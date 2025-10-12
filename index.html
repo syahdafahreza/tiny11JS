@@ -4,139 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pratinjau Wallpaper Desktop Modern</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+    <!-- Tailwind Offline CSS (In case of CDN failures) --> 
+    <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
+	<script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet"> -->
     <style>
         :root {
             /* General Theme */
             --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-            /* Window Styles */
             --window-bg: #f0f0f0;
             --window-text: #000;
             --window-border: #a0a0a0;
-            --window-header-bg: #f0f0f0;
-            --window-content-bg: #f0f0f0;
-            --window-content-text: #212529;
-            --window-content-border: #cccccc;
             --control-hover-bg: #e6e6e6;
             --control-close-hover-bg: #e81123;
             --control-close-hover-text: white;
-            
-            /* Form Elements */
-            --select-bg: white;
-            --select-border: #a0a0a0;
-            --select-text: #000;
-            --toggle-bg-off: #d1d5db; /* gray-300 */
-            --toggle-bg-on: #3b82f6; /* blue-500 */
-            --toggle-handle-bg: white;
-            --toggle-handle-border: #d1d5db;
-
-            /* Taskbar Styles */
             --taskbar-bg: rgba(245, 245, 245, 0.85);
             --taskbar-text: #000;
             --taskbar-hover-bg: rgba(0, 0, 0, 0.1);
             --backdrop-blur: blur(15px);
-
-            /* Start Menu Styles */
-            --start-menu-bg: rgba(255, 255, 255, 0.85);
-            --start-menu-border: rgba(0, 0, 0, 0.1);
-            --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-            --start-menu-text: #212529;
-            --start-menu-subtle-text: #6c757d;
-            --start-menu-item-hover-bg: rgba(0, 0, 0, 0.08);
-            --start-menu-search-bg: rgba(0, 0, 0, 0.05);
-            --start-menu-search-text: #000;
-            --start-menu-search-placeholder: rgba(0, 0, 0, 0.6);
-            --start-menu-footer-border: rgba(0, 0, 0, 0.1);
-
-            --menu-bg: var(--start-menu-bg, rgba(255, 255, 255, 0.85));
+            --menu-bg: rgba(255, 255, 255, 0.85);
+            /* [MODIFIED] Visualizer Colors for Light Theme (Light on Light) */
+            --visualizer-fill: rgba(255, 255, 255, 0.7);
+            --visualizer-shadow: rgba(255, 255, 255, 0.5);
+            
+            /* Variabel baru untuk efek Liquid Glass */
+            --c-glass: #f0f0f0;
+            --c-light: #ffffff;
+            --c-dark: #000000;
+            --glass-reflex-dark: 1;
+            --glass-reflex-light: 1;
+            --saturation: 150%;
         }
 
         body.dark {
-            /* Window Styles */
             --window-bg: #2b2b2b;
             --window-text: #f0f0f0;
             --window-border: #555555;
-            --window-header-bg: #2b2b2b;
-            --window-content-bg: #1e1e1e;
-            --window-content-text: #f0f0f0;
-            --window-content-border: #444444;
             --control-hover-bg: #3c3c3c;
-
-            /* Form Elements */
-            --select-bg: #3c3c3c;
-            --select-border: #555555;
-            --select-text: #f0f0f0;
-            --toggle-bg-off: #4b5563; /* gray-600 */
-            --toggle-handle-border: #4b5563;
-
-            /* Taskbar Styles */
             --taskbar-bg: rgba(20, 20, 20, 0.85);
             --taskbar-text: white;
             --taskbar-hover-bg: rgba(255, 255, 255, 0.1);
+            --menu-bg: rgba(30, 30, 30, 0.75);
+            /* [MODIFIED] Visualizer Colors for Dark Theme (Dark on Dark) */
+            --visualizer-fill: rgba(0, 0, 0, 0.6);
+            --visualizer-shadow: rgba(0, 0, 0, 0.4);
 
-            /* Start Menu Styles */
-            --start-menu-bg: rgba(30, 30, 30, 0.75);
-            --start-menu-border: rgba(255, 255, 255, 0.1);
-            --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            --start-menu-text: white;
-            --start-menu-subtle-text: rgba(255, 255, 255, 0.7);
-            --start-menu-item-hover-bg: rgba(255, 255, 255, 0.1);
-            --start-menu-search-bg: rgba(255, 255, 255, 0.1);
-            --start-menu-search-text: white;
-            --start-menu-search-placeholder: rgba(255, 255, 255, 0.6);
-            --start-menu-footer-border: rgba(255, 255, 255, 0.1);
+            /* Variabel baru untuk efek Liquid Glass - Mode Gelap */
+            --c-glass: #2b2b2b;
+            --glass-reflex-dark: 2;
+            --glass-reflex-light: 0.3;
         }
 
         body {
             font-family: var(--font-family);
             overflow: hidden;
         }
-
-        /* [BARU] Tambahkan blok style ini untuk progress bar modern */
-        #progress-bar {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 5px;
-            background: #e2e8f0; /* gray-200 */
-            outline: none;
-            border-radius: 5px;
-            --progress-color: #f97316; /* orange-500 */
-        }
-        body.dark #progress-bar {
-            background: #4b5563; /* gray-600 */
-        }
-
-        /* Thumb (bulatan) */
-        #progress-bar::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--progress-color);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        #progress-bar::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: var(--progress-color);
-            cursor: pointer;
-            border-radius: 50%;
-             border: 2px solid white;
-        }
         
-        /* Ganti warna progress track */
-        #progress-bar {
-            background-image: linear-gradient(to right, var(--progress-color), var(--progress-color));
-            background-size: 0% 100%;
-            background-repeat: no-repeat;
-        }
-
-        /* Style untuk desktop */
         #desktop {
             width: 100vw;
             height: 100vh;
@@ -144,16 +67,14 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transition: background-image 0.3s ease-in-out;
+            transition: background-image: 0.3s ease-in-out;
         }
 
-        /* Menyorot area drop */
         .drag-over {
             border: 4px dashed rgba(255, 255, 255, 0.7);
             box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
         }
 
-        /* Ikon di desktop */
         .desktop-icon {
             color: white;
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
@@ -162,12 +83,17 @@
             border-radius: 4px;
             cursor: pointer;
             width: 100px;
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+             /* CRITICAL FIX: Only transition background for hover effect. Opacity/transform is handled by animation now. */
+            transition: background-color 0.2s ease-out;
         }
 
         .desktop-icon:hover, .desktop-icon:focus {
             background-color: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            outline: none; /* Hilangkan outline default saat fokus */
+            outline: none;
         }
         
         .desktop-icon img, .desktop-icon svg {
@@ -176,112 +102,45 @@
             margin: 0 auto 8px auto;
         }
 
-        /* --- Gaya Jendela (Generic) --- */
-        .app-window {
+        /* Universal style for app iframes */
+        .app-iframe {
             position: absolute;
             display: none;
-            z-index: 1000;
-            flex-direction: column;
+            z-index: 1001;
             overflow: hidden;
-            border: 1px solid var(--window-border);
-            background-color: var(--menu-bg);
-            backdrop-filter: var(--backdrop-blur) saturate(180%);
-            -webkit-backdrop-filter: var(--backdrop-blur) saturate(180%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            color: var(--window-text);
-        }
-
-        .window-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-            flex-shrink: 0;
-/*            background-color: var(--window-header-bg);*/
-            padding: 3px 3px 3px 6px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        .window-title-container {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .window-header h2 {
-            font-weight: 400;
-            font-size: 13px;
-            color: var(--window-text);
-        }
-
-        .window-controls { display: flex; }
-        .window-control-btn {
-            width: 45px;
-            height: 29px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
             border: none;
-            color: var(--window-text);
+            background-color: transparent;
         }
-        .window-control-btn:hover { background-color: var(--control-hover-bg); }
-        .close-window-btn {
-            font-size: 22px;
-            font-weight: 300;
-            padding-bottom: 4px;
+
+        /* Style for Start Menu iframe, optimized size */
+        #start-menu-frame {
+            position: fixed;
+            --start-menu-top: auto;
+            --start-menu-left: 0px;
+            --start-menu-bottom: auto;
+            top: var(--start-menu-top);
+            left: var(--start-menu-left);
+            bottom: var(--start-menu-bottom);
+            border: none;
+            background-color: transparent;
+            z-index: 499;
+            width: 580px; /* Slightly narrower */
+            max-width: 95vw;
+            height: 640px; /* Reduced height */
+            max-height: calc(100vh - 70px); /* Responsive max height with buffer */
+            /* Initial hidden state */
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+            transform: translateY(20px) scale(0.98);
         }
-        .close-window-btn:hover { 
-            background-color: var(--control-close-hover-bg); 
-            color: var(--control-close-hover-text); 
-        }
-        
-        .window-menu-bar {
-            background-color: var(--window-bg);
-            display: flex;
-            flex-shrink: 0;
-            font-size: 13px;
-            padding: 0 4px;
-        }
-        .menu-item { padding: 3px 8px; cursor: default; }
-        .menu-item:hover { background-color: var(--control-hover-bg); }
-        
-        .window-content-area {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            color: var(--window-content-text);
-/*            border-top: 1px solid var(--window-content-border);*/
-        }
-        .window-content-area select {
-            background-color: var(--select-bg);
-            color: var(--select-text);
-            border: 1px solid var(--select-border);
+
+        #start-menu-frame.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
         
-        .window-status-bar {
-            background-color: var(--window-bg);
-            padding: 4px 12px;
-            font-size: 12px;
-            flex-shrink: 0;
-            border-top: 1px solid var(--window-content-border);
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-        
-        .resize-handle {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            right: 0;
-            bottom: 0;
-            cursor: nwse-resize;
-            background: transparent;
-        }
-        
-        /* --- Gaya Taskbar --- */
         #taskbar {
             background-color: var(--taskbar-bg);
             backdrop-filter: var(--backdrop-blur);
@@ -294,736 +153,217 @@
             transition: all 0.3s ease;
         }
         
-        .taskbar-icon {
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
+        .taskbar-icon { padding: 8px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center; }
         .taskbar-icon:hover { background-color: var(--taskbar-hover-bg); }
         .taskbar-icon img, .taskbar-icon svg { height: 24px; width: 24px; }
         .taskbar-bottom { bottom: 0; left: 0; right: 0; height: 48px; flex-direction: row; padding: 0 0.5rem; justify-content: space-between;}
         .taskbar-top { top: 0; left: 0; right: 0; height: 48px; flex-direction: row; padding: 0 0.5rem; justify-content: space-between;}
         .taskbar-left { top: 0; left: 0; bottom: 0; width: 60px; flex-direction: column; padding: 0.5rem 0; justify-content: space-between;}
         .taskbar-right { top: 0; right: 0; bottom: 0; width: 60px; flex-direction: column; padding: 0.5rem 0; justify-content: space-between;}
-        
         #taskbar.island { width: auto; left: 50%; transform: translateX(-50%); right: auto; }
         #taskbar.island.taskbar-bottom { bottom: 0.5rem; }
         #taskbar.island.taskbar-top { top: 0.5rem; }
-        
         #taskbar.island.single { border-radius: 12px; padding: 0.25rem 0.5rem; gap: 0.5rem; }
+        #taskbar.island.space-between { width: calc(100% - 1rem); left: 0.5rem; right: 0.5rem; transform: none; justify-content: space-between; }
+        #taskbar.island.split { background-color: transparent; backdrop-filter: none; gap: 0.75rem; }
+        #taskbar.island.split > div { background-color: var(--taskbar-bg); backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur); border-radius: 12px; display: flex; align-items: center; padding: 0.25rem 0.5rem; height: 40px; }
         
-        #taskbar.island.space-between {
-            width: calc(100% - 1rem);
-            left: 0.5rem;
-            right: 0.5rem;
-            transform: none;
-            justify-content: space-between;
+        #context-menu {
+            --menu-text: var(--window-text, #212529);
+            --menu-hover-bg: var(--taskbar-hover-bg, rgba(0, 0, 0, 0.08));
+            --menu-separator: var(--window-border, rgba(0, 0, 0, 0.1));
+            --menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            position: absolute; z-index: 2000; display: none; min-width: 250px;
+            background-color: var(--menu-bg); backdrop-filter: var(--backdrop-blur) saturate(180%);
+            -webkit-backdrop-filter: var(--backdrop-blur) saturate(180%); border-radius: 8px;
+            padding: 6px; box-shadow: var(--menu-shadow); border: 1px solid var(--menu-separator);
+            font-size: 14px; color: var(--menu-text);
         }
-        #taskbar.island.split {
+        .context-menu-items { list-style: none; padding: 0; margin: 0; }
+        .context-menu-item { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; border-radius: 5px; transition: background-color 0.15s ease; }
+        .context-menu-item:hover { background-color: var(--menu-hover-bg); }
+        .context-menu-item svg { width: 16px; height: 16px; margin-right: 12px; fill: currentColor; flex-shrink: 0; }
+        .context-menu-item .menu-text { flex-grow: 1; }
+        .context-menu-item .arrow { margin-left: auto; margin-right: -4px; }
+        .context-menu-separator { height: 1px; background-color: var(--menu-separator); margin: 4px 0; }
+        
+        #visualizer {
+            position: absolute; z-index: 498; pointer-events: none; display: none;
+            transition: all 0.2s ease-out;
+        }
+
+        /* --- Fancy Mode (Liquid Glass) Styles for Taskbar --- */
+        body.fancy-mode #taskbar:not(.split),
+        body.fancy-mode #taskbar.split > div {
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            /* MODIFIED: Using the new taskbar-specific filter */
+            backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
+            box-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+        }
+
+        /* --- Fancy Mode (Liquid Glass) Styles for Context Menu --- */
+        body.fancy-mode #context-menu {
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+            border-color: transparent; /* Hide default border in fancy mode */
+        }
+
+        /* In fancy mode, the split container itself should be fully transparent and the default bg removed from the normal taskbar */
+        body.fancy-mode #taskbar {
             background-color: transparent;
             backdrop-filter: none;
-            gap: 0.75rem;
+            -webkit-backdrop-filter: none;
         }
-        #taskbar.island.split > div {
-            background-color: var(--taskbar-bg);
-            backdrop-filter: var(--backdrop-blur);
-            -webkit-backdrop-filter: var(--backdrop-blur);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            padding: 0.25rem 0.5rem;
-            height: 40px;
-        }
-        .toggle-checkbox { border-color: var(--toggle-handle-border); }
-        .toggle-checkbox:checked { right: 0; border-color: var(--toggle-bg-on); }
-        .toggle-label { background-color: var(--toggle-bg-off); }
-        .toggle-checkbox:checked + .toggle-label { background-color: var(--toggle-bg-on); }
 
-        /* --- Modern Start Menu Styles --- */
-        #start-menu {
-            position: absolute;
-            z-index: 499;
+        /* --- NEW: Refresh Icon Animation --- */
+        .desktop-icon.hide-for-refresh {
+            transition: none !important;
+            opacity: 0 !important;
             visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-            transform: translateY(20px) scale(0.98); /* Start animation */
-            
-            width: clamp(320px, 90vw, 620px);
-            max-height: 700px;
-            height: 90vh;
-            border-radius: 12px;
-            border: 1px solid var(--start-menu-border);
-
-            background-color: var(--start-menu-bg);
-            backdrop-filter: var(--backdrop-blur) saturate(180%);
-            -webkit-backdrop-filter: var(--backdrop-blur) saturate(180%);
-            color: var(--start-menu-text);
-            box-shadow: var(--start-menu-shadow);
-
-            display: flex;
-            flex-direction: column;
-            padding: 1rem;
-            gap: 1.25rem;
-            overflow: hidden;
         }
-        #start-menu.show {
+
+        .desktop-icon.animate-in {
             visibility: visible;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-        .search-container {
-            position: relative;
-            flex-shrink: 0;
-        }
-        .search-container input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border-radius: 20px;
-            border: none;
-            background-color: var(--start-menu-search-bg);
-            color: var(--start-menu-search-text);
-            font-size: 1rem;
-            outline: none;
-        }
-        .search-container input::placeholder { color: var(--start-menu-search-placeholder); }
-        .search-container .search-icon {
-            position: absolute;
-            left: 0.8rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--start-menu-search-placeholder);
-            height: 1.25rem;
-            width: 1.25rem;
-        }
-        .apps-section, .recommended-section {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            min-height: 0;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 0.5rem;
-        }
-        .section-header h3 { font-size: 1.1rem; font-weight: 600; }
-        .all-apps-btn {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            background-color: var(--start-menu-search-bg);
-            transition: background-color 0.2s ease;
-            border: none;
-            color: var(--start-menu-text);
-        }
-        .all-apps-btn:hover { background-color: var(--start-menu-item-hover-bg); }
-        .pinned-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 1rem;
-            padding: 0.5rem;
-        }
-        .app-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            text-align: center;
-        }
-        .app-item:hover { background-color: var(--start-menu-item-hover-bg); }
-        .app-item .app-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .app-item .app-icon img { width: 32px; height: 32px; }
-        .app-item span {
-            font-size: 0.75rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-        .recommended-section { flex-grow: 1; }
-        .recommended-list {
-            overflow-y: auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 0.5rem;
-            padding-right: 8px;
-        }
-        .recommended-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .recommended-item:hover { background-color: var(--start-menu-item-hover-bg); }
-        .recommended-icon {
-            width: 36px;
-            height: 36px;
-            flex-shrink: 0;
-            border-radius: 8px;
-        }
-        .recommended-info { display: flex; flex-direction: column; line-height: 1.2; }
-        .recommended-info span:last-child { font-size: 0.8rem; color: var(--start-menu-subtle-text); }
-        .footer-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0 -1rem -1rem -1rem;
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--start-menu-footer-border);
-            flex-shrink: 0;
-        }
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.25rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .user-profile:hover { background-color: var(--start-menu-item-hover-bg); }
-        .user-avatar { width: 32px; height: 32px; border-radius: 50%; }
-        .power-button {
-            padding: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .power-button:hover { background-color: var(--start-menu-item-hover-bg); }
-        .power-button svg { width: 24px; height: 24px; }
-
-        /* --- Gaya Menu Konteks Modern --- */
-        #context-menu {
-            --menu-bg: var(--start-menu-bg, rgba(255, 255, 255, 0.85));
-            --menu-text: var(--start-menu-text, #212529);
-            --menu-hover-bg: var(--start-menu-item-hover-bg, rgba(0, 0, 0, 0.08));
-            --menu-separator: var(--start-menu-footer-border, rgba(0, 0, 0, 0.1));
-            --menu-shadow: var(--start-menu-shadow, 0 8px 32px 0 rgba(0, 0, 0, 0.2));
-
-            position: absolute;
-            z-index: 2000;
-            display: none; /* Disembunyikan secara default */
-            min-width: 250px;
-            background-color: var(--menu-bg);
-            backdrop-filter: var(--backdrop-blur) saturate(180%);
-            -webkit-backdrop-filter: var(--backdrop-blur) saturate(180%);
-            border-radius: 8px;
-            padding: 6px;
-            box-shadow: var(--menu-shadow);
-            border: 1px solid var(--menu-separator);
-            font-size: 14px;
-            color: var(--menu-text);
+            animation: slide-fade-in 0.4s ease-out forwards;
         }
 
-        .context-menu-items {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .context-menu-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.15s ease;
-        }
-
-        .context-menu-item:hover {
-            background-color: var(--menu-hover-bg);
-        }
-
-        .context-menu-item svg {
-            width: 16px;
-            height: 16px;
-            margin-right: 12px;
-            fill: currentColor;
-            flex-shrink: 0;
-        }
-
-        .context-menu-item .menu-text {
-            flex-grow: 1;
-        }
-        
-        .context-menu-item .arrow {
-            margin-left: auto;
-            margin-right: -4px;
-        }
-
-        .context-menu-separator {
-            height: 1px;
-            background-color: var(--menu-separator);
-            margin: 4px 0;
-        }
-        
-        /* Gaya Visualizer */
-        #visualizer {
-            position: absolute;
-            z-index: 498; /* Di bawah taskbar & menu, di atas desktop */
-            pointer-events: none; /* Agar tidak bisa diklik */
-            display: none; /* Sembunyi sampai ada musik */
-            transition: all 0.2s ease-out; /* Animasi halus untuk posisi & radius */
+        @keyframes slide-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body class="bg-gray-800 select-none">
-    <audio id="audio-player" class="hidden"></audio>
-    <!-- Area Desktop Utama -->
+    
+    <!-- Filter SVG for Liquid Glass effect -->
+    <div style="position: absolute; width: 0; height: 0; z-index: -1;">
+        <svg>
+          <!-- Original Filter (for windows) -->
+          <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
+            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>   
+			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+			<feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
+			</feDisplacementMap>
+          </filter>
+          <!-- NEW: Taskbar-specific filter with reduced scale -->
+          <filter id="taskbar-liquid-glass-filter" primitiveUnits="objectBoundingBox">
+            <feImage result="map" width="120%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter-taskbar.jpg"/>   
+			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+			<feDisplacementMap id="disp-taskbar" in="blur" in2="map" scale="0.06" xChannelSelector="R" yChannelSelector="G">
+			</feDisplacementMap>
+          </filter>
+        </svg>
+    </div>
+
     <div id="desktop" class="relative">
         
-        <!-- Kontainer Ikon -->
         <div id="desktop-icons" class="absolute top-4 left-4 flex flex-col gap-2">
-            <div class="desktop-icon" tabindex="0">
-                <img src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin"/>
-                <span>Recycle Bin</span>
-            </div>
-            <div class="desktop-icon" tabindex="0">
-                <img src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC"/>
-                <span>This PC</span>
-            </div>
-            <div id="control-panel-icon" class="desktop-icon" tabindex="0">
-                <img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/>
-                <span>Control Panel</span>
-            </div>
-             <div id="music-player-icon" class="desktop-icon" tabindex="0">
-                <img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/>
-                <span>Music Player</span>
-            </div>
+            <div class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin"/><span>Recycle Bin</span></div>
+            <div class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC"/><span>This PC</span></div>
+            <div id="control-panel-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/><span>Control Panel</span></div>
+            <div id="music-player-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/><span>Music Player</span></div>
         </div>
 
-        <!-- Jendela Control Panel -->
-        <div id="control-panel-window" class="app-window" style="top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 480px; min-height: 400px; height: 550px; width: 550px;">
-            <div id="window-header" class="window-header">
-                <div class="window-title-container">
-                    <img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel Icon" class="h-4 w-4">
-                    <h2>Control Panel</h2>
-                </div>
-                <div class="window-controls">
-                    <button class="window-control-btn" title="Minimize">
-                        <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1H10V2H0V1Z" fill="currentColor"/></svg>
-                    </button>
-                    <button class="window-control-btn" title="Maximize">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>
-                    </button>
-                    <button id="close-window-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
-                </div>
-            </div>
-            <!-- <div class="window-menu-bar">
-                <div class="menu-item">File</div>
-                <div class="menu-item">Edit</div>
-                <div class="menu-item">View</div>
-                <div class="menu-item">Help</div>
-            </div> -->
-            <div class="window-content-area">
-                <div class="space-y-4 divide-y divide-gray-300 dark:divide-gray-600">
-                     <!-- Pengaturan Tema -->
-                    <div class="pb-4">
-                        <h3 class="font-bold text-lg mb-2">Overall Theme</h3>
-                        <div>
-                            <label for="theme-select" class="block mb-1 text-sm font-medium">Window & Taskbar Theme</label>
-                            <select id="theme-select" class="w-full p-2 rounded">
-                                <option value="light" selected>Light</option>
-                                <option value="dark">Dark</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- Pengaturan Wallpaper -->
-                    <div class="pt-4">
-                        <h3 class="font-bold text-lg mb-2">Pengaturan Wallpaper</h3>
-                        <div>
-                            <label for="bg-size" class="block mb-1 text-sm font-medium">Posisi Gambar (Fit)</label>
-                            <select id="bg-size" class="w-full p-2 rounded">
-                                <option value="cover" selected>Cover (Isi Penuh)</option>
-                                <option value="contain">Contain (Dalam Layar)</option>
-                                <option value="auto">Auto (Ukuran Asli)</option>
-                            </select>
-                        </div>
-                        <div class="mt-2">
-                            <label for="bg-repeat" class="block mb-1 text-sm font-medium">Pengulangan Gambar (Repeat)</label>
-                            <select id="bg-repeat" class="w-full p-2 rounded">
-                                <option value="no-repeat" selected>No Repeat</option>
-                                <option value="repeat">Repeat (Ulangi)</option>
-                                <option value="repeat-x">Repeat Horizontally</option>
-                                <option value="repeat-y">Repeat Vertically</option>
-                                <option value="space">Space</option>
-                                <option value="round">Round</option>
-                            </select>
-                        </div>
-                        <div class="mt-2">
-                            <label for="bg-position" class="block mb-1 text-sm font-medium">Posisi Gambar</label>
-                            <select id="bg-position" class="w-full p-2 rounded">
-                                <option value="center" selected>Tengah (Center)</option>
-                                <option value="top">Atas (Top)</option>
-                                <option value="bottom">Bawah (Bottom)</option>
-                                <option value="left">Kiri (Left)</option>
-                                <option value="right">Kanan (Right)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- Pengaturan Taskbar -->
-                    <div class="pt-4">
-                        <h3 class="font-bold text-lg mb-2">Pengaturan Taskbar</h3>
-                        <div class="space-y-2">
-                            <div>
-                                <label for="taskbar-style" class="block mb-1 text-sm font-medium">Gaya Taskbar</label>
-                                <select id="taskbar-style" class="w-full p-2 rounded">
-                                    <option value="default" selected>Default (Penuh)</option>
-                                    <option value="island-single">Island (Menyatu)</option>
-                                    <option value="island-split">Island (Terpisah)</option>
-                                </select>
-                            </div>
-                            <div id="space-between-container" class="flex items-center justify-between mt-2 hidden">
-                                <label for="toggle-space-between" class="text-sm font-medium">Jarak Antar Grup (Island)</label>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                    <input type="checkbox" name="toggle-space-between" id="toggle-space-between" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                                    <label for="toggle-space-between" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="taskbar-position" class="block mb-1 text-sm font-medium">Posisi Taskbar</label>
-                                <select id="taskbar-position" class="w-full p-2 rounded">
-                                    <option value="bottom" selected>Bawah (Bottom)</option>
-                                    <option value="top">Atas (Top)</option>
-                                    <option value="left">Kiri (Left)</option>
-                                    <option value="right">Kanan (Right)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <h4 class="text-sm font-medium mb-2">Ikon Sistem</h4>
-                            <div class="flex items-center justify-between">
-                                <label for="toggle-clock">Tampilkan Jam & Tanggal</label>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                    <input type="checkbox" name="toggle-clock" id="toggle-clock" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                                    <label for="toggle-clock" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="window-status-bar" class="window-status-bar">
-                <span>Displays desktop wallpaper and taskbar settings.</span>
-            </div>
-            <div id="resize-handle" class="resize-handle"></div>
-        </div>
-
-        <!-- Jendela Music Player -->
-        <div id="music-player-window" class="app-window" style="top: 20%; left: 20%; width: 420px; min-width: 380px; height: auto; min-height: 250px; z-index: 1001; display: none;">
-            <div id="music-window-header" class="window-header">
-                <div class="window-title-container">
-                    <img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Icon" class="h-4 w-4">
-                    <h2>Music Player</h2>
-                </div>
-                <div class="window-controls">
-                    <button id="minimize-music-window-btn" class="window-control-btn" title="Minimize">
-                        <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1H10V2H0V1Z" fill="currentColor"/></svg>
-                    </button>
-                    <button id="maximize-music-window-btn" class="window-control-btn" title="Maximize">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>
-                    </button>
-                    <button id="close-music-window-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
-                </div>
-            </div>
-            
-            <div id="music-drop-zone" class="window-content-area" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
-                
-                <img id="album-art" src="https://img.icons8.com/fluency/96/000000/music-folder.png" class="w-48 h-48 rounded-lg mb-4 mx-auto">
-                
-                <div class="w-full mb-3">
-                    <input type="range" id="progress-bar" class="w-full h-2 my-2 cursor-pointer" value="0" step="1">
-                    <div class="w-full flex justify-between text-xs opacity-60">
-                        <span id="current-time">0:00</span>
-                        <span id="duration">0:00</span>
-                    </div>
-                </div>
-
-                <div class="text-left mb-4">
-                    <h3 id="song-title" class="text-xl font-bold truncate">No song playing</h3>
-                    <p id="song-artist" class="text-sm opacity-70 truncate">Drop a music file to start</p>
-                </div>
-                
-                <div class="flex items-center justify-between gap-2">
-                    <button id="shuffle-btn" class="p-2 opacity-70 hover:opacity-100 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="16 16 21 16 21 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
-                    </button>
-
-                    <div class="flex items-center justify-center gap-4">
-                        <button id="prev-btn" class="p-2 opacity-80 hover:opacity-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
-                        </button>
-                        <button id="rewind-btn" class="p-2 opacity-80 hover:opacity-100">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 8 12 12 16"></polyline><path d="M16 12h-8"></path></svg>
-                        </button>
-                        <button id="play-pause-btn" class="text-4xl w-16 h-16 flex items-center justify-center rounded-full shadow-lg transition border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white">
-                            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="padding-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
-                            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                        </button>
-                        <button id="forward-btn" class="p-2 opacity-80 hover:opacity-100">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 16 12 12 16"></polyline><path d="M8 12h8"></path></svg>
-                        </button>
-                        <button id="next-btn" class="p-2 opacity-80 hover:opacity-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
-                        </button>
-                    </div>
-
-                    <button id="repeat-btn" class="p-2 opacity-70 hover:opacity-100 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEW Modern Start Menu -->
-        <div id="start-menu">
-            <div class="search-container">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                </svg>
-                <input type="text" placeholder="Type here to search">
-            </div>
-
-            <div class="apps-section">
-                <div class="section-header">
-                    <h3>Pinned</h3>
-                    <button class="all-apps-btn">All apps &gt;</button>
-                </div>
-                <div class="pinned-grid">
-                    <div class="app-item">
-                        <div class="app-icon bg-blue-500"><img src="https://syahdafahreza.my.id/images/desktopicons/msedge2019.png" alt="Edge"/></div>
-                        <span>Edge</span>
-                    </div>
-                    <div id="start-menu-music-player" class="app-item">
-                        <div class="app-icon bg-pink-500"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music"/></div>
-                        <span>Music</span>
-                    </div>
-                    <div class="app-item">
-                        <div class="app-icon bg-green-700"><img src="https://img.icons8.com/fluency/48/ms-excel.png" alt="Excel"/></div>
-                        <span>Excel</span>
-                    </div>
-                    <div class="app-item">
-                        <div class="app-icon bg-red-500"><img src="https://syahdafahreza.my.id/images/desktopicons/winstoreapp-dark.png" alt="Store"/></div>
-                        <span>Store</span>
-                    </div>
-                     <div class="app-item">
-                        <div class="app-icon bg-blue-700"><img src="https://img.icons8.com/color/48/ms-word.png" alt="Word"/></div>
-                        <span>Word</span>
-                    </div>
-                    <div class="app-item">
-                        <div class="app-icon bg-gray-700"><img src="https://img.icons8.com/fluency/48/github.png" alt="Github"/></div>
-                        <span>Github</span>
-                    </div>
-                     <div class="app-item">
-                        <div class="app-icon bg-purple-600"><img src="https://img.icons8.com/fluency/48/visual-studio-code-2019.png" alt="VS Code"/></div>
-                        <span>VS Code</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="recommended-section">
-                 <div class="section-header">
-                    <h3>Recommended</h3>
-                </div>
-                <div class="recommended-list">
-                    <div class="recommended-item">
-                        <div class="recommended-icon bg-orange-500 flex items-center justify-center"><img src="https://img.icons8.com/color/48/ms-powerpoint.png" class="w-6 h-6" alt="PowerPoint"/></div>
-                        <div class="recommended-info">
-                            <span class="font-semibold">Quarterly Review.pptx</span>
-                            <span>17m ago</span>
-                        </div>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="recommended-icon bg-blue-700 flex items-center justify-center"><img src="https://img.icons8.com/color/48/ms-word.png" class="w-6 h-6" alt="Word"/></div>
-                        <div class="recommended-info">
-                            <span class="font-semibold">Project Proposal.docx</span>
-                            <span>Recently added</span>
-                        </div>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="recommended-icon bg-sky-500 flex items-center justify-center"><img src="https://img.icons8.com/fluency/48/image-file.png" class="w-6 h-6" alt="Image"/></div>
-                        <div class="recommended-info">
-                            <span class="font-semibold">Brand_Logo_Final.png</span>
-                            <span>Yesterday</span>
-                        </div>
-                    </div>
-                     <div class="recommended-item">
-                        <div class="recommended-icon bg-green-700 flex items-center justify-center"><img src="https://img.icons8.com/fluency/48/ms-excel.png" class="w-6 h-6" alt="Excel"/></div>
-                        <div class="recommended-info">
-                            <span class="font-semibold">Budget_2025.xlsx</span>
-                            <span>2h ago</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bar">
-                <div class="user-profile">
-                    <img src="https://placehold.co/40x40/555/fff?text=U" alt="User" class="user-avatar">
-                    <span>Umarkov</span>
-                </div>
-                <div class="power-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A7.963 7.963 0 0120 12h2c0-2.34-1.01-4.43-2.6-5.98l-1.57-1.85zM5.59 5.59L4.17 4.17C2.59 5.76 1.58 7.84 1.58 10h2c0-1.85.73-3.54 1.93-4.8l1.08-1.61zM12 23c4.97 0 9-4.03 9-9h-2c0 3.86-3.14 7-7 7s-7-3.14-7-7H3c0 4.97 4.03 9 9 9z" /></svg>
-                </div>
-            </div>
-        </div>
+        <iframe id="control-panel-frame" 
+                class="app-iframe"
+                src="control_panel.html"
+                allowtransparency="true"
+                style="top: 15%; left: 30%; width: 550px; height: 550px; min-width: 480px; min-height: 400px;">
+        </iframe>
         
-        <!-- Menu Konteks Modern -->
+        <iframe id="start-menu-frame" 
+                src="start_menu.html"
+                allowtransparency="true">
+        </iframe>
+
+        <iframe id="music-player-frame" 
+                class="app-iframe"
+                src="music_player.html" 
+                allowtransparency="true"
+                style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
+        </iframe>
+        
         <div id="context-menu">
             <ul class="context-menu-items">
-                <li class="context-menu-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-                    <span class="menu-text">View</span>
-                    <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </li>
-                <li class="context-menu-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h14a1 1 0 100-2H3zM3 8a1 1 0 000 2h14a1 1 0 100-2H3zM3 13a1 1 0 000 2h14a1 1 0 100-2H3z" /></svg>
-                    <span class="menu-text">Sort by</span>
-                    <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </li>
-                <li class="context-menu-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg>
-                    <span class="menu-text">Refresh</span>
-                </li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg><span class="menu-text">View</span><svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h14a1 1 0 100-2H3zM3 8a1 1 0 000 2h14a1 1 0 100-2H3zM3 13a1 1 0 000 2h14a1 1 0 100-2H3z" /></svg><span class="menu-text">Sort by</span><svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+                <li id="context-menu-refresh" class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg><span class="menu-text">Refresh</span></li>
                 <li class="context-menu-separator"></li>
-                <li class="context-menu-item">
-                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                    <span class="menu-text">New</span>
-                    <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg><span class="menu-text">New</span><svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
                 <li class="context-menu-separator"></li>
-                <li class="context-menu-item" id="context-menu-settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
-                    <span class="menu-text">Display settings</span>
-                </li>
-                <li class="context-menu-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 3.293A1 1 0 0118 4v12a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1h4.586a1 1 0 01.707.293l1.414 1.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l1.414-1.414A1 1 0 0112.414 3H17.293zM2 6v10h16V6H2z" /></svg>
-                    <span class="menu-text">Personalize</span>
-                </li>
+                <li class="context-menu-item" id="context-menu-settings"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg><span class="menu-text">Display settings</span></li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 3.293A1 1 0 0118 4v12a1 1 0 01-1-1H2a1 1 0 01-1-1V4a1 1 0 011-1h4.586a1 1 0 01.707.293l1.414 1.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l1.414-1.414A1 1 0 0112.414 3H17.293zM2 6v10h16V6H2z" /></svg><span class="menu-text">Personalize</span></li>
             </ul>
         </div>
 
         <canvas id="visualizer"></canvas>
-        <!-- Taskbar -->
+
         <div id="taskbar" class="taskbar-bottom">
             <div id="taskbar-main-group" class="flex items-center gap-1">
-                <div id="start-button" class="taskbar-icon">
-                    <img src="https://img.icons8.com/fluency/48/windows-11.png" alt="Start"/>
-                </div>
+                <div id="start-button" class="taskbar-icon"><img src="https://img.icons8.com/fluency/48/windows-11.png" alt="Start"/></div>
                 <div id="app-icons" class="flex items-center gap-1">
-                    <div class="taskbar-icon">
-                        <img src="https://syahdafahreza.my.id/images/desktopicons/explorer.png" alt="Folder"/>
-                    </div>
-                    <div class="taskbar-icon">
-                        <img src="https://syahdafahreza.my.id/images/desktopicons/msedge2019.png" alt="Edge"/>
-                    </div>
-                    <div class="taskbar-icon">
-                        <img src="https://syahdafahreza.my.id/images/desktopicons/winstoreapp-dark.png" alt="Store"/>
-                    </div>
-                    <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;">
-                        <img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/>
-                    </div>
-                    <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;">
-                        <img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/>
-                    </div>
+                    <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/explorer.png" alt="Folder"/></div>
+                    <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/msedge2019.png" alt="Edge"/></div>
+                    <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/winstoreapp-dark.png" alt="Store"/></div>
+                    <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/></div>
+                    <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/></div>
                 </div>
             </div>
-            
             <div id="system-tray" class="flex items-center gap-2">
-                <div class="taskbar-icon p-2">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
-                </div>
-                <div class="taskbar-icon p-2">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0" /></svg>
-                </div>
-                <div class="text-sm px-1">
-                    <span>ENG</span>
-                </div>
-                <div id="datetime-container" class="text-xs text-right leading-tight px-1 cursor-default">
-                    <span id="clock">15:45</span>
-                    <span id="date" class="block">28/09/2025</span>
-                </div>
-                <div class="taskbar-icon p-2">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
+                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg></div>
+                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0" /></svg></div>
+                <div class="text-sm px-1"><span>ENG</span></div>
+                <div id="datetime-container" class="text-xs text-right leading-tight px-1 cursor-default"><span id="clock">15:45</span><span id="date" class="block">28/09/2025</span></div>
+                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
             </div>
         </div>
-
     </div>
 
-    <script>
-    // === DEKLARASI SEMUA ELEMEN ===
+<script>
+    // === ALL ELEMENT DECLARATIONS ===
     const desktop = document.getElementById('desktop');
     
-    let isMusicPlayerOpen = false;
-    let lastMusicPlayerRect = null;
-    
-    // Elemen Jendela Control Panel
+    // App Iframes
     const controlPanelIcon = document.getElementById('control-panel-icon');
-    const controlPanelWindow = document.getElementById('control-panel-window');
-    const closeWindowBtn = document.getElementById('close-window-btn');
-    const windowHeader = document.getElementById('window-header');
-    const resizeHandle = document.getElementById('resize-handle');
-    
-    // Elemen Music Player & UI di dalamnya
+    const controlPanelFrame = document.getElementById('control-panel-frame');
     const musicPlayerIcon = document.getElementById('music-player-icon');
-    const musicPlayerWindow = document.getElementById('music-player-window');
-    const closeMusicWindowBtn = document.getElementById('close-music-window-btn');
-    const minimizeMusicWindowBtn = document.getElementById('minimize-music-window-btn');
-    const musicWindowHeader = document.getElementById('music-window-header');
-    const musicDropZone = document.getElementById('music-drop-zone');
-    const audioPlayer = document.getElementById('audio-player');
-    const albumArt = document.getElementById('album-art');
-    const songTitle = document.getElementById('song-title');
-    const songArtist = document.getElementById('song-artist');
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
-    const rewindBtn = document.getElementById('rewind-btn');
-    const forwardBtn = document.getElementById('forward-btn');
-    const shuffleBtn = document.getElementById('shuffle-btn');
-    const repeatBtn = document.getElementById('repeat-btn');
+    const musicPlayerFrame = document.getElementById('music-player-frame');
 
-    // Elemen Visualizer
+    // Visualizer Elements
     const visualizerCanvas = document.getElementById('visualizer');
     const visualizerCtx = visualizerCanvas.getContext('2d');
     
-    // Elemen Pengaturan di Control Panel
-    const themeSelect = document.getElementById('theme-select');
-    const bgSizeSelect = document.getElementById('bg-size');
-    const bgRepeatSelect = document.getElementById('bg-repeat');
-    const bgPositionSelect = document.getElementById('bg-position');
-    
-    // Elemen Taskbar
+    // Taskbar Elements
     const taskbar = document.getElementById('taskbar');
-    const taskbarPositionSelect = document.getElementById('taskbar-position');
-    const taskbarStyleSelect = document.getElementById('taskbar-style');
-    const toggleSpaceBetween = document.getElementById('toggle-space-between');
-    const spaceBetweenContainer = document.getElementById('space-between-container');
-    const toggleClockCheckbox = document.getElementById('toggle-clock');
     const datetimeContainer = document.getElementById('datetime-container');
     const clockElement = document.getElementById('clock');
     const dateElement = document.getElementById('date');
@@ -1033,520 +373,305 @@
     const taskbarControlPanelIcon = document.getElementById('taskbar-cp-icon');
     const taskbarMusicIcon = document.getElementById('taskbar-music-icon');
 
-    // Elemen Start Menu
+    // Start Menu Elements
     const startButton = document.getElementById('start-button');
-    const startMenu = document.getElementById('start-menu');
-    const startMenuMusicPlayer = document.getElementById('start-menu-music-player');
+    const startMenuFrame = document.getElementById('start-menu-frame');
 
-    // Elemen Menu Konteks
+    // Context Menu Elements
     const contextMenu = document.getElementById('context-menu');
     const contextMenuSettings = document.getElementById('context-menu-settings');
+    const contextMenuRefresh = document.getElementById('context-menu-refresh'); // New Refresh element
 
-    // Variabel Global untuk state
-    let activeWindow = null;
-    let offsetX, offsetY;
-    let isResizing = false;
-    let initialWidth, initialHeight, initialMouseX, initialMouseY;
-    let audioContext, analyser, source, dataArray;
-    let isAudioSetup = false;
+    // Global State Variables
+    let isMusicPlayerOpen = false;
+    let isControlPanelOpen = false;
+    let lastMusicPlayerRect = null;
+    let lastControlPanelRect = null;
+    let visualizerData = null;
     let previousBarHeights = [];
-    
+    let currentTaskbarPosition = 'bottom';
+    let currentTaskbarStyle = 'default';
+    let isTaskbarSpaceBetween = false;
+
     const visualizerSettings = {
-        fillStyle: 'rgba(255, 255, 255, 0.8)',
-        shadowBlur: 4,
-        shadowColor: 'rgba(255, 255, 255, 0.5)',
-        smoothingFactor: 0.5,
-        bassMultiplier: 0.75,
-        bassEndPercentage: 0.25, 
-        midBoostAmount: 0.8,
-        trebleStartPercentage: 0.5, 
-        trebleBoostAmount: 0.8,
-        scalingPower: 2.0,
-        height: 200,
-        width: 120, 
-        islandBorderRadius: '12px', 
-        islandGap: 6,
+        // [REMOVED] fillStyle and shadowColor are now in CSS
+        shadowBlur: 4, 
+        smoothingFactor: 0.5, bassMultiplier: 0.75, bassEndPercentage: 0.25, midBoostAmount: 0.8,
+        trebleStartPercentage: 0.5, trebleBoostAmount: 0.2, scalingPower: 2.0,
+        height: 200, width: 120, islandBorderRadius: '12px', islandGap: 6,
     };
 
-    // === FUNGSI-FUNGSI UTAMA ===
+    // === CORE FUNCTIONS ===
 
-    // --- Fungsi Jam & Tanggal ---
     function updateClock() {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const year = now.getFullYear();
-        clockElement.textContent = `${hours}:${minutes}`;
-        dateElement.textContent = `${day}/${month}/${year}`;
+        clockElement.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        dateElement.textContent = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
     }
 
-    // --- Fungsi Drag and Drop Wallpaper ---
     function setupWallpaperDragDrop() {
-        desktop.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            desktop.classList.add('drag-over');
-        });
-        desktop.addEventListener('dragleave', () => {
-            desktop.classList.remove('drag-over');
-        });
+        desktop.addEventListener('dragover', (e) => { e.preventDefault(); desktop.classList.add('drag-over'); });
+        desktop.addEventListener('dragleave', () => { desktop.classList.remove('drag-over'); });
         desktop.addEventListener('drop', (e) => {
             e.preventDefault();
             desktop.classList.remove('drag-over');
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    desktop.style.backgroundImage = `url('${event.target.result}')`;
-                };
+                reader.onload = (event) => { desktop.style.backgroundImage = `url('${event.target.result}')`; };
                 reader.readAsDataURL(file);
             }
         });
     }
+
+    // --- GENERIC APP IFRAME MANAGEMENT ---
     
-    // --- Fungsi Drag & Resize Jendela (Generic) ---
-    function startDrag(e, windowEl) {
-        activeWindow = windowEl;
-        offsetX = e.clientX - activeWindow.offsetLeft;
-        offsetY = e.clientY - activeWindow.offsetTop;
-        document.body.style.cursor = 'grabbing';
-        activeWindow.style.zIndex = 1002;
-        if (activeWindow === controlPanelWindow) musicPlayerWindow.style.zIndex = 1001;
-        if (activeWindow === musicPlayerWindow) controlPanelWindow.style.zIndex = 1000;
-    }
-    function drag(e) {
-        if (!activeWindow) return;
-        e.preventDefault(); 
-        let newX = e.clientX - offsetX;
-        let newY = e.clientY - offsetY;
-        activeWindow.style.left = `${newX}px`;
-        activeWindow.style.top = `${newY}px`;
-        activeWindow.style.transform = 'none';
-    }
-    function stopDrag() {
-        if (activeWindow) {
-            activeWindow.querySelector('.window-header').style.cursor = 'move';
+    function openApp(appName) {
+        let appFrame, isOpenState, taskbarIcon;
+        if (appName === 'music') {
+            appFrame = musicPlayerFrame;
+            taskbarIcon = taskbarMusicIcon;
+            if (isMusicPlayerOpen) { bringToFront('music'); return; }
+            isMusicPlayerOpen = true;
+        } else if (appName === 'cp') {
+            appFrame = controlPanelFrame;
+            taskbarIcon = taskbarControlPanelIcon;
+            if (isControlPanelOpen) { bringToFront('cp'); return; }
+            isControlPanelOpen = true;
         }
-        activeWindow = null;
-        document.body.style.cursor = 'default';
-    }
-    function startResize(e) {
-        isResizing = true;
-        initialWidth = controlPanelWindow.offsetWidth;
-        initialHeight = controlPanelWindow.offsetHeight;
-        initialMouseX = e.clientX;
-        initialMouseY = e.clientY;
-        document.body.style.cursor = 'nwse-resize';
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    function resize(e) {
-        if (isResizing) {
-            const dx = e.clientX - initialMouseX;
-            const dy = e.clientY - initialMouseY;
-            const newWidth = Math.max(480, initialWidth + dx);
-            const newHeight = Math.max(400, initialHeight + dy);
-            controlPanelWindow.style.width = `${newWidth}px`;
-            controlPanelWindow.style.height = `${newHeight}px`;
-        }
-    }
-    function stopResize() {
-        if (isResizing) {
-            isResizing = false;
-            document.body.style.cursor = 'default';
-        }
-    }
 
-    // --- FUNGSI INTERAKSI JENDELA & TASKBAR ---
-    function openMusicPlayerApp() {
-        if (isMusicPlayerOpen) {
-            musicPlayerWindow.style.zIndex = 1002;
-            controlPanelWindow.style.zIndex = 1001;
-            return;
-        }
-        isMusicPlayerOpen = true;
-        taskbarMusicIcon.style.display = 'flex';
-        musicPlayerWindow.style.display = 'flex';
-        musicPlayerWindow.style.transition = 'none';
-        musicPlayerWindow.style.transform = 'translate(-50%, -50%) scale(1)';
-        musicPlayerWindow.style.opacity = '1';
-        musicPlayerWindow.style.top = '50%';
-        musicPlayerWindow.style.left = '50%';
-        musicPlayerWindow.style.zIndex = 1002;
-        controlPanelWindow.style.zIndex = 1001;
-    }
-
-    function closeMusicPlayerApp() {
-        isMusicPlayerOpen = false;
-        musicPlayerWindow.style.display = 'none';
-        taskbarMusicIcon.style.display = 'none';
+        taskbarIcon.style.display = 'flex';
+        appFrame.style.display = 'block';
+        appFrame.style.transition = 'none';
+        appFrame.style.transform = 'scale(1)';
+        appFrame.style.opacity = '1';
         
-        audioPlayer.pause();
-        audioPlayer.src = ""; 
-        songTitle.textContent = 'No song playing';
-        songArtist.textContent = 'Drop a music file to start';
-        progressBar.value = 0;
-        progressBar.style.backgroundSize = '0% 100%';
-        currentTimeEl.textContent = '0:00';
-        durationEl.textContent = '0:00';
-        playIcon.style.display = 'block';
-        pauseIcon.style.display = 'none';
+        bringToFront(appName);
+        
+        if (appName === 'music') {
+            visualizerCanvas.style.display = 'block';
+            drawVisualizer();
+        }
     }
 
-    function minimizeMusicPlayer() {
-        if (musicPlayerWindow.style.display === 'none') return;
-
-        lastMusicPlayerRect = musicPlayerWindow.getBoundingClientRect();
-        const targetRect = taskbarMusicIcon.getBoundingClientRect();
+    function closeApp(appName) {
+        let appFrame, taskbarIcon;
+        if (appName === 'music') {
+            isMusicPlayerOpen = false;
+            appFrame = musicPlayerFrame;
+            taskbarIcon = taskbarMusicIcon;
+            visualizerCanvas.style.display = 'none';
+            visualizerData = null;
+            appFrame.contentWindow.postMessage({ action: 'stop' }, '*');
+        } else if (appName === 'cp') {
+            isControlPanelOpen = false;
+            appFrame = controlPanelFrame;
+            taskbarIcon = taskbarControlPanelIcon;
+        }
+        appFrame.style.display = 'none';
+        taskbarIcon.style.display = 'none';
+    }
+    
+    function minimizeApp(appName) {
+        let appFrame, lastRect, taskbarIcon;
+        if (appName === 'music') {
+            appFrame = musicPlayerFrame;
+            taskbarIcon = taskbarMusicIcon;
+            lastMusicPlayerRect = appFrame.getBoundingClientRect();
+            lastRect = lastMusicPlayerRect;
+        } else if (appName === 'cp') {
+            appFrame = controlPanelFrame;
+            taskbarIcon = taskbarControlPanelIcon;
+            lastControlPanelRect = appFrame.getBoundingClientRect();
+            lastRect = lastControlPanelRect;
+        }
         
-        const translateX = targetRect.left - lastMusicPlayerRect.left + (targetRect.width / 2);
-        const translateY = targetRect.top - lastMusicPlayerRect.top + (targetRect.height / 2);
-
-        musicPlayerWindow.style.transition = 'transform 0.3s ease-in, opacity 0.3s ease-in';
-        musicPlayerWindow.style.transformOrigin = 'top left';
-        musicPlayerWindow.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1)`;
-        musicPlayerWindow.style.opacity = '0';
+        if (appFrame.style.display === 'none' || appFrame.style.opacity === '0') return;
         
-        setTimeout(() => {
-            musicPlayerWindow.style.display = 'none';
-        }, 300);
+        const targetRect = taskbarIcon.getBoundingClientRect();
+        const translateX = targetRect.left - lastRect.left;
+        const translateY = targetRect.top - lastRect.top;
+
+        appFrame.style.transition = 'transform 0.3s ease-in, opacity 0.3s ease-in';
+        appFrame.style.transformOrigin = 'top left';
+        appFrame.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1)`;
+        appFrame.style.opacity = '0';
+        
+        setTimeout(() => { appFrame.style.display = 'none'; }, 300);
     }
 
-    function restoreMusicPlayer() {
-        if (!lastMusicPlayerRect) {
-            musicPlayerWindow.style.transform = 'translate(-50%, -50%) scale(1)';
-            musicPlayerWindow.style.top = '50%';
-            musicPlayerWindow.style.left = '50%';
+    function restoreApp(appName) {
+        let appFrame, lastRect, taskbarIcon;
+        if (appName === 'music') {
+            appFrame = musicPlayerFrame;
+            lastRect = lastMusicPlayerRect;
+            taskbarIcon = taskbarMusicIcon;
+        } else if (appName === 'cp') {
+            appFrame = controlPanelFrame;
+            lastRect = lastControlPanelRect;
+            taskbarIcon = taskbarControlPanelIcon;
         }
 
-        const targetRect = taskbarMusicIcon.getBoundingClientRect();
-        const startX = targetRect.left - lastMusicPlayerRect.left + (targetRect.width / 2);
-        const startY = targetRect.top - lastMusicPlayerRect.top + (targetRect.height / 2);
+        if (!lastRect) return;
 
-        musicPlayerWindow.style.transition = 'none';
-        musicPlayerWindow.style.transform = `translate(${startX}px, ${startY}px) scale(0.1)`;
-        musicPlayerWindow.style.opacity = '0';
-        musicPlayerWindow.style.display = 'flex';
-        musicPlayerWindow.style.zIndex = 1002;
-        controlPanelWindow.style.zIndex = 1001;
+        const targetRect = taskbarIcon.getBoundingClientRect();
+        const startX = targetRect.left - lastRect.left;
+        const startY = targetRect.top - lastRect.top;
+
+        appFrame.style.transition = 'none';
+        appFrame.style.transform = `translate(${startX}px, ${startY}px) scale(0.1)`;
+        appFrame.style.opacity = '0';
+        appFrame.style.display = 'block';
+        
+        bringToFront(appName);
 
         setTimeout(() => {
-            musicPlayerWindow.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-            musicPlayerWindow.style.transform = 'translate(0, 0) scale(1)';
-            musicPlayerWindow.style.opacity = '1';
+            appFrame.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+            appFrame.style.transform = 'translate(0, 0) scale(1)';
+            appFrame.style.opacity = '1';
         }, 10);
     }
 
-    function setupWindowAndTaskbarInteractions() {
-        // Event Listeners untuk Control Panel
-        controlPanelIcon.addEventListener('dblclick', () => {
-            controlPanelWindow.style.display = 'flex';
-            taskbarControlPanelIcon.style.display = 'flex';
-        });
-        closeWindowBtn.addEventListener('click', () => {
-            controlPanelWindow.style.display = 'none';
-            taskbarControlPanelIcon.style.display = 'none';
-        });
-        taskbarControlPanelIcon.addEventListener('click', () => {
-            if (controlPanelWindow.style.display === 'none') {
-                controlPanelWindow.style.display = 'flex';
-            }
-            controlPanelWindow.style.zIndex = 1002;
-            musicPlayerWindow.style.zIndex = 1001;
-        });
+    function bringToFront(appName) {
+        const zIndexApp = 1002;
+        const zIndexOther = 1001;
+        if (appName === 'music') {
+            musicPlayerFrame.style.zIndex = zIndexApp;
+            controlPanelFrame.style.zIndex = zIndexOther;
+        } else if (appName === 'cp') {
+            controlPanelFrame.style.zIndex = zIndexApp;
+            musicPlayerFrame.style.zIndex = zIndexOther;
+        }
+    }
+    
+    function setupAppInteractions() {
+        controlPanelIcon.addEventListener('dblclick', () => openApp('cp'));
+        musicPlayerIcon.addEventListener('dblclick', () => openApp('music'));
         
-        // Event Listeners untuk Music Player
-        musicPlayerIcon.addEventListener('dblclick', openMusicPlayerApp);
-        startMenuMusicPlayer.addEventListener('click', () => {
-            openMusicPlayerApp();
-            startMenu.classList.remove('show');
+        taskbarControlPanelIcon.addEventListener('click', () => {
+            if (!isControlPanelOpen) return;
+            (controlPanelFrame.style.opacity === '1' && controlPanelFrame.style.display !== 'none') ? minimizeApp('cp') : restoreApp('cp');
         });
-        closeMusicWindowBtn.addEventListener('click', closeMusicPlayerApp);
-        minimizeMusicWindowBtn.addEventListener('click', minimizeMusicPlayer);
         taskbarMusicIcon.addEventListener('click', () => {
             if (!isMusicPlayerOpen) return;
-
-            if (musicPlayerWindow.style.display === 'flex') {
-                minimizeMusicPlayer();
-            } else {
-                restoreMusicPlayer();
-            }
+            (musicPlayerFrame.style.opacity === '1' && musicPlayerFrame.style.display !== 'none') ? minimizeApp('music') : restoreApp('music');
         });
-    }
-    
-    // --- FUNGSI-FUNGSI MUSIC PLAYER & VISUALIZER ---
-    function setupAudioContext() {
-        if (isAudioSetup) return;
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        source = audioContext.createMediaElementSource(audioPlayer);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-        isAudioSetup = true;
     }
 
-    function playMusic(file) {
-         if (!isAudioSetup) setupAudioContext();
-        const fileURL = URL.createObjectURL(file);
-        audioPlayer.src = fileURL;
-        audioPlayer.play();
-        
-        const fileName = file.name.replace(/\.[^/.]+$/, "");
-        let [artist, title] = fileName.split(' - ');
-        if (!title) {
-            title = artist;
-            artist = 'Unknown Artist';
-        }
-        songTitle.textContent = title.trim();
-        songArtist.textContent = artist.trim();
-        
-        musicDropZone.classList.add('has-music');
-        albumArt.src = "https://img.icons8.com/fluency/96/000000/apple-music.png";
-        
-        visualizerCanvas.style.display = 'block';
-        drawVisualizer();
-    }
-
-    function formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${minutes}:${secs.toString().padStart(2, '0')}`;
-    }
-    
-    function setupMusicPlayerControls() {
-        playPauseBtn.addEventListener('click', () => {
-            if (!audioPlayer.src) return;
-            if (audioPlayer.paused) audioPlayer.play();
-            else audioPlayer.pause();
-        });
-        audioPlayer.addEventListener('play', () => {
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'block';
-            if(audioContext && audioContext.state === 'suspended') audioContext.resume();
-        });
-        audioPlayer.addEventListener('pause', () => {
-            playIcon.style.display = 'block';
-            pauseIcon.style.display = 'none';
-        });
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            progressBar.max = audioPlayer.duration;
-            durationEl.textContent = formatTime(audioPlayer.duration);
-        });
-        audioPlayer.addEventListener('timeupdate', () => {
-            const percentage = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressBar.value = audioPlayer.currentTime;
-            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
-            progressBar.style.backgroundSize = `${percentage}% 100%`;
-        });
-        progressBar.addEventListener('input', () => {
-            if(audioPlayer.src) audioPlayer.currentTime = progressBar.value;
-        });
-        rewindBtn.addEventListener('click', () => {
-            if(audioPlayer.src) audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
-        });
-        forwardBtn.addEventListener('click', () => {
-            if(audioPlayer.src) audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10);
-        });
-        shuffleBtn.addEventListener('click', () => shuffleBtn.classList.toggle('text-orange-500'));
-        repeatBtn.addEventListener('click', () => repeatBtn.classList.toggle('text-orange-500'));
-        musicDropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            musicDropZone.classList.add('bg-gray-200', 'dark:bg-gray-700');
-        });
-        musicDropZone.addEventListener('dragleave', () => {
-            musicDropZone.classList.remove('bg-gray-200', 'dark:bg-gray-700');
-        });
-        musicDropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            musicDropZone.classList.remove('bg-gray-200', 'dark:bg-gray-700');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('audio/')) playMusic(file);
-        });
-    }
+    // --- VISUALIZER FUNCTIONS ---
     
     function drawVisualizer() {
         requestAnimationFrame(drawVisualizer);
-        if (!isAudioSetup || audioPlayer.paused) {
+        visualizerCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+        
+        if (!visualizerData || visualizerData.isPaused) {
             if (previousBarHeights.some(h => h > 0.1)) {
-                 visualizerCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
-                 for(let i=0; i < previousBarHeights.length; i++) previousBarHeights[i] *= 0.9;
-            } else return;
-        } else {
-            analyser.getByteFrequencyData(dataArray);
+                 for(let i=0; i < previousBarHeights.length; i++) { previousBarHeights[i] *= 0.9; }
+            } else { return; }
         }
         
-        visualizerCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
-        const bufferLength = analyser.frequencyBinCount;
-        const effectiveBufferLength = Math.floor(bufferLength * 0.66);
-        while (previousBarHeights.length < effectiveBufferLength) previousBarHeights.push(0);
+        const bufferLength = visualizerData ? visualizerData.bufferLength : previousBarHeights.length;
+        if (bufferLength === 0) return;
+        while (previousBarHeights.length < bufferLength) previousBarHeights.push(0);
 
-        visualizerCtx.fillStyle = visualizerSettings.fillStyle;
+        // [MODIFIED] Get theme colors dynamically from CSS variables
+        const computedStyle = getComputedStyle(document.body);
+        visualizerCtx.fillStyle = computedStyle.getPropertyValue('--visualizer-fill').trim();
         visualizerCtx.shadowBlur = visualizerSettings.shadowBlur;
-        visualizerCtx.shadowColor = visualizerSettings.shadowColor;
+        visualizerCtx.shadowColor = computedStyle.getPropertyValue('--visualizer-shadow').trim();
         
-        const bassEndIndex = Math.floor(effectiveBufferLength * visualizerSettings.bassEndPercentage);
-        const trebleStartIndex = Math.floor(effectiveBufferLength * visualizerSettings.trebleStartPercentage); 
-        const taskbarPosition = taskbarPositionSelect.value;
+        const bassEndIndex = Math.floor(bufferLength * visualizerSettings.bassEndPercentage);
+        const trebleStartIndex = Math.floor(bufferLength * visualizerSettings.trebleStartPercentage); 
         
-        if (taskbarPosition === 'top' || taskbarPosition === 'bottom') {
-            const barWidth = visualizerCanvas.width / effectiveBufferLength;
-            let x = 0;
-            for(let i = 0; i < effectiveBufferLength; i++) {
-                let targetHeight = ((audioPlayer.paused ? 0 : dataArray[i]) / 255) * visualizerCanvas.height;
-                if (i <= bassEndIndex) targetHeight *= visualizerSettings.bassMultiplier;
-                else if (i >= trebleStartIndex) targetHeight *= (1.0 + visualizerSettings.trebleBoostAmount * ((i - trebleStartIndex) / (bufferLength - trebleStartIndex)));
-                else targetHeight *= visualizerSettings.midBoostAmount;
-                targetHeight = Math.pow(targetHeight / visualizerCanvas.height, visualizerSettings.scalingPower) * visualizerCanvas.height;
-                
+        if (currentTaskbarPosition === 'top' || currentTaskbarPosition === 'bottom') {
+            const barWidth = visualizerCanvas.width / bufferLength;
+            for(let i = 0; i < bufferLength; i++) {
+                let targetHeight = (visualizerData && !visualizerData.isPaused) ? (visualizerData.data[i] / 255) * visualizerCanvas.height : previousBarHeights[i];
+                if (visualizerData && !visualizerData.isPaused) {
+                    if (i <= bassEndIndex) targetHeight *= visualizerSettings.bassMultiplier;
+                    else if (i >= trebleStartIndex) targetHeight *= (1.0 + visualizerSettings.trebleBoostAmount * ((i - trebleStartIndex) / (bufferLength - trebleStartIndex)));
+                    else targetHeight *= visualizerSettings.midBoostAmount;
+                    targetHeight = Math.pow(targetHeight / visualizerCanvas.height, visualizerSettings.scalingPower) * visualizerCanvas.height;
+                }
                 const smoothedHeight = (previousBarHeights[i] || 0) + (targetHeight - (previousBarHeights[i] || 0)) * visualizerSettings.smoothingFactor;
-                const y = taskbarPosition === 'top' ? 0 : visualizerCanvas.height - smoothedHeight;
-                visualizerCtx.fillRect(x, y, barWidth, smoothedHeight);
-                x += barWidth;
+                const y = currentTaskbarPosition === 'top' ? 0 : visualizerCanvas.height - smoothedHeight;
+                visualizerCtx.fillRect(i * barWidth, y, barWidth, smoothedHeight);
                 previousBarHeights[i] = smoothedHeight;
             }
-        } else { // Vertical taskbar
-            const barHeight = visualizerCanvas.height / effectiveBufferLength;
-            let y = 0;
-            for(let i = 0; i < effectiveBufferLength; i++) {
-                let targetWidth = ((audioPlayer.paused ? 0 : dataArray[i]) / 255) * visualizerCanvas.width;
-                if (i <= bassEndIndex) targetWidth *= visualizerSettings.bassMultiplier;
-                else if (i >= trebleStartIndex) targetWidth *= (1.0 + visualizerSettings.trebleBoostAmount * ((i - trebleStartIndex) / (bufferLength - trebleStartIndex)));
-                else targetWidth *= visualizerSettings.midBoostAmount;
-                targetWidth = Math.pow(targetWidth / visualizerCanvas.width, visualizerSettings.scalingPower) * visualizerCanvas.width;
-                
+        } else {
+            const barHeight = visualizerCanvas.height / bufferLength;
+            for(let i = 0; i < bufferLength; i++) {
+                 let targetWidth = (visualizerData && !visualizerData.isPaused) ? (visualizerData.data[i] / 255) * visualizerCanvas.width : previousBarHeights[i];
+                if (visualizerData && !visualizerData.isPaused) {
+                    if (i <= bassEndIndex) targetWidth *= visualizerSettings.bassMultiplier;
+                    else if (i >= trebleStartIndex) targetWidth *= (1.0 + visualizerSettings.trebleBoostAmount * ((i - trebleStartIndex) / (bufferLength - trebleStartIndex)));
+                    else targetWidth *= visualizerSettings.midBoostAmount;
+                    targetWidth = Math.pow(targetWidth / visualizerCanvas.width, visualizerSettings.scalingPower) * visualizerCanvas.width;
+                }
                 const smoothedWidth = (previousBarHeights[i] || 0) + (targetWidth - (previousBarHeights[i] || 0)) * visualizerSettings.smoothingFactor;
-                const x = taskbarPosition === 'left' ? 0 : visualizerCanvas.width - smoothedWidth;
-                visualizerCtx.fillRect(x, y, smoothedWidth, barHeight);
-                y += barHeight;
+                const x = currentTaskbarPosition === 'left' ? 0 : visualizerCanvas.width - smoothedWidth;
+                visualizerCtx.fillRect(x, i * barHeight, smoothedWidth, barHeight);
                 previousBarHeights[i] = smoothedWidth;
             }
         }
     }
-    
+
     function positionVisualizer() {
-        if (!taskbarPositionSelect) return;
+        const isIsland = currentTaskbarStyle.startsWith('island');
+        const isSpecialCenterCase = (currentTaskbarStyle === 'island-single' && !isTaskbarSpaceBetween);
         
-        const pos = taskbarPositionSelect.value;
-        const style = taskbarStyleSelect.value;
-        const isSpaceBetween = toggleSpaceBetween.checked;
-        const isIsland = style.startsWith('island');
-
-        const isSpecialCenterCase = (style === 'island-single' && !isSpaceBetween);
-
-        visualizerCanvas.style.borderRadius = '0';
+        if (isIsland) {
+            visualizerCanvas.style.borderRadius = visualizerSettings.islandBorderRadius;
+        } else {
+            visualizerCanvas.style.borderRadius = '0';
+        }
+        
         ['top', 'bottom', 'left', 'right'].forEach(p => visualizerCanvas.style[p] = 'auto');
         
-        if (isSpecialCenterCase && (pos === 'top' || pos === 'bottom')) {
-            /***** BLOK KODE UNTUK KONDISI SPESIAL (CENTERED) *****/
-            
+        if (isSpecialCenterCase && (currentTaskbarPosition === 'top' || currentTaskbarPosition === 'bottom')) {
             const rect = taskbar.getBoundingClientRect();
             const vizWidth = 500;
-            const vizHeight = visualizerSettings.height;
-
             visualizerCanvas.width = vizWidth;
-            visualizerCanvas.height = vizHeight;
+            visualizerCanvas.height = visualizerSettings.height;
             visualizerCanvas.style.width = vizWidth + 'px';
-            visualizerCanvas.style.height = vizHeight + 'px';
+            visualizerCanvas.style.height = visualizerSettings.height + 'px';
             visualizerCanvas.style.left = `calc(50% - ${vizWidth / 2}px)`;
-
-            if (pos === 'top') {
-                // [FIX] Ditambahkan visualizerSettings.islandGap untuk memberi celah di bawah taskbar
+            if (currentTaskbarPosition === 'top') {
                 visualizerCanvas.style.top = (rect.bottom + visualizerSettings.islandGap) + 'px';
-                visualizerCanvas.style.borderRadius = `${visualizerSettings.islandBorderRadius} ${visualizerSettings.islandBorderRadius} 0 0`;
-            } else { // 'bottom'
-                // [FIX] Ditambahkan visualizerSettings.islandGap untuk memberi celah di atas taskbar
-                visualizerCanvas.style.top = (rect.top - vizHeight - visualizerSettings.islandGap) + 'px';
-                visualizerCanvas.style.borderRadius = `0 0 ${visualizerSettings.islandBorderRadius} ${visualizerSettings.islandBorderRadius}`;
+            } else {
+                visualizerCanvas.style.top = (rect.top - visualizerSettings.height - visualizerSettings.islandGap) + 'px';
             }
-
         } else {
-            /***** BLOK KODE UNTUK KONDISI LAINNYA (FALLBACK) *****/
-
             const rect = taskbar.getBoundingClientRect();
-            
-            if (pos === 'top' || pos === 'bottom') {
+            if (currentTaskbarPosition === 'top' || currentTaskbarPosition === 'bottom') {
                 visualizerCanvas.width = rect.width;
                 visualizerCanvas.height = visualizerSettings.height;
                 visualizerCanvas.style.width = rect.width + 'px';
                 visualizerCanvas.style.height = visualizerSettings.height + 'px';
                 visualizerCanvas.style.left = rect.left + 'px';
-                if (pos === 'top') {
+                if (currentTaskbarPosition === 'top') {
                     visualizerCanvas.style.top = (isIsland ? rect.bottom + visualizerSettings.islandGap : rect.bottom) + 'px';
-                    if (isIsland) visualizerCanvas.style.borderRadius = `${visualizerSettings.islandBorderRadius} ${visualizerSettings.islandBorderRadius} 0 0`;
                 } else {
                     visualizerCanvas.style.top = (isIsland ? (rect.top - visualizerSettings.height - visualizerSettings.islandGap) : (rect.top - visualizerSettings.height)) + 'px';
-                    if (isIsland) visualizerCanvas.style.borderRadius = `0 0 ${visualizerSettings.islandBorderRadius} ${visualizerSettings.islandBorderRadius}`;
                 }
-            } else { // 'left' or 'right'
+            } else {
                 visualizerCanvas.width = visualizerSettings.width;
                 visualizerCanvas.height = rect.height;
                 visualizerCanvas.style.width = visualizerSettings.width + 'px';
                 visualizerCanvas.style.height = rect.height + 'px';
                 visualizerCanvas.style.top = rect.top + 'px';
-                if (pos === 'left') {
+                if (currentTaskbarPosition === 'left') {
                     visualizerCanvas.style.left = (isIsland ? rect.right + visualizerSettings.islandGap : rect.right) + 'px';
-                    if (isIsland) visualizerCanvas.style.borderRadius = `0 ${visualizerSettings.islandBorderRadius} ${visualizerSettings.islandBorderRadius} 0`;
                 } else {
                     visualizerCanvas.style.left = (isIsland ? (rect.left - visualizerSettings.width - visualizerSettings.islandGap) : (rect.left - visualizerSettings.width)) + 'px';
-                    if (isIsland) visualizerCanvas.style.borderRadius = `${visualizerSettings.islandBorderRadius} 0 0 ${visualizerSettings.islandBorderRadius}`;
                 }
             }
         }
     }
     
-    // --- FUNGSI PENGATURAN (CONTROL PANEL) ---
-    function setupControls() {
-        themeSelect.addEventListener('change', (e) => document.body.classList.toggle('dark', e.target.value === 'dark'));
-        bgSizeSelect.addEventListener('change', (e) => desktop.style.backgroundSize = e.target.value);
-        bgRepeatSelect.addEventListener('change', (e) => desktop.style.backgroundRepeat = e.target.value);
-        bgPositionSelect.addEventListener('change', (e) => desktop.style.backgroundPosition = e.target.value);
-        
-        taskbarPositionSelect.addEventListener('change', (e) => {
-            const position = e.target.value;
-            taskbar.className = taskbar.className.replace(/taskbar-(bottom|top|left|right)/, `taskbar-${position}`);
-            applyTaskbarLayout(position);
-        });
-
-        taskbarStyleSelect.addEventListener('change', (e) => {
-            const style = e.target.value;
-            taskbar.classList.remove('island', 'single', 'split', 'space-between');
-
-            if (style === 'default') {
-                taskbar.style.transform = '';
-                taskbar.style.left = '';
-                taskbar.style.right = '';
-                taskbar.style.width = '';
-            }
-            
-            spaceBetweenContainer.classList.toggle('flex', style.startsWith('island'));
-            spaceBetweenContainer.classList.toggle('hidden', !style.startsWith('island'));
-            
-            if (!style.startsWith('island')) {
-                toggleSpaceBetween.checked = false;
-            }
-
-            if (style === 'island-single') taskbar.classList.add('island', 'single');
-            if (style === 'island-split') taskbar.classList.add('island', 'split');
-            
-            if (toggleSpaceBetween.checked && style.startsWith('island')) {
-                taskbar.classList.add('space-between');
-            }
-            
-            setTimeout(positionVisualizer, 50);
-        });
-        
-        toggleSpaceBetween.addEventListener('change', (e) => {
-            taskbar.classList.toggle('space-between', e.target.checked);
-            setTimeout(positionVisualizer, 50);
-        });
-        toggleClockCheckbox.addEventListener('change', (e) => datetimeContainer.style.display = e.target.checked ? 'block' : 'none');
-    }
-
+    // --- TASKBAR & LAYOUT FUNCTIONS ---
     function applyTaskbarLayout(position) {
+        currentTaskbarPosition = position;
         const isVertical = position === 'left' || position === 'right';
         taskbarMainGroup.classList.toggle('flex-col', isVertical);
         appIconsContainer.classList.toggle('flex-col', isVertical);
@@ -1554,83 +679,250 @@
         positionVisualizer();
     }
     
-    // --- FUNGSI START MENU & MENU KONTEKS ---
-    function setStartMenuPosition(taskbarPosition) {
-        // Implementation from your original code...
+    function applyTaskbarStyle(style) {
+        currentTaskbarStyle = style;
+        taskbar.classList.remove('island', 'single', 'split', 'space-between');
+        if (style === 'default') { taskbar.style.transform = ''; taskbar.style.left = ''; taskbar.style.right = ''; taskbar.style.width = ''; }
+        if (style === 'island-single') taskbar.classList.add('island', 'single');
+        if (style === 'island-split') taskbar.classList.add('island', 'split');
+        if (isTaskbarSpaceBetween && style.startsWith('island')) taskbar.classList.add('space-between');
+        setTimeout(positionVisualizer, 50);
     }
+
+    // --- MENU FUNCTIONS ---
+    
+    function positionMenuRelativeToButton(menuElement, buttonElement) {
+        const buttonRect = buttonElement.getBoundingClientRect();
+        const menuRect = menuElement.getBoundingClientRect();
+        const taskbarRect = taskbar.getBoundingClientRect();
+        const gap = 4;
+
+        let top, left, bottom;
+
+        menuElement.style.setProperty('--start-menu-top', 'auto');
+        menuElement.style.setProperty('--start-menu-bottom', 'auto');
+
+        switch (currentTaskbarPosition) {
+            case 'top':
+                top = taskbarRect.bottom + gap;
+                left = buttonRect.left;
+                menuElement.style.transformOrigin = 'top left';
+                break;
+            case 'left':
+                top = buttonRect.top;
+                left = taskbarRect.right + gap;
+                menuElement.style.transformOrigin = 'center left';
+                break;
+            case 'right':
+                top = buttonRect.top;
+                left = taskbarRect.left - menuRect.width - gap;
+                menuElement.style.transformOrigin = 'center right';
+                break;
+            case 'bottom':
+            default:
+                const isFullscreen = (screen.height - window.innerHeight) < 100;
+                const offset = isFullscreen ? -88 : -24; 
+                
+                bottom = (window.innerHeight - taskbarRect.top) + gap + offset;
+                left = buttonRect.left;
+                menuElement.style.transformOrigin = 'bottom left';
+                break;
+        }
+        
+        if (left < gap) {
+            left = gap;
+        } else if (left + menuRect.width > window.innerWidth - gap) {
+            left = window.innerWidth - menuRect.width - gap;
+        }
+        menuElement.style.setProperty('--start-menu-left', `${left}px`);
+
+        if (top !== undefined) {
+            menuElement.style.setProperty('--start-menu-top', `${top}px`);
+            setTimeout(() => {
+                const finalMenuRect = menuElement.getBoundingClientRect();
+                if (finalMenuRect.bottom > window.innerHeight - gap) {
+                    menuElement.style.setProperty('--start-menu-top', 'auto');
+                    menuElement.style.setProperty('--start-menu-bottom', `${gap}px`);
+                }
+            }, 0);
+        }
+        
+        if (bottom !== undefined) {
+            menuElement.style.setProperty('--start-menu-bottom', `${bottom}px`);
+            setTimeout(() => {
+                const finalMenuRect = menuElement.getBoundingClientRect();
+                if (finalMenuRect.top < gap) {
+                    menuElement.style.setProperty('--start-menu-bottom', 'auto');
+                    menuElement.style.setProperty('--start-menu-top', `${gap}px`);
+                }
+            }, 0);
+        }
+    }
+
+    function positionStartMenu() {
+        positionMenuRelativeToButton(startMenuFrame, startButton);
+    }
+    
     function setupMenus() {
         startButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            startMenu.classList.toggle('show');
+            const isShowing = startMenuFrame.classList.contains('show');
+            
+            startMenuFrame.classList.toggle('show');
+
+            if (!isShowing) {
+                positionStartMenu();
+            }
         });
+
         desktop.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            startMenu.classList.remove('show');
-            const { clientX: mouseX, clientY: mouseY } = e;
+            startMenuFrame.classList.remove('show');
             contextMenu.style.display = 'block';
+            const { clientX: mouseX, clientY: mouseY } = e;
             const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
             const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
             let x = (mouseX + menuWidth > windowWidth) ? windowWidth - menuWidth - 5 : mouseX;
             let y = (mouseY + menuHeight > windowHeight) ? windowHeight - menuHeight - 5 : mouseY;
-            contextMenu.style.top = `${y}px`;
-            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`; contextMenu.style.left = `${x}px`;
         });
+
         document.addEventListener('click', (e) => {
             if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
                 contextMenu.style.display = 'none';
             }
-            if (startMenu.classList.contains('show') && !startMenu.contains(e.target) && !startButton.contains(e.target)) {
-                startMenu.classList.remove('show');
+            if (startMenuFrame.classList.contains('show') && !e.composedPath().includes(startMenuFrame) && !startButton.contains(e.target)) {
+                 startMenuFrame.classList.remove('show');
             }
         });
+        
         contextMenuSettings.addEventListener('click', () => {
-            controlPanelWindow.style.display = 'flex';
-            taskbarControlPanelIcon.style.display = 'flex';
+            openApp('cp');
             contextMenu.style.display = 'none';
+        });
+
+        // --- FINAL, ROBUST Refresh Click Handler ---
+        contextMenuRefresh.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+
+            const icons = Array.from(document.querySelectorAll('#desktop-icons .desktop-icon'));
+            const animationDelay = 150; // Delay between each icon's animation
+
+            // 1. Instantly hide all icons and reset their animation state
+            icons.forEach(icon => {
+                icon.classList.remove('animate-in'); // Remove old animation class
+                icon.classList.add('hide-for-refresh'); // Add new instant-hide class
+            });
+
+            // 2. After a short delay to ensure the browser has rendered the hidden state...
+            setTimeout(() => {
+                // 3. Animate each icon in sequentially
+                icons.forEach((icon, index) => {
+                    setTimeout(() => {
+                        icon.classList.remove('hide-for-refresh'); // Remove hide class
+                        icon.classList.add('animate-in'); // Add animation class
+                    }, index * animationDelay);
+                });
+            }, 50); // A small delay to let the UI update
         });
     }
 
-    // === INISIALISASI APLIKASI ===
+    // === APPLICATION INITIALIZATION ===
     function initialize() {
-        // Setup semua event listener
         setupWallpaperDragDrop();
-        setupWindowAndTaskbarInteractions();
-        setupMusicPlayerControls();
-        setupControls();
+        setupAppInteractions();
         setupMenus();
         
-        // Generic window drag/resize listeners
-        windowHeader.addEventListener('mousedown', (e) => startDrag(e, controlPanelWindow));
-        musicWindowHeader.addEventListener('mousedown', (e) => startDrag(e, musicPlayerWindow));
-        resizeHandle.addEventListener('mousedown', startResize);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mousemove', resize);
-        document.addEventListener('mouseup', stopDrag);
-        document.addEventListener('mouseup', stopResize);
+        window.addEventListener('message', (event) => {
+            const { action, dx, dy, data, bufferLength, isPaused, value, appName } = event.data;
+
+            switch(action) {
+                // Music Player
+                case 'drag-music-frame': { const rect = musicPlayerFrame.getBoundingClientRect(); musicPlayerFrame.style.left = `${rect.left + dx}px`; musicPlayerFrame.style.top = `${rect.top + dy}px`; break; }
+                case 'close-music-frame': closeApp('music'); break;
+                case 'minimize-music-frame': minimizeApp('music'); break;
+                case 'bring-music-to-front': bringToFront('music'); break;
+                case 'visualizer-data': visualizerData = { data: data, bufferLength: bufferLength, isPaused: isPaused }; break;
+                
+                // Control Panel
+                case 'drag-cp-frame': { const rect = controlPanelFrame.getBoundingClientRect(); controlPanelFrame.style.left = `${rect.left + dx}px`; controlPanelFrame.style.top = `${rect.top + dy}px`; break; }
+                case 'close-cp-frame': closeApp('cp'); break;
+                case 'minimize-cp-frame': minimizeApp('cp'); break;
+                case 'bring-cp-to-front': bringToFront('cp'); break;
+
+                // Start Menu -> Desktop
+                case 'open-app-from-start-menu': 
+                    openApp(appName); 
+                    startMenuFrame.classList.remove('show'); 
+                    break;
+
+                // Control Panel -> Desktop (Broadcast/Settings)
+                case 'toggle-fancy-mode':
+                    document.body.classList.toggle('fancy-mode', value);
+                    musicPlayerFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
+                    controlPanelFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
+                    startMenuFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
+                    break;
+                case 'request-settings':
+                    controlPanelFrame.contentWindow.postMessage({ action: 'request-settings' }, '*');
+                    break;
+                case 'change-theme': {
+                    const isDark = value === 'dark';
+                    document.body.classList.toggle('dark', isDark);
+                    musicPlayerFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
+                    controlPanelFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
+                    startMenuFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
+                    break;
+                }
+                case 'change-bg-size': desktop.style.backgroundSize = value; break;
+                case 'change-bg-repeat': desktop.style.backgroundRepeat = value; break;
+                case 'change-bg-position': desktop.style.backgroundPosition = value; break;
+                case 'change-taskbar-position': 
+                    taskbar.className = taskbar.className.replace(/taskbar-(bottom|top|left|right)/, `taskbar-${value}`);
+                    applyTaskbarLayout(value);
+                    if (startMenuFrame.classList.contains('show')) {
+                        positionStartMenu();
+                    }
+                    break;
+                case 'change-taskbar-style':
+                    applyTaskbarStyle(value);
+                    if (startMenuFrame.classList.contains('show')) {
+                        positionStartMenu();
+                    }
+                    break;
+                case 'toggle-taskbar-space-between':
+                    isTaskbarSpaceBetween = value;
+                    taskbar.classList.toggle('space-between', value);
+                    setTimeout(positionVisualizer, 50);
+                    break;
+                case 'toggle-clock':
+                    datetimeContainer.style.display = value ? 'block' : 'none';
+                    break;
+            }
+        });
         
-        // Setup jam
         setInterval(updateClock, 1000);
         updateClock();
 
         window.addEventListener('load', () => {
-            // 1. Terapkan layout awal untuk taskbar
-            applyTaskbarLayout(taskbarPositionSelect.value);
-            
-            // 2. Pasang listener untuk resize window di masa mendatang
-            window.addEventListener('resize', () => setTimeout(positionVisualizer, 50));
-            
-            // 3. Pancing/trigger event resize sekali secara manual setelah semua elemen stabil.
-            // [FIX] Delay dinaikkan menjadi 350ms (lebih besar dari durasi transisi CSS 300ms) 
-            // untuk memastikan posisi taskbar sudah final sebelum diukur.
-            setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-            }, 350);
+            applyTaskbarLayout(currentTaskbarPosition);
+            window.addEventListener('resize', () => {
+                setTimeout(positionVisualizer, 50);
+                if (startMenuFrame.classList.contains('show')) {
+                    positionStartMenu();
+                }
+            });
+            window.addEventListener('scroll', () => {
+                 if (startMenuFrame.classList.contains('show')) {
+                    positionStartMenu();
+                }
+            }, true);
+
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 350);
         });
     }
 
-    // Jalankan semuanya
     initialize();
-
 </script>
 </body>
 </html>
