@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Player</title>
-	<!-- Tailwind Offline CSS (In case of CDN failures) --> 
+	<!-- Tailwind Offline CSS (In case of CDN failures) -->
     <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -276,10 +276,14 @@
                     </button>
                 </div>
                 
-                <!-- Tombol Perangkat (placeholder) -->
-                <button class="control-button" title="Devices">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"/><path d="m12 15 5 6H7l5-6z"/></svg>
-                </button>
+                <!-- KONTROL VOLUME BARU -->
+                <div class="flex items-center gap-x-2 w-24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="opacity-80"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    <div class="slider-container my-0" id="volume-slider-container">
+                        <div class="slider-progress" id="volume-track"></div>
+                        <div class="slider-thumb-glass" id="volume-thumb"></div>
+                    </div>
+                </div>
             </div>
             
         </div>
@@ -303,10 +307,15 @@
     const rewindBtn = document.getElementById('rewind-btn');
     const forwardBtn = document.getElementById('forward-btn');
 
-    // Elemen Slider
+    // Elemen Slider Progres
     const progressBarContainer = document.getElementById('progress-slider-container');
     const progressTrack = document.getElementById('progress-track');
     const progressThumb = document.getElementById('progress-thumb');
+
+    // BARIS BARU: Elemen Slider Volume
+    const volumeSliderContainer = document.getElementById('volume-slider-container');
+    const volumeTrack = document.getElementById('volume-track');
+    const volumeThumb = document.getElementById('volume-thumb');
 
     // Variabel state
     let isWindowDragging = false;
@@ -391,10 +400,9 @@
         sendVisualizerData();
     }
     
-    // Logika Slider
+    // Logika Slider Progres
     let isSliderDragging = false;
-    let sliderRect = progressBarContainer.getBoundingClientRect();
-
+    
     function updateThumbAndProgress(percent) {
         percent = Math.max(0, Math.min(100, percent));
         const sliderWidth = progressBarContainer.offsetWidth;
@@ -403,16 +411,16 @@
         progressThumb.style.left = `${px}px`;
     }
 
-    function getPercentFromClientX(clientX) {
-        sliderRect = progressBarContainer.getBoundingClientRect();
+    function getPercentFromClientX(container, clientX) {
+        const sliderRect = container.getBoundingClientRect();
         const offsetX = clientX - sliderRect.left;
-        const sliderWidth = progressBarContainer.offsetWidth;
+        const sliderWidth = container.offsetWidth;
         return (offsetX / sliderWidth) * 100;
     }
     
     function onSliderMove(clientX) {
         if (!audioPlayer.src || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
-        const percent = getPercentFromClientX(clientX);
+        const percent = getPercentFromClientX(progressBarContainer, clientX);
         updateThumbAndProgress(percent);
         const newTime = (percent / 100) * audioPlayer.duration;
         currentTimeEl.textContent = formatTime(newTime);
@@ -420,7 +428,7 @@
     
     function seekAudio(clientX) {
         if (!audioPlayer.src || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
-        const percent = getPercentFromClientX(clientX);
+        const percent = getPercentFromClientX(progressBarContainer, clientX);
         updateThumbAndProgress(percent);
         audioPlayer.currentTime = (percent / 100) * audioPlayer.duration;
     }
@@ -447,6 +455,53 @@
         
         progressBarContainer.addEventListener('mousedown', (e) => {
             if (e.target !== progressThumb) seekAudio(e.clientX);
+        });
+    }
+
+    // BLOK BARU: Logika Slider Volume
+    let isVolumeSliderDragging = false;
+
+    function updateVolumeSlider(volume) { // volume is 0 to 1
+        const percent = volume * 100;
+        const sliderWidth = volumeSliderContainer.offsetWidth;
+        const px = (percent / 100) * sliderWidth;
+        volumeTrack.style.width = `${percent}%`;
+        volumeThumb.style.left = `${px}px`;
+    }
+
+    function setVolumeFromSlider(clientX) {
+        const percent = getPercentFromClientX(volumeSliderContainer, clientX);
+        const volume = Math.max(0, Math.min(100, percent)) / 100;
+        audioPlayer.volume = volume;
+        updateVolumeSlider(volume);
+    }
+
+    function setupVolumeSliderEvents() {
+        volumeThumb.addEventListener('mousedown', (e) => {
+            isVolumeSliderDragging = true;
+            volumeThumb.classList.add('active');
+            document.body.style.cursor = 'grabbing';
+            e.stopPropagation();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isVolumeSliderDragging) {
+                setVolumeFromSlider(e.clientX);
+            }
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (isVolumeSliderDragging) {
+                isVolumeSliderDragging = false;
+                volumeThumb.classList.remove('active');
+                document.body.style.cursor = 'default';
+            }
+        });
+
+        volumeSliderContainer.addEventListener('mousedown', (e) => {
+            if (e.target !== volumeThumb) {
+                setVolumeFromSlider(e.clientX);
+            }
         });
     }
 
@@ -522,6 +577,8 @@
     // Inisialisasi
     setupMusicPlayerControls();
     setupSliderEvents();
+    setupVolumeSliderEvents(); // PANGGILAN FUNGSI BARU
+    updateVolumeSlider(audioPlayer.volume); // Inisialisasi posisi slider volume
     parent.postMessage({ action: 'request-settings' }, '*');
 </script>
 </body>

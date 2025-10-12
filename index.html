@@ -70,6 +70,18 @@
             transition: background-image: 0.3s ease-in-out;
         }
 
+        /* NEW: iframe for live wallpaper */
+        #wallpaper-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 0; /* Behind desktop icons */
+            display: none; /* Hidden by default */
+        }
+
         .drag-over {
             border: 4px dashed rgba(255, 255, 255, 0.7);
             box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
@@ -269,14 +281,14 @@
         <svg>
           <!-- Original Filter (for windows) -->
           <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
-            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>   
+            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>    
 			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
 			<feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
 			</feDisplacementMap>
           </filter>
           <!-- NEW: Taskbar-specific filter with reduced scale -->
           <filter id="taskbar-liquid-glass-filter" primitiveUnits="objectBoundingBox">
-            <feImage result="map" width="120%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter-taskbar.jpg"/>   
+            <feImage result="map" width="120%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter-taskbar.jpg"/>    
 			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
 			<feDisplacementMap id="disp-taskbar" in="blur" in2="map" scale="0.06" xChannelSelector="R" yChannelSelector="G">
 			</feDisplacementMap>
@@ -286,11 +298,26 @@
 
     <div id="desktop" class="relative">
         
-        <div id="desktop-icons" class="absolute top-4 left-4 flex flex-col gap-2">
-            <div class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin"/><span>Recycle Bin</span></div>
-            <div class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC"/><span>This PC</span></div>
-            <div id="control-panel-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/><span>Control Panel</span></div>
-            <div id="music-player-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/><span>Music Player</span></div>
+        <!-- NEW: Iframe for live wallpaper, placed here to be under icons -->
+        <iframe id="wallpaper-iframe" src="about:blank"></iframe>
+        
+        <!-- NEW: Invisible layer to intercept clicks for the live wallpaper -->
+        <div id="click-interceptor" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; display: none; -webkit-user-drag: none;"></div>
+
+        <!-- MODIFIED: Changed to flex-row for multi-column layout -->
+        <div id="desktop-icons" class="absolute top-4 left-4 flex flex-row gap-4 z-10">
+            <!-- Column 1 -->
+            <div class="flex flex-col gap-2">
+                <div class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC"/><span>This PC</span></div>
+                <div id="control-panel-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/><span>Control Panel</span></div>
+                <div id="music-player-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/><span>Music Player</span></div>
+                <div class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin"/><span>Recycle Bin</span></div>
+            </div>
+            <!-- Column 2 -->
+            <div class="flex flex-col gap-2">
+                 <!-- MOVED: Live2D Wallpaper icon is now the first in the second column -->
+                <div id="live2d-icon" class="desktop-icon" tabindex="0"><img src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper"/><span>Live Wallpaper</span></div>
+            </div>
         </div>
 
         <iframe id="control-panel-frame" 
@@ -310,6 +337,14 @@
                 src="music_player.html" 
                 allowtransparency="true"
                 style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
+        </iframe>
+        
+        <!-- NEW: Iframe for the Live2D Wallpaper App window -->
+        <iframe id="live2d-wallpaper-frame" 
+                class="app-iframe"
+                src="live2d_wallpaper.html" 
+                allowtransparency="true"
+                style="top: 25%; left: 40%; width: 400px; height: 220px; min-width: 350px; min-height: 200px;">
         </iframe>
         
         <div id="context-menu">
@@ -336,6 +371,8 @@
                     <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/winstoreapp-dark.png" alt="Store"/></div>
                     <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/></div>
                     <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/></div>
+                    <!-- NEW: Taskbar icon for Live Wallpaper -->
+                    <div id="taskbar-live2d-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper"/></div>
                 </div>
             </div>
             <div id="system-tray" class="flex items-center gap-2">
@@ -351,12 +388,16 @@
 <script>
     // === ALL ELEMENT DECLARATIONS ===
     const desktop = document.getElementById('desktop');
+    const wallpaperIframe = document.getElementById('wallpaper-iframe');
+    const clickInterceptor = document.getElementById('click-interceptor'); // NEW: Invisible layer
     
     // App Iframes
     const controlPanelIcon = document.getElementById('control-panel-icon');
     const controlPanelFrame = document.getElementById('control-panel-frame');
     const musicPlayerIcon = document.getElementById('music-player-icon');
     const musicPlayerFrame = document.getElementById('music-player-frame');
+    const live2dIcon = document.getElementById('live2d-icon');
+    const live2dWallpaperFrame = document.getElementById('live2d-wallpaper-frame');
 
     // Visualizer Elements
     const visualizerCanvas = document.getElementById('visualizer');
@@ -372,6 +413,7 @@
     const appIconsContainer = document.getElementById('app-icons');
     const taskbarControlPanelIcon = document.getElementById('taskbar-cp-icon');
     const taskbarMusicIcon = document.getElementById('taskbar-music-icon');
+    const taskbarLive2dIcon = document.getElementById('taskbar-live2d-icon');
 
     // Start Menu Elements
     const startButton = document.getElementById('start-button');
@@ -380,13 +422,15 @@
     // Context Menu Elements
     const contextMenu = document.getElementById('context-menu');
     const contextMenuSettings = document.getElementById('context-menu-settings');
-    const contextMenuRefresh = document.getElementById('context-menu-refresh'); // New Refresh element
+    const contextMenuRefresh = document.getElementById('context-menu-refresh');
 
     // Global State Variables
     let isMusicPlayerOpen = false;
     let isControlPanelOpen = false;
+    let isLive2dOpen = false;
     let lastMusicPlayerRect = null;
     let lastControlPanelRect = null;
+    let lastLive2dRect = null;
     let visualizerData = null;
     let previousBarHeights = [];
     let currentTaskbarPosition = 'bottom';
@@ -394,7 +438,6 @@
     let isTaskbarSpaceBetween = false;
 
     const visualizerSettings = {
-        // [REMOVED] fillStyle and shadowColor are now in CSS
         shadowBlur: 4, 
         smoothingFactor: 0.5, bassMultiplier: 0.75, bassEndPercentage: 0.25, midBoostAmount: 0.8,
         trebleStartPercentage: 0.5, trebleBoostAmount: 0.2, scalingPower: 2.0,
@@ -418,7 +461,13 @@
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = (event) => { desktop.style.backgroundImage = `url('${event.target.result}')`; };
+                reader.onload = (event) => { 
+                    // When a new image is dropped, clear the live wallpaper
+                    wallpaperIframe.src = 'about:blank';
+                    wallpaperIframe.style.display = 'none';
+                    clickInterceptor.style.display = 'none'; // NEW: Hide interceptor too
+                    desktop.style.backgroundImage = `url('${event.target.result}')`; 
+                };
                 reader.readAsDataURL(file);
             }
         });
@@ -427,7 +476,7 @@
     // --- GENERIC APP IFRAME MANAGEMENT ---
     
     function openApp(appName) {
-        let appFrame, isOpenState, taskbarIcon;
+        let appFrame, taskbarIcon;
         if (appName === 'music') {
             appFrame = musicPlayerFrame;
             taskbarIcon = taskbarMusicIcon;
@@ -438,6 +487,11 @@
             taskbarIcon = taskbarControlPanelIcon;
             if (isControlPanelOpen) { bringToFront('cp'); return; }
             isControlPanelOpen = true;
+        } else if (appName === 'live2d') { // NEW
+            appFrame = live2dWallpaperFrame;
+            taskbarIcon = taskbarLive2dIcon;
+            if (isLive2dOpen) { bringToFront('live2d'); return; }
+            isLive2dOpen = true;
         }
 
         taskbarIcon.style.display = 'flex';
@@ -467,6 +521,10 @@
             isControlPanelOpen = false;
             appFrame = controlPanelFrame;
             taskbarIcon = taskbarControlPanelIcon;
+        } else if (appName === 'live2d') { // NEW
+            isLive2dOpen = false;
+            appFrame = live2dWallpaperFrame;
+            taskbarIcon = taskbarLive2dIcon;
         }
         appFrame.style.display = 'none';
         taskbarIcon.style.display = 'none';
@@ -484,6 +542,11 @@
             taskbarIcon = taskbarControlPanelIcon;
             lastControlPanelRect = appFrame.getBoundingClientRect();
             lastRect = lastControlPanelRect;
+        } else if (appName === 'live2d') { // NEW
+            appFrame = live2dWallpaperFrame;
+            taskbarIcon = taskbarLive2dIcon;
+            lastLive2dRect = appFrame.getBoundingClientRect();
+            lastRect = lastLive2dRect;
         }
         
         if (appFrame.style.display === 'none' || appFrame.style.opacity === '0') return;
@@ -510,6 +573,10 @@
             appFrame = controlPanelFrame;
             lastRect = lastControlPanelRect;
             taskbarIcon = taskbarControlPanelIcon;
+        } else if (appName === 'live2d') { // NEW
+            appFrame = live2dWallpaperFrame;
+            lastRect = lastLive2dRect;
+            taskbarIcon = taskbarLive2dIcon;
         }
 
         if (!lastRect) return;
@@ -535,18 +602,23 @@
     function bringToFront(appName) {
         const zIndexApp = 1002;
         const zIndexOther = 1001;
+        musicPlayerFrame.style.zIndex = zIndexOther;
+        controlPanelFrame.style.zIndex = zIndexOther;
+        live2dWallpaperFrame.style.zIndex = zIndexOther; // NEW
+
         if (appName === 'music') {
             musicPlayerFrame.style.zIndex = zIndexApp;
-            controlPanelFrame.style.zIndex = zIndexOther;
         } else if (appName === 'cp') {
             controlPanelFrame.style.zIndex = zIndexApp;
-            musicPlayerFrame.style.zIndex = zIndexOther;
+        } else if (appName === 'live2d') { // NEW
+            live2dWallpaperFrame.style.zIndex = zIndexApp;
         }
     }
     
     function setupAppInteractions() {
         controlPanelIcon.addEventListener('dblclick', () => openApp('cp'));
         musicPlayerIcon.addEventListener('dblclick', () => openApp('music'));
+        live2dIcon.addEventListener('dblclick', () => openApp('live2d')); // NEW
         
         taskbarControlPanelIcon.addEventListener('click', () => {
             if (!isControlPanelOpen) return;
@@ -555,6 +627,10 @@
         taskbarMusicIcon.addEventListener('click', () => {
             if (!isMusicPlayerOpen) return;
             (musicPlayerFrame.style.opacity === '1' && musicPlayerFrame.style.display !== 'none') ? minimizeApp('music') : restoreApp('music');
+        });
+        taskbarLive2dIcon.addEventListener('click', () => { // NEW
+            if (!isLive2dOpen) return;
+            (live2dWallpaperFrame.style.opacity === '1' && live2dWallpaperFrame.style.display !== 'none') ? minimizeApp('live2d') : restoreApp('live2d');
         });
     }
 
@@ -574,7 +650,6 @@
         if (bufferLength === 0) return;
         while (previousBarHeights.length < bufferLength) previousBarHeights.push(0);
 
-        // [MODIFIED] Get theme colors dynamically from CSS variables
         const computedStyle = getComputedStyle(document.body);
         visualizerCtx.fillStyle = computedStyle.getPropertyValue('--visualizer-fill').trim();
         visualizerCtx.shadowBlur = visualizerSettings.shadowBlur;
@@ -689,6 +764,19 @@
         setTimeout(positionVisualizer, 50);
     }
 
+    // --- CONTEXT MENU FUNCTION ---
+    // NEW: Reusable function to show the context menu at a specific event's coordinates.
+    function showDesktopContextMenu(e) {
+        startMenuFrame.classList.remove('show');
+        contextMenu.style.display = 'block';
+        const { clientX: mouseX, clientY: mouseY } = e;
+        const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
+        const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
+        let x = (mouseX + menuWidth > windowWidth) ? windowWidth - menuWidth - 5 : mouseX;
+        let y = (mouseY + menuHeight > windowHeight) ? windowHeight - menuHeight - 5 : mouseY;
+        contextMenu.style.top = `${y}px`; contextMenu.style.left = `${x}px`;
+    }
+
     // --- MENU FUNCTIONS ---
     
     function positionMenuRelativeToButton(menuElement, buttonElement) {
@@ -775,16 +863,17 @@
             }
         });
 
+        // MODIFIED: Use the new reusable function
         desktop.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            startMenuFrame.classList.remove('show');
-            contextMenu.style.display = 'block';
-            const { clientX: mouseX, clientY: mouseY } = e;
-            const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
-            const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
-            let x = (mouseX + menuWidth > windowWidth) ? windowWidth - menuWidth - 5 : mouseX;
-            let y = (mouseY + menuHeight > windowHeight) ? windowHeight - menuHeight - 5 : mouseY;
-            contextMenu.style.top = `${y}px`; contextMenu.style.left = `${x}px`;
+            showDesktopContextMenu(e);
+        });
+
+        // NEW: Add a context menu listener to the interceptor layer.
+        // This ensures the desktop context menu appears even when right-clicking on the live wallpaper.
+        clickInterceptor.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showDesktopContextMenu(e);
         });
 
         document.addEventListener('click', (e) => {
@@ -801,29 +890,45 @@
             contextMenu.style.display = 'none';
         });
 
-        // --- FINAL, ROBUST Refresh Click Handler ---
         contextMenuRefresh.addEventListener('click', () => {
             contextMenu.style.display = 'none';
 
             const icons = Array.from(document.querySelectorAll('#desktop-icons .desktop-icon'));
-            const animationDelay = 150; // Delay between each icon's animation
+            const animationDelay = 150;
 
-            // 1. Instantly hide all icons and reset their animation state
             icons.forEach(icon => {
-                icon.classList.remove('animate-in'); // Remove old animation class
-                icon.classList.add('hide-for-refresh'); // Add new instant-hide class
+                icon.classList.remove('animate-in');
+                icon.classList.add('hide-for-refresh');
             });
 
-            // 2. After a short delay to ensure the browser has rendered the hidden state...
             setTimeout(() => {
-                // 3. Animate each icon in sequentially
                 icons.forEach((icon, index) => {
                     setTimeout(() => {
-                        icon.classList.remove('hide-for-refresh'); // Remove hide class
-                        icon.classList.add('animate-in'); // Add animation class
+                        icon.classList.remove('hide-for-refresh');
+                        icon.classList.add('animate-in');
                     }, index * animationDelay);
                 });
-            }, 50); // A small delay to let the UI update
+            }, 50);
+        });
+    }
+
+    // NEW: Function to handle forwarding clicks to the live wallpaper iframe
+    function setupClickForwarding() {
+        // When the mouse button is pressed down on the interceptor layer
+        clickInterceptor.addEventListener('mousedown', (e) => {
+            // If it's a left click, make the interceptor layer temporarily "transparent" to mouse events,
+            // allowing the click event to pass through to the iframe below.
+            if (e.button === 0) { // 0 is the main button, usually left
+                clickInterceptor.style.pointerEvents = 'none';
+            }
+        });
+
+        // When the mouse button is released anywhere in the window
+        window.addEventListener('mouseup', (e) => {
+            // If the interceptor was made transparent, make it solid again to catch the next click.
+            if (clickInterceptor.style.pointerEvents === 'none') {
+                clickInterceptor.style.pointerEvents = 'auto';
+            }
         });
     }
 
@@ -832,6 +937,7 @@
         setupWallpaperDragDrop();
         setupAppInteractions();
         setupMenus();
+        setupClickForwarding(); // NEW: Initialize the click forwarding logic
         
         window.addEventListener('message', (event) => {
             const { action, dx, dy, data, bufferLength, isPaused, value, appName } = event.data;
@@ -850,6 +956,27 @@
                 case 'minimize-cp-frame': minimizeApp('cp'); break;
                 case 'bring-cp-to-front': bringToFront('cp'); break;
 
+                // Live2D Wallpaper (NEW)
+                case 'drag-live2d-frame': { const rect = live2dWallpaperFrame.getBoundingClientRect(); live2dWallpaperFrame.style.left = `${rect.left + dx}px`; live2dWallpaperFrame.style.top = `${rect.top + dy}px`; break; }
+                case 'close-live2d-frame': closeApp('live2d'); break;
+                case 'minimize-live2d-frame': minimizeApp('live2d'); break;
+                case 'bring-live2d-to-front': bringToFront('live2d'); break;
+                case 'set-live-wallpaper':
+                    wallpaperIframe.src = value;
+                    wallpaperIframe.style.display = 'block';
+                    clickInterceptor.style.display = 'block'; // Show the interceptor layer
+                    desktop.style.backgroundImage = 'none';
+                    break;
+                case 'clear-live-wallpaper':
+                    wallpaperIframe.src = 'about:blank';
+                    wallpaperIframe.style.display = 'none';
+                    clickInterceptor.style.display = 'none'; // Hide the interceptor layer
+                    // Fallback to default or previously set background image
+                    if (desktop.style.backgroundImage === 'none') {
+                        desktop.style.backgroundImage = ''; // Let CSS take over
+                    }
+                    break;
+
                 // Start Menu -> Desktop
                 case 'open-app-from-start-menu': 
                     openApp(appName); 
@@ -862,6 +989,7 @@
                     musicPlayerFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
                     controlPanelFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
                     startMenuFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
+                    live2dWallpaperFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*'); // NEW
                     break;
                 case 'request-settings':
                     controlPanelFrame.contentWindow.postMessage({ action: 'request-settings' }, '*');
@@ -872,6 +1000,7 @@
                     musicPlayerFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
                     controlPanelFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
                     startMenuFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
+                    live2dWallpaperFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*'); // NEW
                     break;
                 }
                 case 'change-bg-size': desktop.style.backgroundSize = value; break;

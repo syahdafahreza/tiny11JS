@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live2D Wallpaper</title>
+    <!-- Tailwind Offline CSS (In case of CDN failures) --> 
+    <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Mengadopsi gaya dasar dari control_panel.html untuk konsistensi */
+        :root {
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --window-bg: #f0f0f0;
+            --window-text: #000;
+            --window-border: #a0a0a0;
+            --control-hover-bg: #e6e6e6;
+            --control-close-hover-bg: #e81123;
+            --control-close-hover-text: white;
+            --input-bg: white;
+            --input-border: #a0a0a0;
+            --input-text: #000;
+            --button-bg: #e1e1e1;
+            --button-hover-bg: #e5e5e5;
+            --button-border: #adadad;
+
+            /* Variabel untuk efek Liquid Glass */
+            --c-glass: #f0f0f0;
+            --c-light: #ffffff;
+            --c-dark: #000000;
+            --glass-reflex-dark: 1;
+            --glass-reflex-light: 1;
+            --saturation: 150%;
+        }
+
+        body.dark {
+            --window-bg: #2b2b2b;
+            --window-text: #f0f0f0;
+            --window-border: #555555;
+            --control-hover-bg: #3c3c3c;
+            --input-bg: #3c3c3c;
+            --input-border: #555555;
+            --input-text: #f0f0f0;
+            --button-bg: #3c3c3c;
+            --button-hover-bg: #4a4a4a;
+            --button-border: #555555;
+            
+            /* Variabel Liquid Glass - Mode Gelap */
+            --c-glass: #2b2b2b;
+            --glass-reflex-dark: 2;
+            --glass-reflex-light: 0.3;
+        }
+
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: transparent; 
+            font-family: var(--font-family); 
+            color: var(--window-text); 
+            overflow: hidden; 
+            user-select: none;
+        }
+        
+        .app-window {
+            display: flex; flex-direction: column; width: 100vw; height: 100vh;
+            border: 1px solid var(--window-border); border-radius: 8px;
+            background-color: var(--window-bg);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        body.fancy-mode .app-window {
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+        }
+
+        .window-header { display: flex; justify-content: space-between; align-items: center; cursor: move; flex-shrink: 0; padding: 3px 3px 3px 6px; }
+        .window-title-container { display: flex; align-items: center; gap: 6px; }
+        h2 { font-weight: 400; font-size: 13px; }
+        .window-controls { display: flex; }
+        .window-control-btn { width: 45px; height: 29px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--window-text); }
+        .window-control-btn:hover { background-color: var(--control-hover-bg); }
+        .close-window-btn { font-size: 22px; font-weight: 300; padding-bottom: 4px; }
+        .close-window-btn:hover { background-color: var(--control-close-hover-bg); color: var(--control-close-hover-text); }
+        .window-content-area { flex-grow: 1; overflow-y: auto; padding: 1rem; }
+        .window-content-area input { background-color: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border); }
+        .window-content-area button { background-color: var(--button-bg); border: 1px solid var(--button-border); }
+        .window-content-area button:hover { background-color: var(--button-hover-bg); }
+    </style>
+</head>
+<body>
+    <!-- Filter SVG for Liquid Glass effect -->
+    <div style="position: absolute; width: 0; height: 0; z-index: -1;">
+        <svg>
+          <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
+            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>       
+			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+			<feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
+			</feDisplacementMap>
+          </filter>
+        </svg>
+    </div>
+
+    <div class="app-window">
+        <div id="live2d-window-header" class="window-header">
+            <div class="window-title-container">
+                <img src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper Icon" class="h-4 w-4">
+                <h2>Live Wallpaper</h2>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="window-control-btn" title="Minimize"><svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1H10V2H0V1Z" fill="currentColor"/></svg></button>
+                <button class="window-control-btn" title="Maximize"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg></button>
+                <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
+            </div>
+        </div>
+        <div class="window-content-area space-y-4">
+            <div>
+                <label for="url-input" class="block mb-2 text-sm font-medium">Website URL</label>
+                <input type="url" id="url-input" class="w-full p-2 rounded border" placeholder="https://example.com">
+            </div>
+            <div class="flex gap-2">
+                 <button id="set-wallpaper-btn" class="w-full p-2 rounded">Set Wallpaper</button>
+                 <button id="clear-wallpaper-btn" class="w-full p-2 rounded">Clear Wallpaper</button>
+            </div>
+        </div>
+    </div>
+<script>
+    // Element declarations
+    const header = document.getElementById('live2d-window-header');
+    const closeBtn = document.getElementById('close-btn');
+    const minimizeBtn = document.getElementById('minimize-btn');
+    const urlInput = document.getElementById('url-input');
+    const setWallpaperBtn = document.getElementById('set-wallpaper-btn');
+    const clearWallpaperBtn = document.getElementById('clear-wallpaper-btn');
+
+    // State
+    let isDragging = false;
+    
+    // Window Interaction Logic (communicates with parent)
+    header.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        parent.postMessage({ action: 'bring-live2d-to-front' }, '*');
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            parent.postMessage({ action: 'drag-live2d-frame', dx: e.movementX, dy: e.movementY }, '*');
+        }
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-live2d-frame' }, '*'));
+    minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-live2d-frame' }, '*'));
+
+    // App Functionality Logic
+    setWallpaperBtn.addEventListener('click', () => {
+        const url = urlInput.value;
+        if (url) {
+            parent.postMessage({ action: 'set-live-wallpaper', value: url }, '*');
+        }
+    });
+    
+    clearWallpaperBtn.addEventListener('click', () => {
+        parent.postMessage({ action: 'clear-live-wallpaper' }, '*');
+    });
+
+    // Message Listener (receives messages from parent for theme consistency)
+    window.addEventListener('message', (event) => {
+        const { action, isDark, value } = event.data;
+        if (action === 'theme-change') {
+            document.body.classList.toggle('dark', isDark);
+        }
+        if (action === 'toggle-fancy-mode') {
+            document.body.classList.toggle('fancy-mode', value);
+        }
+    });
+</script>
+</body>
+</html>
