@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Player</title>
-	<!-- Tailwind Offline CSS (In case of CDN failures) -->
+    <!-- Tailwind Offline CSS (In case of CDN failures) -->
     <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Library (offline) untuk membaca metadata audio -->
     <script src="js/jsmediatags.min.js"></script>
-	<!-- Library untuk membaca metadata audio -->
+    <!-- Library untuk membaca metadata audio -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
         /* CSS Variabel untuk Theming */
@@ -66,6 +66,8 @@
             border-radius: 8px;
             background-color: var(--window-bg);
             transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative; 
+            overflow: hidden; 
         }
 
         body.fancy-mode .app-window {
@@ -119,8 +121,8 @@
             position: absolute;
             top: 50%;
             transform: translate(-50%, -50%);
-            width: 30px; /* Ukuran diperkecil */
-            height: 20px; /* Ukuran diperkecil */
+            width: 30px; /* Ukuran default untuk handle progress */
+            height: 20px; /* Ukuran default untuk handle progress */
             border-radius: 999px;
             cursor: grab;
             z-index: 2;
@@ -128,6 +130,13 @@
             box-shadow: 0 1px 8px 0 rgba(0, 30, 63, 0.1), 0 0 2px 0 rgba(0, 9, 20, 0.1);
             transition: transform 0.15s ease, background-color 0.2s, box-shadow 0.2s, backdrop-filter 0.2s;
         }
+        
+        /* PERUBAHAN: Ukuran spesifik untuk handle volume agar lebih kecil */
+        #volume-thumb.slider-thumb-glass {
+            width: 16px;
+            height: 16px;
+        }
+
         .slider-thumb-glass:active { cursor: grabbing; }
 
         body.dark .slider-thumb-glass {
@@ -312,7 +321,7 @@
     const progressTrack = document.getElementById('progress-track');
     const progressThumb = document.getElementById('progress-thumb');
 
-    // BARIS BARU: Elemen Slider Volume
+    // Elemen Slider Volume
     const volumeSliderContainer = document.getElementById('volume-slider-container');
     const volumeTrack = document.getElementById('volume-track');
     const volumeThumb = document.getElementById('volume-thumb');
@@ -458,7 +467,7 @@
         });
     }
 
-    // BLOK BARU: Logika Slider Volume
+    // Logika Slider Volume
     let isVolumeSliderDragging = false;
 
     function updateVolumeSlider(volume) { // volume is 0 to 1
@@ -473,7 +482,6 @@
         const percent = getPercentFromClientX(volumeSliderContainer, clientX);
         const volume = Math.max(0, Math.min(100, percent)) / 100;
         audioPlayer.volume = volume;
-        updateVolumeSlider(volume);
     }
 
     function setupVolumeSliderEvents() {
@@ -540,6 +548,20 @@
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('audio/')) playMusic(file);
         });
+
+        // Listener untuk perubahan volume, akan mengirim pesan ke desktop
+        audioPlayer.addEventListener('volumechange', () => {
+            const currentVolume = audioPlayer.volume;
+            // 1. Perbarui slider volume utama di jendela ini
+            updateVolumeSlider(currentVolume);
+
+            // 2. Kirim data ke parent (desktop) untuk menampilkan flyout di sana
+            const percent = Math.round(currentVolume * 100);
+            parent.postMessage({
+                action: 'show-volume-flyout',
+                volume: percent 
+            }, '*');
+        });
     }
 
     // Logika window
@@ -577,9 +599,12 @@
     // Inisialisasi
     setupMusicPlayerControls();
     setupSliderEvents();
-    setupVolumeSliderEvents(); // PANGGILAN FUNGSI BARU
-    updateVolumeSlider(audioPlayer.volume); // Inisialisasi posisi slider volume
-    parent.postMessage({ action: 'request-settings' }, '*');
+    setupVolumeSliderEvents(); 
+
+    window.addEventListener('load', () => {
+        updateVolumeSlider(audioPlayer.volume); // Inisialisasi posisi slider volume setelah layout dihitung
+        parent.postMessage({ action: 'request-settings' }, '*');
+    });
 </script>
 </body>
 </html>

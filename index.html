@@ -272,6 +272,95 @@
                 transform: translateY(0);
             }
         }
+        
+        /* --- BARU: Gaya Flyout Volume di Desktop --- */
+        .volume-flyout {
+            position: absolute;
+            bottom: 60px; /* Di atas taskbar standar */
+            left: 50%;
+            z-index: 2100; /* Di atas context menu */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 999px; /* Bentuk pil */
+            color: var(--window-text); /* Menggunakan variabel tema desktop */
+            
+            /* State awal untuk animasi */
+            visibility: hidden;
+            opacity: 0;
+            transform: translate(-50%, 20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Gaya default (non-fancy) */
+            background-color: var(--menu-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--menu-separator);
+            box-shadow: var(--menu-shadow);
+        }
+
+        .volume-flyout.visible {
+            visibility: visible;
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        /* Terapkan efek Liquid Glass saat fancy-mode aktif */
+        body.fancy-mode .volume-flyout {
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+            border-color: transparent;
+        }
+
+        .volume-flyout-icon-container {
+            width: 20px;
+            height: 20px;
+            color: var(--taskbar-text); /* Menggunakan warna ikon taskbar */
+        }
+        .volume-flyout-icon-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .volume-flyout-bar-wrapper {
+            width: 120px; /* Lebar bar volume */
+            height: 6px;
+            border-radius: 999px;
+            background-color: var(--taskbar-hover-bg); /* Warna track yang lembut */
+            overflow: hidden;
+        }
+
+        .volume-flyout-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background-color: var(--window-text); /* Warna fill yang kontras */
+            transition: width 0.1s linear;
+        }
+
+        body.dark .volume-flyout-bar-fill {
+            background-color: #f0f0f0; /* Pastikan kontras di mode gelap */
+        }
+
+        .volume-flyout-value {
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 32px; /* Ruang untuk 3 digit + % */
+            text-align: right;
+            color: var(--taskbar-text); /* Menggunakan warna teks taskbar */
+        }
     </style>
 </head>
 <body class="bg-gray-800 select-none">
@@ -281,14 +370,14 @@
         <svg>
           <!-- Original Filter (for windows) -->
           <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
-            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>    
+            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>   
 			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
 			<feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
 			</feDisplacementMap>
           </filter>
           <!-- NEW: Taskbar-specific filter with reduced scale -->
           <filter id="taskbar-liquid-glass-filter" primitiveUnits="objectBoundingBox">
-            <feImage result="map" width="120%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter-taskbar.jpg"/>    
+            <feImage result="map" width="120%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter-taskbar.jpg"/>   
 			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
 			<feDisplacementMap id="disp-taskbar" in="blur" in2="map" scale="0.06" xChannelSelector="R" yChannelSelector="G">
 			</feDisplacementMap>
@@ -366,9 +455,9 @@
             <div id="taskbar-main-group" class="flex items-center gap-1">
                 <div id="start-button" class="taskbar-icon"><img src="https://img.icons8.com/fluency/48/windows-11.png" alt="Start"/></div>
                 <div id="app-icons" class="flex items-center gap-1">
-                    <div class="taskbar-icon"><img src="img/explorer.png" alt="Folder"/></div>
-                    <div class="taskbar-icon"><img src="img/msedge2019.png" alt="Edge"/></div>
-                    <div class="taskbar-icon"><img src="img/winstoreapp-dark.png" alt="Store"/></div>
+                    <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/explorer.png" alt="Folder"/></div>
+                    <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/msedge2019.png" alt="Edge"/></div>
+                    <div class="taskbar-icon"><img src="https://syahdafahreza.my.id/images/desktopicons/winstoreapp-dark.png" alt="Store"/></div>
                     <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel"/></div>
                     <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player"/></div>
                     <!-- NEW: Taskbar icon for Live Wallpaper -->
@@ -382,6 +471,17 @@
                 <div id="datetime-container" class="text-xs text-right leading-tight px-1 cursor-default"><span id="clock">15:45</span><span id="date" class="block">28/09/2025</span></div>
                 <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
             </div>
+        </div>
+
+        <!-- BARU: Flyout Volume di Desktop -->
+        <div id="volume-flyout" class="volume-flyout">
+            <div id="volume-flyout-icon-container" class="volume-flyout-icon-container">
+                <!-- SVG Icon will be injected here by JS -->
+            </div>
+            <div class="volume-flyout-bar-wrapper">
+                <div id="volume-flyout-bar-fill" class="volume-flyout-bar-fill"></div>
+            </div>
+            <span id="volume-flyout-value" class="volume-flyout-value">80%</span>
         </div>
     </div>
 
@@ -424,6 +524,12 @@
     const contextMenuSettings = document.getElementById('context-menu-settings');
     const contextMenuRefresh = document.getElementById('context-menu-refresh');
 
+    // BARU: Elemen Flyout Volume di Desktop
+    const volumeFlyout = document.getElementById('volume-flyout');
+    const volumeFlyoutIconContainer = document.getElementById('volume-flyout-icon-container');
+    const volumeFlyoutBarFill = document.getElementById('volume-flyout-bar-fill');
+    const volumeFlyoutValue = document.getElementById('volume-flyout-value');
+
     // Global State Variables
     let isMusicPlayerOpen = false;
     let isControlPanelOpen = false;
@@ -436,6 +542,14 @@
     let currentTaskbarPosition = 'bottom';
     let currentTaskbarStyle = 'default';
     let isTaskbarSpaceBetween = false;
+    let volumeFlyoutTimer = null; // BARU: Timer untuk flyout
+
+    // BARU: Ikon SVG untuk flyout
+    const volumeIcons = {
+        mute: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`,
+        low: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/></svg>`,
+        high: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`
+    };
 
     const visualizerSettings = {
         shadowBlur: 4, 
@@ -863,14 +977,11 @@
             }
         });
 
-        // MODIFIED: Use the new reusable function
         desktop.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             showDesktopContextMenu(e);
         });
 
-        // NEW: Add a context menu listener to the interceptor layer.
-        // This ensures the desktop context menu appears even when right-clicking on the live wallpaper.
         clickInterceptor.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             showDesktopContextMenu(e);
@@ -912,35 +1023,56 @@
         });
     }
 
-    // NEW: Function to handle forwarding clicks to the live wallpaper iframe
+    // MODIFIED: Function to handle forwarding clicks with hold-down logic
     function setupClickForwarding() {
-        // When the mouse button is pressed down on the interceptor layer
-        clickInterceptor.addEventListener('mousedown', (e) => {
-            // If it's a left click, make the interceptor layer temporarily "transparent" to mouse events,
-            // allowing the click event to pass through to the iframe below.
-            if (e.button === 0) { // 0 is the main button, usually left
-                clickInterceptor.style.pointerEvents = 'none';
-            }
-        });
+        const interceptor = clickInterceptor;
+        let reEnableTimerId = null;
 
-        // When the mouse button is released anywhere in the window
-        window.addEventListener('mouseup', (e) => {
-            // If the interceptor was made transparent, make it solid again to catch the next click.
-            if (clickInterceptor.style.pointerEvents === 'none') {
-                clickInterceptor.style.pointerEvents = 'auto';
+        // This function starts the timer to make the interceptor solid again.
+        const startReEnableTimer = () => {
+            clearTimeout(reEnableTimerId); // Clear any old timers
+            reEnableTimerId = setTimeout(() => {
+                if (interceptor.style.pointerEvents === 'none') {
+                    interceptor.style.pointerEvents = 'auto';
+                }
+            }, 500); // 1.5 second delay
+        };
+
+        interceptor.addEventListener('mousedown', (e) => {
+            if (e.button === 0) { // Only for left click
+                // When a new click starts, cancel any pending timer.
+                // This handles your request to "auto extend" the time if a new click happens.
+                clearTimeout(reEnableTimerId);
+
+                // Let the click pass through.
+                interceptor.style.pointerEvents = 'none';
+
+                // We need a reliable way to know when the "hold" is over.
+                // Since we can't listen to 'mouseup' inside the iframe, we'll listen for it on the main window.
+                // This will catch quick clicks that don't enter the iframe.
+                // We also listen for when the mouse leaves the window entirely.
+                const onInteractionEnd = () => {
+                    startReEnableTimer();
+                    window.removeEventListener('mouseup', onInteractionEnd);
+                    window.removeEventListener('mouseleave', onInteractionEnd);
+                };
+                
+                window.addEventListener('mouseup', onInteractionEnd, { once: true });
+                window.addEventListener('mouseleave', onInteractionEnd, { once: true });
             }
         });
     }
+
 
     // === APPLICATION INITIALIZATION ===
     function initialize() {
         setupWallpaperDragDrop();
         setupAppInteractions();
         setupMenus();
-        setupClickForwarding(); // NEW: Initialize the click forwarding logic
+        setupClickForwarding(); 
         
         window.addEventListener('message', (event) => {
-            const { action, dx, dy, data, bufferLength, isPaused, value, appName } = event.data;
+            const { action, dx, dy, data, bufferLength, isPaused, value, appName, volume } = event.data;
 
             switch(action) {
                 // Music Player
@@ -950,6 +1082,30 @@
                 case 'bring-music-to-front': bringToFront('music'); break;
                 case 'visualizer-data': visualizerData = { data: data, bufferLength: bufferLength, isPaused: isPaused }; break;
                 
+                // BARU: Menangani event flyout volume dari music player
+                case 'show-volume-flyout': {
+                    const percent = volume;
+
+                    volumeFlyoutValue.textContent = `${percent}%`;
+                    volumeFlyoutBarFill.style.width = `${percent}%`;
+
+                    if (percent === 0) {
+                        volumeFlyoutIconContainer.innerHTML = volumeIcons.mute;
+                    } else if (percent <= 50) {
+                        volumeFlyoutIconContainer.innerHTML = volumeIcons.low;
+                    } else {
+                        volumeFlyoutIconContainer.innerHTML = volumeIcons.high;
+                    }
+                    
+                    clearTimeout(volumeFlyoutTimer);
+                    volumeFlyout.classList.add('visible');
+                    
+                    volumeFlyoutTimer = setTimeout(() => {
+                        volumeFlyout.classList.remove('visible');
+                    }, 1800); // Durasi tampil 1.8 detik
+                    break;
+                }
+
                 // Control Panel
                 case 'drag-cp-frame': { const rect = controlPanelFrame.getBoundingClientRect(); controlPanelFrame.style.left = `${rect.left + dx}px`; controlPanelFrame.style.top = `${rect.top + dy}px`; break; }
                 case 'close-cp-frame': closeApp('cp'); break;
