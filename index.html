@@ -59,11 +59,20 @@
             font-family: var(--font-family);
             overflow: hidden;
         }
+		
+		.desktop-image {
+			width: 100%;
+			height: 100%;
+			object-fit: cover; /* Ini penting agar gambar mengisi ruang tanpa terdistorsi */
+			position: absolute; /* Opsional: jika Anda ingin elemen lain berada di atasnya */
+			top: 0;
+			left: 0;
+			z-index: -1; /* Opsional: untuk menempatkan gambar di belakang konten lain */
+		}
         
         #desktop {
             width: 100vw;
             height: 100vh;
-            background-image: url('https://placehold.co/1920x1080/3b82f6/ffffff?text=Drag+%26+Drop+Your+Image+Here');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -386,7 +395,9 @@
     </div>
 
     <div id="desktop" class="relative">
-        
+        <!-- Default wallpaper instead of placeholder -->
+		<img src="img/img0_1920x1200.jpg" alt="Desktop Background" class="desktop-image">
+		
         <!-- NEW: Iframe for live wallpaper, placed here to be under icons -->
         <iframe id="wallpaper-iframe" src="about:blank"></iframe>
         
