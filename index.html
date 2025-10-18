@@ -125,14 +125,18 @@
         }
 
         #pill-container {
-            display: none;
             position: fixed;
             z-index: 5000;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            /* GANTI: Gunakan satu properti 'all' untuk transisi yang lebih mulus */
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Atur state awal agar tidak terlihat */
+            opacity: 0;
+            pointer-events: none;
 
             /* Gunakan variabel dari taskbar normal, BUKAN fancy-mode */
             background-color: var(--taskbar-bg);
@@ -140,14 +144,19 @@
             -webkit-backdrop-filter: var(--backdrop-blur);
         }
 
+        #pill-container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         #pill-container #notification-content,
         #pill-container #volume-content {
             position: relative;
-            /* Hapus `absolute` */
             display: none;
             /* Konten diatur oleh JS */
             opacity: 0;
-            transition: opacity 0.3s ease-in;
+            /* GANTI: Perhalus transisi opacity konten */
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Gaya notifikasi saat Fancy Mode aktif */
@@ -1517,20 +1526,8 @@
             // debugTaskbarState('Before Show Pill');
             // For toast notification, Fungsi Show Pill
             const showPill = (type, duration = 5000) => {
-                // 1. Handle jika pill sudah aktif (hanya ganti konten & reset timer)
-                if (isPillActive) {
-                    if (type !== activePillType) {
-                        const currentContent = (activePillType === 'notification') ? notificationContent : volumeContent;
-                        currentContent.style.opacity = '0';
-
-                        setTimeout(() => {
-                            currentContent.style.display = 'none';
-                            const newContent = (type === 'notification') ? notificationContent : volumeContent;
-                            newContent.style.display = 'flex';
-                            setTimeout(() => { newContent.style.opacity = '1'; }, 10);
-                            activePillType = type;
-                        }, 200); // Tunggu animasi fade-out selesai
-                    }
+                if (isPillActive && type === activePillType) {
+                    // Jika tipe sama, hanya reset timer
                     clearTimeout(pillTimer);
                     pillTimer = setTimeout(() => {
                         if (type === 'volume' && isVolumeChanging) return;
@@ -1539,64 +1536,96 @@
                     return;
                 }
 
-                // --- Mulai animasi baru ---
+                // Jika pill sudah aktif tapi tipenya BEDA (misal dari notif ke volume)
+                if (isPillActive && type !== activePillType) {
+                    const currentContent = activePillType === 'notification' ? notificationContent : volumeContent;
+                    const newContent = type === 'notification' ? notificationContent : volumeContent;
+
+                    // 1. Fade out konten lama
+                    currentContent.style.opacity = '0';
+
+                    // 2. Setelah fade out, ganti konten dan fade in
+                    setTimeout(() => {
+                        currentContent.style.display = 'none';
+                        newContent.style.display = 'flex';
+                        // Beri sedikit waktu untuk browser me-render display:flex
+                        setTimeout(() => {
+                            newContent.style.opacity = '1';
+                        }, 20);
+                    }, 300); // Sesuaikan dengan durasi transisi opacity konten
+
+                    activePillType = type;
+                    clearTimeout(pillTimer);
+                    pillTimer = setTimeout(() => {
+                        if (type === 'volume' && isVolumeChanging) return;
+                        hidePill();
+                    }, duration);
+                    return;
+                }
+
+
+                // --- Animasi Muncul Pertama Kali ---
                 isPillActive = true;
                 activePillType = type;
 
-                // Sembunyikan visualizer jika terlihat
-                if ($('#visualizer').is(':visible')) {
-                    $('#visualizer').fadeTo(200, 0);
-                }
-
-                // 2. Dapatkan posisi visual taskbar saat ini dan simpan
+                // 1. Dapatkan posisi & gaya taskbar saat ini
                 const taskbarRect = taskbar.getBoundingClientRect();
-                $(pillContainer).data('originalRect', taskbarRect);
+                const taskbarStyle = getComputedStyle(taskbar);
+                $(pillContainer).data('originalRect', taskbarRect); // Simpan untuk animasi kembali
 
-                // 3. Sembunyikan taskbar asli secara halus
-                taskbar.style.transition = 'opacity 0.2s ease-out, visibility 0.2s';
-                taskbar.style.opacity = '0';
-                taskbar.style.pointerEvents = 'none';
+                // 2. Sembunyikan konten taskbar & visualizer
+                taskbarMainGroup.style.opacity = '0';
+                systemTray.style.opacity = '0';
+                visualizerCanvas.style.opacity = '0';
 
-                // 4. Siapkan wadah pill di posisi awal (di atas taskbar) tanpa animasi
-                pillContainer.style.transition = 'none';
+                // 3. Atur posisi awal pill agar sama persis dengan taskbar (tapi masih transparan)
+                pillContainer.style.transition = 'none'; // Matikan transisi sementara
                 pillContainer.style.left = `${taskbarRect.left}px`;
                 pillContainer.style.top = `${taskbarRect.top}px`;
                 pillContainer.style.width = `${taskbarRect.width}px`;
                 pillContainer.style.height = `${taskbarRect.height}px`;
-                pillContainer.style.borderRadius = getComputedStyle(taskbar).borderRadius;
-                pillContainer.style.opacity = '1'; // Pastikan pill terlihat saat mulai
-                pillContainer.style.display = 'flex';
+                pillContainer.style.borderRadius = taskbarStyle.borderRadius;
 
-                // Siapkan konten yang akan ditampilkan di dalam pill
-                const activeContent = (type === 'notification') ? notificationContent : volumeContent;
-                notificationContent.style.display = (type === 'notification') ? 'flex' : 'none';
-                volumeContent.style.display = (type === 'volume') ? 'flex' : 'none';
-                activeContent.style.opacity = '0'; // Konten masih transparan
+                // 4. Siapkan konten yang akan ditampilkan di dalam pill
+                const activeContent = type === 'notification' ? notificationContent : volumeContent;
+                notificationContent.style.display = 'none';
+                volumeContent.style.display = 'none';
+                activeContent.style.display = 'flex';
+                activeContent.style.opacity = '0';
 
-                // 5. Hitung posisi & ukuran akhir dari pill
-                const pillWidth = 380;
-                const pillHeight = 56;
-                const targetLeft = (window.innerWidth / 2) - (pillWidth / 2);
-                const targetTop = window.innerHeight - pillHeight - 8; // 8px margin dari bawah
+                // 5. Jalankan animasi secara sinkron
+                requestAnimationFrame(() => {
+                    // Sembunyikan taskbar asli
+                    taskbar.style.opacity = '0';
+                    taskbar.style.pointerEvents = 'none';
 
-                // 6. Animasikan wadah pill ke posisi akhirnya
-                // Timeout kecil untuk memastikan browser menerapkan state awal sebelum memulai transisi
-                setTimeout(() => {
-                    pillContainer.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    // Aktifkan lagi transisi dan mulai animasi pill
+                    pillContainer.style.transition = 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
+                    pillContainer.classList.add('show');
+
+                    // Tentukan target posisi & ukuran pill
+                    const pillWidth = 380;
+                    const pillHeight = 56;
+                    const targetLeft = (window.innerWidth / 2) - (pillWidth / 2);
+                    // KEMBALIKAN: Posisi seperti semula, dekat bagian bawah
+                    const targetTop = window.innerHeight - pillHeight - 8;
+
                     pillContainer.style.left = `${targetLeft}px`;
                     pillContainer.style.top = `${targetTop}px`;
                     pillContainer.style.width = `${pillWidth}px`;
                     pillContainer.style.height = `${pillHeight}px`;
-                    pillContainer.style.borderRadius = '12px'; // Pill lebih bulat
+                    // KEMBALIKAN: Bentuk sudut seperti semula
+                    pillContainer.style.borderRadius = '12px';
 
-                    // Fade-in konten setelah animasi morph dimulai
+                    // 6. Fade-in konten di dalam pill setelah animasi morphing berjalan setengah jalan
                     setTimeout(() => {
                         activeContent.style.opacity = '1';
-                    }, 150); // Mulai fade-in di tengah-tengah animasi morph
-                }, 20);
+                    }, 200);
+                });
 
                 // 7. Atur timer untuk menyembunyikan pill secara otomatis
                 pillTimer = setTimeout(() => {
+                    // Jangan sembunyikan jika pengguna masih menggeser volume
                     if (type === 'volume' && isVolumeChanging) return;
                     hidePill();
                 }, duration);
@@ -1606,46 +1635,46 @@
                 if (!isPillActive) return;
 
                 clearTimeout(pillTimer);
-                isPillActive = false; // Set state segera untuk mencegah pemanggilan ganda
-
                 const originalRect = $(pillContainer).data('originalRect');
+
                 if (!originalRect) {
-                    console.error("Original rect not found. Resetting state.");
+                    // Fallback jika terjadi error
                     resetPillState();
                     return;
                 }
 
-                // 1. Fade-out konten di dalam pill
-                const activeContent = (activePillType === 'notification') ? notificationContent : volumeContent;
-                activeContent.style.transition = 'opacity 0.15s ease-out';
+                // 1. Sembunyikan konten di dalam pill terlebih dahulu
+                const activeContent = activePillType === 'notification' ? notificationContent : volumeContent;
                 activeContent.style.opacity = '0';
 
-                // 2. Animasikan wadah pill kembali ke posisi taskbar semula
-                pillContainer.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                pillContainer.style.left = `${originalRect.left}px`;
-                pillContainer.style.top = `${originalRect.top}px`;
-                pillContainer.style.width = `${originalRect.width}px`;
-                pillContainer.style.height = `${originalRect.height}px`;
-                pillContainer.style.borderRadius = getComputedStyle(taskbar).borderRadius;
-
-                // 3. Tampilkan kembali taskbar di tengah-tengah animasi `hidePill`
+                // 2. Setelah jeda singkat, mulai animasi kembali ke posisi taskbar
                 setTimeout(() => {
-                    taskbar.style.transition = 'opacity 0.2s ease-in';
+                    // Kembalikan taskbar asli (masih kosong)
                     taskbar.style.opacity = '1';
                     taskbar.style.pointerEvents = 'auto';
-                }, 150); // Mulai muncul setelah 200ms
 
-                // 4. Setelah animasi selesai, sembunyikan pill sepenuhnya
-                setTimeout(() => {
-                    pillContainer.style.display = 'none';
-                    activeContent.style.display = 'none';
+                    // Animasikan pill kembali ke bentuk & posisi taskbar
+                    pillContainer.style.left = `${originalRect.left}px`;
+                    pillContainer.style.top = `${originalRect.top}px`;
+                    pillContainer.style.width = `${originalRect.width}px`;
+                    pillContainer.style.height = `${originalRect.height}px`;
+                    pillContainer.style.borderRadius = getComputedStyle(taskbar).borderRadius;
 
-                    if ($('#visualizer').css('opacity') === '0') {
-                        $('#visualizer').fadeTo(300, 1);
-                    }
+                    // Sembunyikan pill bersamaan dengan animasi morphing
+                    pillContainer.classList.remove('show');
 
-                    activePillType = null;
-                }, 400); // Harus cocok dengan durasi transisi CSS
+                    // 3. Kembalikan konten taskbar setelah animasi kembali hampir selesai
+                    setTimeout(() => {
+                        taskbarMainGroup.style.opacity = '1';
+                        systemTray.style.opacity = '1';
+                        if (visualizerCanvas.style.display !== 'none') {
+                            visualizerCanvas.style.opacity = '1';
+                        }
+                        // Reset state setelah semua animasi selesai
+                        setTimeout(resetPillState, 450);
+                    }, 100);
+
+                }, 200); // Jeda ini untuk menunggu konten pill fade out
             };
 
             // Fungsi helper untuk menyelesaikan proses hide
@@ -1696,14 +1725,33 @@
                 }, 50);
             };
 
+            // Fungsi bantu untuk reset transitions
+            const resetTransitions = () => {
+                pillContainer.style.transition = '';
+                notificationContent.style.transition = '';
+                volumeContent.style.transition = '';
+                taskbar.style.transition = '';
+                visualizerCanvas.style.transition = '';
+            };
+
             // Fungsi fallback untuk reset state jika ada error
             const resetPillState = () => {
-                pillContainer.style.display = 'none';
-                taskbar.style.opacity = '1';
-                taskbar.style.pointerEvents = 'auto';
                 isPillActive = false;
                 activePillType = null;
-            };
+                pillContainer.style.transition = 'none';
+                pillContainer.classList.remove('show');
+                notificationContent.style.display = 'none';
+                volumeContent.style.display = 'none';
+
+                // Pastikan semua state kembali normal
+                taskbar.style.opacity = '1';
+                taskbar.style.pointerEvents = 'auto';
+                taskbarMainGroup.style.opacity = '1';
+                systemTray.style.opacity = '1';
+                if (visualizerCanvas.style.display !== 'none') {
+                    visualizerCanvas.style.opacity = '1';
+                }
+            }
 
             // debugTaskBarState('After Hide Pill');
             // Fungsi utama untuk menyembunyikan pill, Hide Pill End
@@ -1761,10 +1809,24 @@
                 notifTitle.textContent = title;
                 notifMessage.textContent = message;
 
+                notifIcon.classList.add('flex', 'items-center', 'justify-center');
+
                 if (icon && (icon.startsWith('blob:') || icon.startsWith('http'))) {
+                    // Untuk gambar (img), kita juga harus memastikan gambar itu sendiri terpusat, 
+                    // meskipun object-cover biasanya sudah baik.
                     notifIcon.innerHTML = `<img src="${icon}" class="w-full h-full object-cover rounded" alt="Notification Icon">`;
                 } else if (icon) {
+                    // Untuk SVG, sekarang akan terpusat di dalam div 40x40
                     notifIcon.innerHTML = icon;
+
+                    // Atur ukuran ikon yang dimasukkan (Contoh: untuk ProTipIcon yang ukurannya 24x24)
+                    const svg = notifIcon.querySelector('svg');
+                    if (svg) {
+                        // Hapus class ukuran lama (w-6 h-6) dan gunakan ukuran yang lebih baik di sini jika diperlukan
+                        // Atau pastikan SVG menggunakan w-full h-full untuk mengisi div 40x40
+                        // Namun, karena `div#notification-icon` adalah w-10 h-10 (40px x 40px), 
+                        // menambahkan `flex items-center justify-center` sudah cukup.
+                    }
                 } else {
                     notifIcon.innerHTML = '';
                 }
