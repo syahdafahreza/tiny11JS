@@ -25,11 +25,10 @@
             --taskbar-hover-bg: rgba(0, 0, 0, 0.1);
             --backdrop-blur: blur(15px);
             --menu-bg: rgba(255, 255, 255, 0.85);
-            /* [MODIFIED] Visualizer Colors for Light Theme (Light on Light) */
             --visualizer-fill: rgba(255, 255, 255, 0.7);
             --visualizer-shadow: rgba(255, 255, 255, 0.5);
 
-            /* Variabel baru untuk efek Liquid Glass */
+            /* Liquid Glass Effect */
             --c-glass: #f0f0f0;
             --c-light: #ffffff;
             --c-dark: #000000;
@@ -37,7 +36,7 @@
             --glass-reflex-light: 1;
             --saturation: 150%;
 
-            /* NEW: Explorer Context Menu colors */
+            /* Explorer Context Menu */
             --explorer-menu-bg: #f3f3f3;
             --explorer-menu-border: #d1d1d1;
             --explorer-menu-shadow: rgba(0, 0, 0, 0.15);
@@ -45,23 +44,19 @@
             --explorer-menu-separator: #e0e0e0;
             --explorer-text-secondary: #666666;
 
-            /* untuk notifikasi */
+            /* Notification Center */
             --quick-settings-bg: rgba(0, 0, 0, 0.05);
             --quick-settings-hover-bg: rgba(0, 0, 0, 0.1);
             --quick-settings-active-bg: #0078d4;
             --quick-settings-active-text: white;
 
-            /* Variabel baru untuk warna volume flyout */
+            /* Volume Flyout */
             --volume-icon-color: var(--window-text);
-            /* Gunakan warna teks saat ini sebagai default */
             --volume-bar-fill-color: #f97316;
-            /* Gunakan warna teks saat ini sebagai default */
             --volume-bar-track-color: color-mix(in srgb, var(--window-text) 20%, transparent);
-            /* Track lebih pudar */
             --volume-text-color: var(--window-text);
-            ;
 
-            /* [NEW/COPIED] Start Menu Theme Variables - Light */
+            /* [FIXED] Start Menu Theme Variables - Light ONLY */
             --start-menu-bg: rgba(255, 255, 255, 0.85);
             --start-menu-border: rgba(0, 0, 0, 0.1);
             --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
@@ -72,18 +67,6 @@
             --start-menu-search-text: #000;
             --start-menu-search-placeholder: rgba(0, 0, 0, 0.6);
             --start-menu-footer-border: rgba(0, 0, 0, 0.1);
-
-            /* [NEW/COPIED] Start Menu Theme Variables - Dark */
-            --start-menu-bg: rgba(30, 30, 30, 0.75);
-            --start-menu-border: rgba(255, 255, 255, 0.1);
-            --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            --start-menu-text: white;
-            --start-menu-subtle-text: rgba(255, 255, 255, 0.7);
-            --start-menu-item-hover-bg: rgba(255, 255, 255, 0.1);
-            --start-menu-search-bg: rgba(255, 255, 255, 0.1);
-            --start-menu-search-text: white;
-            --start-menu-search-placeholder: rgba(255, 255, 255, 0.6);
-            --start-menu-footer-border: rgba(255, 255, 255, 0.1);
         }
 
         body.dark {
@@ -95,16 +78,15 @@
             --taskbar-text: white;
             --taskbar-hover-bg: rgba(255, 255, 255, 0.1);
             --menu-bg: rgba(30, 30, 30, 0.75);
-            /* [MODIFIED] Visualizer Colors for Dark Theme (Dark on Dark) */
             --visualizer-fill: rgba(0, 0, 0, 0.6);
             --visualizer-shadow: rgba(0, 0, 0, 0.4);
 
-            /* Variabel baru untuk efek Liquid Glass - Mode Gelap */
+            /* Liquid Glass Effect - Dark Mode */
             --c-glass: #2b2b2b;
             --glass-reflex-dark: 2;
             --glass-reflex-light: 0.3;
 
-            /* NEW: Explorer Context Menu colors for Dark Mode */
+            /* Explorer Context Menu - Dark Mode */
             --explorer-menu-bg: #2b2b2b;
             --explorer-menu-border: #4a4a4a;
             --explorer-menu-shadow: rgba(0, 0, 0, 0.3);
@@ -112,11 +94,23 @@
             --explorer-menu-separator: #4a4a4a;
             --explorer-text-secondary: #a0a0a0;
 
-            /* untuk notifikasi */
+            /* Notification Center - Dark Mode */
             --quick-settings-bg: rgba(255, 255, 255, 0.08);
             --quick-settings-hover-bg: rgba(255, 255, 255, 0.15);
             --quick-settings-active-bg: #60cdff;
             --quick-settings-active-text: #000;
+
+            /* [FIXED] Start Menu Theme Variables - Dark MOVED HERE */
+            --start-menu-bg: rgba(30, 30, 30, 0.75);
+            --start-menu-border: rgba(255, 255, 255, 0.1);
+            --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --start-menu-text: white;
+            --start-menu-subtle-text: rgba(255, 255, 255, 0.7);
+            --start-menu-item-hover-bg: rgba(255, 255, 255, 0.1);
+            --start-menu-search-bg: rgba(255, 255, 255, 0.1);
+            --start-menu-search-text: white;
+            --start-menu-search-placeholder: rgba(255, 255, 255, 0.6);
+            --start-menu-footer-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
@@ -131,14 +125,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* GANTI: Gunakan satu properti 'all' untuk transisi yang lebih mulus */
             transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-
-            /* Atur state awal agar tidak terlihat */
             opacity: 0;
             pointer-events: none;
-
-            /* Gunakan variabel dari taskbar normal, BUKAN fancy-mode */
             background-color: var(--taskbar-bg);
             backdrop-filter: var(--backdrop-blur);
             -webkit-backdrop-filter: var(--backdrop-blur);
@@ -153,32 +142,11 @@
         #pill-container #volume-content {
             position: relative;
             display: none;
-            /* Konten diatur oleh JS */
             opacity: 0;
-            /* GANTI: Perhalus transisi opacity konten */
             transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Gaya notifikasi saat Fancy Mode aktif */
-        body.fancy-mode #taskbar.notification-mode {
-            /* Menggunakan filter liquid glass yang sama dengan jendela aplikasi agar konsisten */
-            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
-            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-            box-shadow:
-                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
-            border-color: transparent;
-        }
-
+        body.fancy-mode #taskbar.notification-mode,
         body.fancy-mode #pill-container {
             background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
             backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
@@ -194,66 +162,49 @@
                 inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
                 0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
                 0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+            border-color: transparent;
         }
 
-        /* Gaya Notifikasi end */
-
-        /* For volume flyout */
-        /* Terapkan warna dari variabel ke elemen volume flyout */
         #volume-icon svg {
-            /* Ikon volume dalam flyout */
             fill: var(--volume-icon-color);
             color: var(--volume-icon-color);
-            /* Jika ikon menggunakan color */
         }
 
         #volume-bar-fill {
-            /* Bagian yang terisi dari volume bar */
             background-color: var(--volume-bar-fill-color);
         }
 
         #volume-track {
-            /* Bagian track dari volume bar (sebagai perbandingan) */
             background-color: var(--volume-bar-track-color);
         }
 
         #volume-value {
-            /* Teks persentase volume */
             color: var(--volume-text-color);
         }
 
-        /* For volume flyout End */
-
-        /* untuk notification center */
         #notification-center {
             position: absolute;
             bottom: 60px;
-            /* Di atas taskbar (48px + margin 12px) */
             right: 8px;
             width: 360px;
             max-height: 520px;
             z-index: 1900;
-            /* Di bawah context menu (2000) */
             color: var(--window-text);
             display: flex;
             flex-direction: column;
             gap: 12px;
-
-            /* State Awal untuk Animasi */
             visibility: hidden;
             opacity: 0;
             transform: translateY(20px) scale(0.98);
             transition: all 0.25s cubic-bezier(0.1, 0.82, 0.25, 1);
             transform-origin: bottom right;
-
-            /* Gaya Default (non-fancy) */
             background-color: var(--menu-bg);
             backdrop-filter: var(--backdrop-blur);
             -webkit-backdrop-filter: var(--backdrop-blur);
-            border: 1px solid var(--menu-separator);
+            border: 1px solid var(--window-border);
             border-radius: 8px;
             padding: 12px;
-            box-shadow: var(--menu-shadow);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
 
         #notification-center.show {
@@ -262,7 +213,6 @@
             transform: translateY(0) scale(1);
         }
 
-        /* for notification item */
         .notification-item {
             display: flex;
             align-items: flex-start;
@@ -327,9 +277,6 @@
             }
         }
 
-        /* for notification item end */
-
-        /* Terapkan efek Liquid Glass saat fancy-mode aktif */
         body.fancy-mode #notification-center {
             background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
             backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
@@ -392,38 +339,29 @@
             height: 18px;
         }
 
-        /* Perbaikan kecil agar jam terlihat bisa diklik */
         #datetime-container {
             cursor: pointer !important;
         }
 
-        /* untuk notification center end */
-
-        /* [MERGED] Gaya untuk tag gambar desktop */
         .desktop-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Ini penting agar gambar mengisi ruang tanpa terdistorsi */
             position: absolute;
-            /* Opsional: jika Anda ingin elemen lain berada di atasnya */
             top: 0;
             left: 0;
             z-index: -1;
-            /* Opsional: untuk menempatkan gambar di belakang konten lain */
         }
 
         #desktop {
             width: 100vw;
             height: 100vh;
-            /* [MERGED] Menghapus background-image dari sini karena sekarang ditangani oleh tag <img> */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             transition: background-image: 0.3s ease-in-out;
         }
 
-        /* NEW: iframe for live wallpaper */
         #wallpaper-iframe {
             position: absolute;
             top: 0;
@@ -432,9 +370,7 @@
             height: 100%;
             border: none;
             z-index: 0;
-            /* Behind desktop icons */
             display: none;
-            /* Hidden by default */
         }
 
         .drag-over {
@@ -453,7 +389,6 @@
             opacity: 1;
             transform: translateY(0);
             visibility: visible;
-            /* CRITICAL FIX: Only transition background for hover effect. Opacity/transform is handled by animation now. */
             transition: background-color 0.2s ease-out;
         }
 
@@ -471,7 +406,6 @@
             margin: 0 auto 8px auto;
         }
 
-        /* Universal style for app iframes */
         .app-iframe {
             position: absolute;
             display: none;
@@ -490,7 +424,6 @@
             display: flex;
             align-items: center;
             z-index: 500;
-            /* Gunakan transisi yang lebih canggih dari contohdilan.html */
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
@@ -505,7 +438,6 @@
             opacity: 0 !important;
         }
 
-        /* --- Notification --- */
         #notification-content,
         #volume-content,
         #taskbar-main-group,
@@ -533,46 +465,6 @@
         #notification-message {
             color: var(--explorer-text-secondary);
         }
-
-        /* notification center */
-        #notification-center {
-            position: absolute;
-            bottom: 60px;
-            /* Di atas taskbar (48px + margin 12px) */
-            right: 8px;
-            width: 360px;
-            max-height: 520px;
-            z-index: 1900;
-            /* Di bawah context menu (2000) */
-            color: var(--window-text);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-
-            /* State Awal untuk Animasi */
-            visibility: hidden;
-            opacity: 0;
-            transform: translateY(20px) scale(0.98);
-            transition: all 0.25s cubic-bezier(0.1, 0.82, 0.25, 1);
-            transform-origin: bottom right;
-
-            /* Gaya Default (non-fancy) */
-            background-color: var(--menu-bg);
-            backdrop-filter: var(--backdrop-blur);
-            -webkit-backdrop-filter: var(--backdrop-blur);
-            border: 1px solid var(--menu-separator);
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: var(--menu-shadow);
-        }
-
-        #notification-center.show {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* notification center end */
 
         .taskbar-icon {
             padding: 8px;
@@ -602,8 +494,7 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100%);
-            /* 0.5rem padding di setiap sisi */
+            width: 100%;
             height: 48px;
             flex-direction: row;
             padding: 0 0.5rem;
@@ -614,8 +505,7 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100%);
-            /* 0.5rem padding di setiap sisi */
+            width: 100%;
             height: 48px;
             flex-direction: row;
             padding: 0 0.5rem;
@@ -688,7 +578,6 @@
             height: 40px;
         }
 
-        /* --- Styles for Desktop Context Menu --- */
         #context-menu {
             --menu-text: var(--window-text, #212529);
             --menu-hover-bg: var(--taskbar-hover-bg, rgba(0, 0, 0, 0.08));
@@ -751,7 +640,6 @@
             margin: 4px 0;
         }
 
-        /* --- NEW: Styles for Explorer Context Menu --- */
         .explorer-context-menu {
             position: absolute;
             z-index: 2100;
@@ -838,11 +726,9 @@
             transition: all 0.2s ease-out;
         }
 
-        /* --- Fancy Mode (Liquid Glass) Styles for Taskbar --- */
         body.fancy-mode #taskbar:not(.split),
         body.fancy-mode #taskbar.split>div {
             background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
-            /* MODIFIED: Using the new taskbar-specific filter */
             backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
             -webkit-backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
             box-shadow:
@@ -858,7 +744,6 @@
                 0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
         }
 
-        /* --- Fancy Mode (Liquid Glass) Styles for Context Menus --- */
         body.fancy-mode #context-menu,
         body.fancy-mode .explorer-context-menu {
             background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
@@ -876,17 +761,14 @@
                 0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
                 0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
             border-color: transparent;
-            /* Hide default border in fancy mode */
         }
 
-        /* In fancy mode, the split container itself should be fully transparent and the default bg removed from the normal taskbar */
         body.fancy-mode #taskbar {
             background-color: transparent;
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
         }
 
-        /* --- NEW: Refresh Icon Animation --- */
         .desktop-icon.hide-for-refresh {
             transition: none !important;
             opacity: 0 !important;
@@ -1888,15 +1770,15 @@
                 const notifItem = document.createElement('div');
                 notifItem.className = 'notification-item';
                 notifItem.innerHTML = `
-                <div class="notification-item-icon">${iconContent}</div>
-                <div class="notification-item-content">
-                    <div class="notification-item-title">${title}</div>
-                    <div class="notification-item-message">${message}</div>
-                </div>
-                <button class="notification-item-close" title="Hapus notifikasi">
-                    <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
-            `;
+            <div class="notification-item-icon">${iconContent}</div>
+            <div class="notification-item-content">
+                <div class="notification-item-title">${title}</div>
+                <div class="notification-item-message">${message}</div>
+            </div>
+            <button class="notification-item-close" title="Hapus notifikasi">
+                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        `;
 
                 // 3. Tambahkan notifikasi baru ke bagian paling atas daftar
                 notificationList.prepend(notifItem);
@@ -2318,9 +2200,7 @@
 
             // --- CONTEXT MENU FUNCTIONS ---
             function showDesktopContextMenu(e) {
-                // GANTI: Tutup Start Menu menggunakan ID yang benar
                 startMenu.classList.remove('show');
-                // Hide explorer menus if visible
                 explorerGeneralMenu.style.display = 'none';
                 explorerItemMenu.style.display = 'none';
 
@@ -2399,18 +2279,6 @@
                 });
             }
 
-            // --- MENU FUNCTIONS ---
-
-            // dipindahkan ke js/startmenu.js
-
-            // function positionMenuRelativeToButton End
-
-            // Fungsi ini telah dipindahkan ke js/startmenu.js
-            // function positionStartMenu() {
-            //     // GANTI: Menggunakan ID #start-menu
-            //     positionMenuRelativeToButton(startMenu, startButton);
-            // }
-
             function setupMenus() {
 
                 desktop.addEventListener('contextmenu', (e) => {
@@ -2427,19 +2295,16 @@
                     if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
                         contextMenu.style.display = 'none';
                     }
-                    // GANTI: Gunakan ID #start-menu
                     if (startMenu.classList.contains('show') && !e.composedPath().includes(startMenu) && !startButton.contains(e.target)) {
                         startMenu.classList.remove('show');
                     }
-                    // Hide explorer menus on outside click
                     if (!e.target.closest('.explorer-context-menu')) {
                         explorerGeneralMenu.style.display = 'none';
                         explorerItemMenu.style.display = 'none';
                     }
-                    // for notification center
                     if (notificationCenter.classList.contains('show') &&
                         !notificationCenter.contains(e.target) &&
-                        !notificationCenterTrigger.contains(e.target) // <-- GANTI DARI datetimeContainer
+                        !notificationCenterTrigger.contains(e.target)
                     ) {
                         notificationCenter.classList.remove('show');
                     }
@@ -2471,14 +2336,10 @@
                     }, 50);
                 });
 
-                // trigger untuk notification center nya
                 notificationCenterTrigger.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    // Tutup menu lain yang mungkin terbuka
                     startMenu.classList.remove('show');
                     contextMenu.style.display = 'none';
-
-                    // Tampilkan/sembunyikan notification center
                     notificationCenter.classList.toggle('show');
                 });
             }
@@ -2520,78 +2381,56 @@
                 setupClickForwarding();
                 setupExplorerContextMenuActions();
 
-                window.addEventListener('resize', () => {
-                    // console.log("[DEBUG] Resize event triggered, repositioning menu if open.");
-                    // GANTI: Menggunakan ID #start-menu
-                    if (startMenu.classList.contains('show')) {
-                        positionStartMenu(); // Fungsi ini memanggil positionMenuRelativeToButton
-                    }
-                    // Jika Anda memiliki fungsi lain yang perlu di-update saat resize, tambahkan di sini
-                    // Misalnya: setTimeout(positionVisualizer, 50);
-                });
+                // This listener is now handled inside startmenu.js
+                // window.addEventListener('resize', () => {
+                //     if (startMenu.classList.contains('show')) {
+                //         positionStartMenu();
+                //     }
+                // });
 
                 window.addEventListener('message', (event) => {
-                    // LOG 8: Tampilkan semua data yang masuk dari iframe
                     console.log('[Desktop] Message received from iframe. Action:', event.data.action, 'Full data:', event.data);
-
                     const { action, dx, dy, data, bufferLength, isPaused, value, appName, volume } = event.data;
 
                     switch (action) {
-
-                        // untuk stop music
                         case 'stop-music-frame': {
-                            // Hentikan visualisasi jika perlu
-                            isPaused = true; // Asumsikan ini digunakan oleh fungsi drawVisualizer
-                            visualizerData = null; // Hapus data visualisasi
-                            visualizerCanvas.style.display = 'none'; // Sembunyikan canvas
-                            // Tidak perlu menyembunyikan iframe, cukup hentikan audio di music_player.html
-                            break; // Keluar dari case
+                            isPaused = true;
+                            visualizerData = null;
+                            visualizerCanvas.style.display = 'none';
+                            break;
                         }
-
-                        // case untuk volume changing (untuk volume flyout)
                         case 'volume-change-start':
-                            console.log('[Desktop] Volume change started.'); // Debug log
+                            console.log('[Desktop] Volume change started.');
                             isVolumeChanging = true;
-                            // Jika pill volume sedang aktif, reset timer utama agar tidak hilang saat digeser
                             if (isPillActive && activePillType === 'volume') {
                                 clearTimeout(pillTimer);
-                                // Atur ulang timer utama untuk menunggu setelah selesai berubah
                                 pillTimer = setTimeout(() => {
                                     if (!isVolumeChanging) hidePill();
-                                }, 2000); // Misalnya, sembunyikan 2 detik setelah berhenti berubah
+                                }, 2000);
                             }
                             break;
                         case 'volume-change-end':
-                            console.log('[Desktop] Volume change ended.'); // Debug log
-                            isVolumeChanging = false; // Penting: Reset status setelah selesai
-                            // Jika pill volume sedang aktif, sembunyikan setelah jeda kecil
+                            console.log('[Desktop] Volume change ended.');
+                            isVolumeChanging = false;
                             if (isPillActive && activePillType === 'volume') {
                                 clearTimeout(pillTimer);
-                                // Beri jeda kecil sebelum menyembunyikan setelah slider dilepas
                                 pillTimer = setTimeout(() => {
-                                    // Cek kembali apakah volume masih tidak berubah sebelum menyembunyikan
                                     if (!isVolumeChanging) {
                                         hidePill();
                                     }
-                                }, 500); // Misalnya, sembunyikan 500ms setelah selesai menggeser
+                                }, 500);
                             }
                             break;
-                        // case untuk volume changing (untuk volume flyout) End
-
-                        // media player notification
                         case 'show-media-notification': {
-                            // LOG 9: Log spesifik untuk notifikasi media
                             console.log('[Desktop] Handling "show-media-notification". Title:', event.data.title, 'Album Art URL:', event.data.albumArt);
                             showNotification(event.data.title, event.data.artist, event.data.albumArt);
                             break;
                         }
-                        // NEW: Explorer Context Menu
                         case 'show-explorer-context-menu': {
                             const explorerFrameRect = fileExplorerFrame.getBoundingClientRect();
                             showExplorerContextMenu(data, explorerFrameRect);
                             break;
                         }
-
                         case 'test-toast-notification': {
                             const testIcon = `<svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                             showNotification(
@@ -2601,36 +2440,20 @@
                             );
                             break;
                         }
-
-                        // Music Player
                         case 'drag-music-frame': { const rect = musicPlayerFrame.getBoundingClientRect(); musicPlayerFrame.style.left = `${rect.left + dx}px`; musicPlayerFrame.style.top = `${rect.top + dy}px`; break; }
-                        case 'close-music-frame':
-                            closeApp('music');
-                            break;
-                        case 'minimize-music-frame':
-                            minimizeApp('music');
-                            break;
+                        case 'close-music-frame': closeApp('music'); break;
+                        case 'minimize-music-frame': minimizeApp('music'); break;
                         case 'bring-music-to-front': bringToFront('music'); break;
                         case 'visualizer-data': visualizerData = { data: data, bufferLength: bufferLength, isPaused: isPaused }; break;
-
-                        case 'show-volume-flyout': {
-                            showVolumeNotification(event.data.volume);
-                            break;
-                        }
-
-                        // Control Panel
+                        case 'show-volume-flyout': { showVolumeNotification(event.data.volume); break; }
                         case 'drag-cp-frame': { const rect = controlPanelFrame.getBoundingClientRect(); controlPanelFrame.style.left = `${rect.left + dx}px`; controlPanelFrame.style.top = `${rect.top + dy}px`; break; }
                         case 'close-cp-frame': closeApp('cp'); break;
                         case 'minimize-cp-frame': minimizeApp('cp'); break;
                         case 'bring-cp-to-front': bringToFront('cp'); break;
-
-                        // [KEPT] Handler untuk File Explorer
                         case 'drag-explorer-frame': { const rect = fileExplorerFrame.getBoundingClientRect(); fileExplorerFrame.style.left = `${rect.left + dx}px`; fileExplorerFrame.style.top = `${rect.top + dy}px`; break; }
                         case 'close-explorer-frame': closeApp('explorer'); break;
                         case 'minimize-explorer-frame': minimizeApp('explorer'); break;
                         case 'bring-explorer-to-front': bringToFront('explorer'); break;
-
-                        // Live2D Wallpaper
                         case 'drag-live2d-frame': { const rect = live2dWallpaperFrame.getBoundingClientRect(); live2dWallpaperFrame.style.left = `${rect.left + dx}px`; live2dWallpaperFrame.style.top = `${rect.top + dy}px`; break; }
                         case 'close-live2d-frame': closeApp('live2d'); break;
                         case 'minimize-live2d-frame': minimizeApp('live2d'); break;
@@ -2640,28 +2463,22 @@
                             wallpaperIframe.style.display = 'block';
                             clickInterceptor.style.display = 'block';
                             desktop.style.backgroundImage = 'none';
-                            document.querySelector('.desktop-image').style.display = 'none'; // Sembunyikan gambar statis
+                            document.querySelector('.desktop-image').style.display = 'none';
                             break;
                         case 'clear-live-wallpaper':
                             wallpaperIframe.src = 'about:blank';
                             wallpaperIframe.style.display = 'none';
                             clickInterceptor.style.display = 'none';
-                            document.querySelector('.desktop-image').style.display = 'block'; // Tampilkan lagi gambar statis
+                            document.querySelector('.desktop-image').style.display = 'block';
                             break;
-
-                        // Start Menu -> Desktop
                         case 'open-app-from-start-menu':
                             openApp(appName);
-                            // GANTI: Gunakan ID yang benar
                             startMenu.classList.remove('show');
                             break;
-
-                        // Control Panel -> Desktop (Broadcast/Settings)
                         case 'toggle-fancy-mode':
                             document.body.classList.toggle('fancy-mode', value);
                             musicPlayerFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
                             controlPanelFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
-                            // Panggil fungsi global di startmenu.js
                             if (typeof toggleFancyMode === 'function') {
                                 toggleFancyMode(value);
                             }
@@ -2677,52 +2494,41 @@
                             document.body.classList.toggle('dark', isDark);
                             musicPlayerFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
                             controlPanelFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
-                            // Panggil fungsi global di startmenu.js
                             if (typeof applyTheme === 'function') {
                                 applyTheme(isDark);
                             }
                             window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark } }));
                             break;
                         }
-                        // START wallpaper settings FIX
                         case 'change-bg-size':
-                            // Terapkan ke kedua mode (<img> dan background-div)
-                            // Map 'auto' ke 'none' untuk object-fit agar sesuai dengan ukuran asli
                             desktopImage.style.objectFit = value === 'auto' ? 'none' : value;
                             desktop.style.backgroundSize = value;
                             break;
                         case 'change-bg-repeat':
                             if (value === 'no-repeat') {
-                                // Beralih ke mode <img>
                                 desktopImage.style.display = 'block';
                                 desktop.style.backgroundImage = 'none';
                             } else {
-                                // Beralih ke mode background-image
                                 desktopImage.style.display = 'none';
                                 desktop.style.backgroundImage = `url('${desktopImage.src}')`;
                             }
-                            // Selalu atur properti repeat untuk state tracking
                             desktop.style.backgroundRepeat = value;
                             break;
                         case 'change-bg-position':
-                            // Terapkan ke kedua mode
                             desktopImage.style.objectPosition = value;
                             desktop.style.backgroundPosition = value;
                             break;
-                        // END wallpaper settings FIX
                         case 'change-taskbar-position':
                             taskbar.className = taskbar.className.replace(/taskbar-(bottom|top|left|right)/, `taskbar-${value}`);
                             applyTaskbarLayout(value);
-                            // GANTI: Menggunakan ID #start-menu
                             if (startMenu.classList.contains('show')) {
-                                positionStartMenu();
+                                // Logic moved to startmenu.js
                             }
                             break;
                         case 'change-taskbar-style':
                             applyTaskbarStyle(value);
-                            // GANTI: Menggunakan ID #start-menu
                             if (startMenu.classList.contains('show')) {
-                                positionStartMenu();
+                                // Logic moved to startmenu.js
                             }
                             break;
                         case 'toggle-taskbar-space-between':
@@ -2743,22 +2549,16 @@
                     applyTaskbarLayout(currentTaskbarPosition);
                     window.addEventListener('resize', () => {
                         setTimeout(positionVisualizer, 50);
-                        // GANTI: Menggunakan ID #start-menu
-                        if (startMenu.classList.contains('show')) {
-                            positionStartMenu();
-                        }
                     });
                     window.addEventListener('scroll', () => {
-                        // GANTI: Menggunakan ID #start-menu
                         if (startMenu.classList.contains('show')) {
-                            positionStartMenu();
+                            // This is handled by startmenu.js now
                         }
                     }, true);
 
                     setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 350);
                 });
 
-                // for notification center / quick settings
                 document.querySelectorAll('.quick-setting-btn').forEach(button => {
                     button.addEventListener('click', () => {
                         button.classList.toggle('active');
