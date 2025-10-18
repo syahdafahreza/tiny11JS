@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --window-bg: #f3f3f3;
+            --window-text: #000;
+            --window-border: #e0e0e0;
+            --control-hover-bg: #e6e6e6;
+            --control-close-hover-bg: #e81123;
+            --control-close-hover-text: white;
+            --sidebar-bg: #f9f9f9;
+            --main-bg: #ffffff;
+            --item-hover-bg: #eeeeee;
+            --item-selected-bg: #cce8ff;
+            --item-selected-border: #99d1ff;
+            --toolbar-bg: #f9f9f9;
+            --toolbar-separator: #e5e5e5;
+            --text-secondary: #666666;
+            --toast-bg: #323232;
+            --toast-text: #ffffff;
+            --modal-backdrop: rgba(0,0,0,0.4);
+
+            /* Variabel baru untuk efek Liquid Glass */
+            --c-glass: #f0f0f0;
+            --c-light: #ffffff;
+            --c-dark: #000000;
+            --glass-reflex-dark: 1;
+            --glass-reflex-light: 1;
+            --saturation: 150%;
+        }
+
+        body.dark {
+            --window-bg: #202020;
+            --window-text: #f0f0f0;
+            --window-border: #3a3a3a;
+            --control-hover-bg: #3c3c3c;
+            --sidebar-bg: #252525;
+            --main-bg: #1e1e1e;
+            --item-hover-bg: #2d2d2d;
+            --item-selected-bg: #004578;
+            --item-selected-border: #0078d4;
+            --toolbar-bg: #252525;
+            --toolbar-separator: #3a3a3a;
+            --text-secondary: #a0a0a0;
+            --toast-bg: #e0e0e0;
+            --toast-text: #121212;
+            --modal-backdrop: rgba(0,0,0,0.6);
+
+            /* Variabel baru untuk efek Liquid Glass - Mode Gelap */
+            --c-glass: #2b2b2b;
+            --glass-reflex-dark: 2;
+            --glass-reflex-light: 0.3;
+        }
+
+        html, body { 
+            margin: 0; padding: 0; background-color: transparent; 
+            font-family: var(--font-family); color: var(--window-text); 
+            user-select: none; font-size: 14px;
+            width: 100%; height: 100%;
+            overflow: hidden;
+        }
+
+        .app-window {
+            display: flex; flex-direction: column; 
+            width: 100vw; 
+            height: 100vh;
+            border: 1px solid var(--window-border);
+            border-radius: 8px;
+            background-color: var(--window-bg);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+        
+        body.fancy-mode .app-window {
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+        }
+        
+        .window-header { display: flex; justify-content: space-between; align-items: center; cursor: move; flex-shrink: 0; padding: 3px; }
+        .window-title-container { display: flex; align-items: center; gap: 6px; padding-left: 8px; }
+        h2 { font-weight: 400; font-size: 13px; }
+        .window-controls { display: flex; }
+        .window-control-btn { width: 45px; height: 29px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--window-text); }
+        .window-control-btn:hover { background-color: var(--control-hover-bg); }
+        .close-window-btn { font-size: 22px; font-weight: 300; padding-bottom: 4px; }
+        .close-window-btn:hover { background-color: var(--control-close-hover-bg); color: var(--control-close-hover-text); }
+        
+        .toolbar-container { background-color: var(--toolbar-bg); padding: 8px; border-bottom: 1px solid var(--toolbar-separator); }
+        .toolbar-row { display: flex; align-items: center; gap: 8px; }
+        .nav-buttons { display: flex; gap: 4px; }
+        .toolbar-btn { background: none; border: none; border-radius: 4px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .toolbar-btn:hover:not(:disabled) { background-color: var(--item-hover-bg); }
+        .toolbar-btn:disabled { color: #888; cursor: not-allowed; background-color: transparent; }
+        .toolbar-btn svg { width: 16px; height: 16px; }
+        .address-bar-container { flex-grow: 1; display: flex; align-items: center; border: 1px solid var(--window-border); border-radius: 4px; padding: 4px 8px; font-size: 14px; background-color: var(--main-bg); }
+        .breadcrumb-item { cursor: pointer; padding: 2px 4px; border-radius: 2px; }
+        .breadcrumb-item:hover { background-color: var(--item-hover-bg); }
+        .breadcrumb-separator { margin: 0 4px; color: var(--text-secondary); }
+        .search-bar { border: 1px solid var(--window-border); border-radius: 4px; padding: 4px 8px; font-size: 14px; background-color: var(--main-bg); color: var(--window-text); width: 200px; }
+        
+        .window-content-area { flex-grow: 1; display: flex; overflow: hidden; }
+        .sidebar { width: 220px; background-color: var(--sidebar-bg); padding: 8px; flex-shrink: 0; overflow-y: auto; }
+        .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .sidebar-item:hover { background-color: var(--item-hover-bg); }
+        .sidebar-item.active { background-color: var(--item-selected-bg); font-weight: 600; }
+        .sidebar-item img { width: 18px; height: 18px; }
+
+        .main-panel { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--main-bg); }
+        .file-list-container { flex-grow: 1; padding: 8px; overflow-y: auto; position: relative; transition: background-color 0.2s; }
+        .file-list-container.drag-over-area { outline: 2px dashed var(--item-selected-border); outline-offset: -8px; background-color: color-mix(in srgb, var(--item-selected-bg) 50%, transparent); }
+        .content-section-header { font-weight: 600; font-size: 16px; margin-bottom: 12px; padding: 0 8px; }
+        
+        /* View Modes */
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 8px; }
+        .file-list { display: flex; flex-direction: column; gap: 2px; }
+        .file-details-header { display: flex; padding: 8px 12px; border-bottom: 1px solid var(--toolbar-separator); font-weight: 600; color: var(--text-secondary); font-size: 12px; }
+        .file-details-header .col { cursor: pointer; }
+        .col-name { flex: 1; }
+        .col-date { width: 150px; }
+        .col-type { width: 120px; }
+        .col-size { width: 100px; text-align: right; }
+        .sort-arrow { display: inline-block; transition: transform 0.2s; margin-left: 4px; }
+        .sort-arrow.asc { transform: rotate(180deg); }
+
+        .file-item { display: flex; align-items: center; text-align: left; padding: 8px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; position: relative; transition: opacity 0.2s; flex-direction: column; width: 100px; }
+        .file-item:hover { background-color: var(--item-hover-bg); }
+        .file-item.selected { background-color: var(--item-selected-bg); border-color: var(--item-selected-border); }
+        .file-item.cut { opacity: 0.5; }
+        .file-item img { 
+            width: 48px; 
+            height: 48px; 
+            margin-bottom: 8px; 
+            object-fit: contain; /* Prevent icon stretching */
+        }
+        .file-item .file-item-thumbnail {
+            object-fit: cover; /* Make thumbnail fill space */
+            border: 1px solid var(--window-border);
+            border-radius: 3px;
+        }
+        .file-item-details { display: flex; flex-direction: column; overflow: hidden; width: 100%; text-align: center; }
+        .file-item-name { font-size: 12px; white-space: normal; overflow-wrap: break-word; line-height: 1.2; }
+        
+        .file-list .file-item, .details .file-item { flex-direction: row; width: 100%; padding: 4px 12px; }
+        .file-list .file-item img, .details .file-item img { 
+            width: 20px; 
+            height: 20px; 
+            margin-right: 12px; 
+            margin-bottom: 0; 
+            object-fit: contain; /* Prevent icon stretching */
+        }
+        .file-list .file-item .file-item-thumbnail, .details .file-item .file-item-thumbnail {
+             object-fit: cover;
+             border: none;
+        }
+        .file-list .file-item-details, .details .file-item-details { text-align: left; }
+        .file-list .file-item-name, .details .file-item-name { font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .details .file-item-details { display: flex; flex: 1; align-items: center; }
+        .details .file-item-name { flex: 1; }
+        .details .file-item-subtitle { display: none; }
+        .item-detail-col { font-size: 13px; color: var(--text-secondary); }
+
+        .rename-input { position: absolute; left: 8px; right: 8px; bottom: 8px; border: 1px solid var(--item-selected-border); outline: none; padding: 2px 4px; font-size: 12px; background-color: var(--main-bg); color: var(--window-text); text-align: center; }
+        .list .rename-input, .details .rename-input { position: static; width: 100%; text-align: left; }
+        
+        /* Modals and Toasts */
+        .modal-backdrop { display: none; position: fixed; inset: 0; background-color: var(--modal-backdrop); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--window-bg); color: var(--window-text); padding: 20px; border-radius: 8px; min-width: 350px; max-width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
+        .toast { background-color: var(--toast-bg); color: var(--toast-text); padding: 10px 20px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); font-size: 14px; opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(20px); }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <!-- Filter SVG for Liquid Glass effect -->
+    <div style="position: absolute; width: 0; height: 0; z-index: -1;">
+        <svg><filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox"><feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/><feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" /><feDisplacementMap in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter></svg>
+    </div>
+
+    <div class="app-window">
+        <!-- HEADER -->
+        <div id="explorer-window-header" class="window-header">
+             <div class="window-title-container">
+                 <img src="img/explorer.png" alt="Explorer Icon" class="h-4 w-4">
+                 <h2 id="window-title-text">Home</h2>
+             </div>
+             <div class="window-controls">
+                 <button id="minimize-btn" class="window-control-btn" title="Minimize"><svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1H10V2H0V1Z" fill="currentColor"/></svg></button>
+                 <button class="window-control-btn" title="Maximize"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg></button>
+                 <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
+             </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar-container">
+            <div class="toolbar-row">
+                <div class="nav-buttons">
+                    <button id="back-btn" class="toolbar-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg></button>
+                    <button id="forward-btn" class="toolbar-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg></button>
+                    <button id="up-btn" class="toolbar-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.75a.75.75 0 01.75.75v10.5a.75.75 0 01-1.5 0V4.5a.75.75 0 01.75-.75z" /><path d="M10 3.75a.75.75 0 01.75.75v10.5a.75.75 0 01-1.5 0V4.5a.75.75 0 01.75-.75z" transform="rotate(90 10 10)"/><path d="M10 3.75L15 8.75M10 3.75L5 8.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                </div>
+                <div id="address-bar" class="address-bar-container"></div>
+                <input type="text" id="search-bar" class="search-bar" placeholder="Search Home">
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="window-content-area">
+            <div class="sidebar">
+                <div class="sidebar-item active" data-path="C:\Home"><img src="https://img.icons8.com/fluent-systems-filled/48/home.png"/> <span>Home</span></div>
+                <div class="sidebar-item" data-path="C:\Desktop"><img src="https://img.icons8.com/fluency/48/desktop.png"/> <span>Desktop</span></div>
+                <div class="sidebar-item" data-path="C:\Documents"><img src="https://img.icons8.com/fluency/48/document.png"/> <span>Documents</span></div>
+                <div class="sidebar-item" data-path="C:\Downloads"><img src="https://img.icons8.com/fluency/48/download.png"/> <span>Downloads</span></div>
+                <div class="sidebar-item" data-path="C:\Music"><img src="https://img.icons8.com/fluency/48/music.png"/> <span>Music</span></div>
+                <div class="sidebar-item" data-path="C:\Pictures"><img src="https://img.icons8.com/fluency/48/stack-of-photos.png"/> <span>Pictures</span></div>
+                <div class="sidebar-item" data-path="C:\Videos"><img src="https://img.icons8.com/fluency/48/video.png"/> <span>Videos</span></div>
+            </div>
+            <div id="file-list-container" class="file-list-container">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- NOTE: Context Menus have been moved to the parent document (index.html) -->
+    
+    <!-- Modals -->
+    <div id="properties-modal" class="modal-backdrop"><div class="modal-content"><h3 id="properties-title" class="modal-header">Properties</h3><div id="properties-content" class="modal-body" style="display: grid; grid-template-columns: auto 1fr; gap: 8px 15px; align-items: center;"></div><div class="modal-footer"><button id="properties-close-btn" class="modal-btn primary">OK</button></div></div></div>
+    <div id="confirm-modal" class="modal-backdrop"><div class="modal-content"><h3 id="confirm-title" class="modal-header">Confirm Action</h3><p id="confirm-message" class="modal-body">Are you sure?</p><div class="modal-footer"><button id="confirm-cancel-btn" class="modal-btn">Cancel</button><button id="confirm-ok-btn" class="modal-btn primary">OK</button></div></div></div>
+    
+    <div id="toast-container"></div>
+
+<script>
+// --- VIRTUAL FILE SYSTEM ---
+class VirtualFileSystem {
+    constructor() {
+        this.fs = this.load() || this.getDefaultFS();
+        this.save();
+    }
+    
+    _generateItemData(type = 'directory', extraData = {}) {
+        const date = new Date().toISOString();
+        const size = type === 'directory' ? 0 : Math.floor(Math.random() * 500000);
+        return { type, dateModified: date, size, ...extraData };
+    }
+
+    getDefaultFS() {
+        return { 'C:': { ...this._generateItemData('drive'), children: { 
+            'Home': { ...this._generateItemData(), children: {} }, 
+            'Desktop': { ...this._generateItemData(), children: { 'MyResume.docx': this._generateItemData('file') } }, 
+            'Documents': { ...this._generateItemData(), children: { 'Work': this._generateItemData(), 'Personal': this._generateItemData() } }, 
+            'Downloads': { ...this._generateItemData(), children: {} }, 
+            'Music': { ...this._generateItemData(), children: {} }, 
+            'Pictures': { ...this._generateItemData(), children: {
+                'sunset.jpg': this._generateItemData('file', { thumbnail: 'https://placehold.co/128x128/orange/white?text=Sunset' }),
+                'mountain.png': this._generateItemData('file', { thumbnail: 'https://placehold.co/128x128/blue/white?text=Mountain' }),
+                'forest_walk.gif': this._generateItemData('file', { thumbnail: 'https://placehold.co/128x128/green/white?text=Forest' })
+            }}, 
+            'Videos': { ...this._generateItemData(), children: {} },
+        }}};
+    }
+
+    load = () => { try { return JSON.parse(localStorage.getItem('virtualFS')); } catch (e) { return null; } }
+    save = () => { try { localStorage.setItem('virtualFS', JSON.stringify(this.fs)); } catch (e) { console.error("Failed to save VFS", e); } }
+    
+    _resolvePath(path) {
+        const parts = path.split('\\').filter(p => p);
+        if (parts.length === 0) return null;
+        let current = this.fs[parts.shift()];
+        if (!current) return null;
+        for (const part of parts) {
+            if (current?.children?.[part]) { current = current.children[part]; } else { return null; }
+        }
+        return current;
+    }
+
+    getItem = (path, name) => this._resolvePath(path)?.children?.[name] || null;
+    list = (path) => this._resolvePath(path)?.children || null;
+    
+    createItem(path, name, type = 'directory', data = null) {
+        const parentNode = this._resolvePath(path);
+        if (parentNode?.children && !parentNode.children[name]) {
+            parentNode.children[name] = data || this._generateItemData(type);
+            this.save();
+            return { success: true };
+        }
+        return { success: false, error: 'Item already exists or path is invalid.' };
+    }
+    
+    deleteItem(path, name) {
+        const parentNode = this._resolvePath(path);
+        const itemData = this.getItem(path, name);
+        if (parentNode?.children?.[name] && itemData) {
+            delete parentNode.children[name];
+            this.save();
+            return { success: true, deletedData: itemData };
+        }
+        return { success: false };
+    }
+
+    renameItem(path, oldName, newName) {
+        const parentNode = this._resolvePath(path);
+        if (parentNode?.children?.[newName]) return { success: false, error: 'An item with that name already exists.' };
+        if (parentNode?.children?.[oldName]) {
+            parentNode.children[newName] = parentNode.children[oldName];
+            delete parentNode.children[oldName];
+            this.save();
+            return { success: true };
+        }
+        return { success: false, error: 'Original item not found.' };
+    }
+}
+
+// --- GLOBAL STATE & VARIABLES ---
+const vfs = new VirtualFileSystem();
+let currentPath = "C:\\Home";
+let historyStack = [currentPath];
+let historyIndex = 0;
+let clipboard = null;
+let undoStack = [];
+let currentView = 'grid';
+let currentSort = { by: 'name', asc: true };
+
+// --- DOM ELEMENTS ---
+const header = document.getElementById('explorer-window-header'), backBtn = document.getElementById('back-btn'),
+      forwardBtn = document.getElementById('forward-btn'), upBtn = document.getElementById('up-btn'),
+      addressBar = document.getElementById('address-bar'), windowTitle = document.getElementById('window-title-text'),
+      sidebarItems = document.querySelectorAll('.sidebar-item'), fileListContainer = document.getElementById('file-list-container');
+
+const ICONS = { 
+    directory: 'https://img.icons8.com/fluency/96/folder-invoices.png', 
+    drive: 'https://img.icons8.com/fluency/96/data-drive.png', 
+    file: 'https://img.icons8.com/fluency/96/document.png',
+    'docx': 'https://img.icons8.com/fluency/96/microsoft-word-2019.png',
+    'pdf': 'https://img.icons8.com/fluency/96/adobe-acrobat-reader.png',
+    'txt': 'https://img.icons8.com/fluency/96/txt.png',
+};
+
+// --- CORE FUNCTIONS ---
+function render() {
+    renderBreadcrumbs();
+    renderContent();
+    updateUIState();
+}
+
+function renderBreadcrumbs() {
+    addressBar.innerHTML = '';
+    const parts = currentPath.split('\\').filter(p => p);
+    let pathSoFar = '';
+    parts.forEach((part, index) => {
+        pathSoFar += (index > 0 ? '\\' : '') + part;
+        if (index === 0 && !pathSoFar.includes(':')) pathSoFar += ':';
+        const finalPath = pathSoFar;
+        const itemEl = document.createElement('span');
+        itemEl.className = 'breadcrumb-item';
+        itemEl.textContent = part;
+        itemEl.onclick = () => navigateTo(finalPath);
+        addressBar.appendChild(itemEl);
+        if (index < parts.length - 1) {
+            const separator = document.createElement('span');
+            separator.className = 'breadcrumb-separator';
+            separator.innerHTML = '&gt;';
+            addressBar.appendChild(separator);
+        }
+    });
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
+}
+
+function createItemElement(name, data) {
+    const { type, dateModified, size, thumbnail } = data;
+    const itemEl = document.createElement('div');
+    itemEl.className = 'file-item';
+    if (clipboard?.action === 'cut' && clipboard.items.some(item => item.name === name && item.sourcePath === currentPath)) {
+        itemEl.classList.add('cut');
+    }
+    itemEl.dataset.name = name;
+    itemEl.dataset.type = type;
+    
+    let detailsHTML = `<div class="file-item-details"><span class="file-item-name">${name}</span></div>`;
+    if (currentView === 'details') {
+        const date = new Date(dateModified);
+        const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        detailsHTML = `<div class="file-item-details">
+            <span class="file-item-name col-name">${name}</span>
+            <span class="item-detail-col col-date">${formattedDate}</span>
+            <span class="item-detail-col col-type">${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+            <span class="item-detail-col col-size">${type !== 'directory' ? formatBytes(size) : ''}</span>
+        </div>`;
+    }
+    
+    const getIconSrc = () => {
+        if (type !== 'file') return ICONS[type] || ICONS.file;
+        const extension = name.split('.').pop().toLowerCase();
+        return ICONS[extension] || ICONS.file;
+    };
+    
+    const iconSrc = getIconSrc();
+    const iconHTML = thumbnail 
+        ? `<img src="${thumbnail}" alt="${name}" class="file-item-thumbnail"/>`
+        : `<img src="${iconSrc}" alt="${name}"/>`;
+
+    itemEl.innerHTML = `${iconHTML}${detailsHTML}`;
+    return itemEl;
+}
+
+function renderContent() {
+    fileListContainer.innerHTML = '';
+    
+    if (currentPath === 'C:\\Home') {
+        const quickAccess = { 'Desktop': 'C:\\Desktop', 'Documents': 'C:\\Documents', 'Downloads': 'C:\\Downloads', 'Pictures': 'C:\\Pictures', 'Music': 'C:\\Music', 'Videos': 'C:\\Videos' };
+        fileListContainer.innerHTML = '<h2 class="content-section-header">Quick access</h2>';
+        const grid = document.createElement('div');
+        grid.className = 'file-grid';
+        for (const name in quickAccess) {
+            grid.appendChild(createItemElement(name, { type: 'directory', path: quickAccess[name] }));
+        }
+        fileListContainer.appendChild(grid);
+        return;
+    }
+    
+    const items = vfs.list(currentPath);
+    if (!items) return;
+
+    let itemsArray = Object.entries(items).map(([name, data]) => ({ name, ...data }));
+    
+    // Sorting logic
+    itemsArray.sort((a, b) => {
+        if (a.type === 'directory' && b.type !== 'directory') return -1;
+        if (a.type !== 'directory' && b.type === 'directory') return 1;
+
+        let valA, valB;
+        switch(currentSort.by) {
+            case 'size': valA = a.size || 0; valB = b.size || 0; break;
+            case 'dateModified': valA = new Date(a.dateModified); valB = new Date(b.dateModified); break;
+            default: valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); break;
+        }
+
+        if (valA < valB) return currentSort.asc ? -1 : 1;
+        if (valA > valB) return currentSort.asc ? 1 : -1;
+        return 0;
+    });
+
+    const container = document.createElement('div');
+    container.className = `${currentView}`;
+    fileListContainer.appendChild(container);
+    
+    if (currentView === 'details') {
+        const headerEl = document.createElement('div');
+        headerEl.className = 'file-details-header';
+        headerEl.innerHTML = `<div class="col col-name" data-sort-header="name">Name</div><div class="col col-date" data-sort-header="dateModified">Date modified</div><div class="col col-type" data-sort-header="type">Type</div><div class="col col-size" data-sort-header="size">Size</div>`;
+        container.appendChild(headerEl);
+        
+        // Add sort arrows
+        const currentHeader = headerEl.querySelector(`[data-sort-header="${currentSort.by}"]`);
+        if(currentHeader) {
+            const arrow = document.createElement('span');
+            arrow.className = `sort-arrow ${currentSort.asc ? '' : 'asc'}`;
+            arrow.innerHTML = '&#9660;';
+            currentHeader.appendChild(arrow);
+        }
+    }
+
+    itemsArray.forEach(item => container.appendChild(createItemElement(item.name, item)));
+}
+
+
+function navigateTo(path) {
+    if (path === currentPath) return;
+    currentPath = path;
+    if (historyIndex < historyStack.length - 1) historyStack.splice(historyIndex + 1);
+    historyStack.push(currentPath);
+    historyIndex = historyStack.length - 1;
+    render();
+}
+
+function updateUIState() {
+    backBtn.disabled = historyIndex <= 0;
+    forwardBtn.disabled = historyIndex >= historyStack.length - 1;
+    upBtn.disabled = currentPath.split('\\').length <= 1 || currentPath === 'C:\\Home';
+    sidebarItems.forEach(item => item.classList.toggle('active', item.dataset.path === currentPath));
+    const pathParts = currentPath.split('\\');
+    const currentFolderName = pathParts[pathParts.length - 1] || 'File Explorer';
+    windowTitle.textContent = currentFolderName;
+    document.getElementById('search-bar').placeholder = `Search ${currentFolderName}`;
+}
+
+// --- CONTEXT MENU, ACTIONS & UNDO ---
+function showContextMenu(menuType, e) {
+    // Gather state for menu items
+    const selectedItems = getSelectedItems();
+    const menuData = {
+        type: menuType, // 'general' or 'item'
+        states: {
+            pasteDisabled: !clipboard || currentPath === 'C:\\Home',
+            undoDisabled: undoStack.length === 0,
+            itemActionsDisabled: selectedItems.length === 0,
+            renameDisabled: selectedItems.length !== 1,
+        },
+        clickPosition: {
+            x: e.clientX,
+            y: e.clientY
+        }
+    };
+    // Send this data to the parent window
+    parent.postMessage({ action: 'show-explorer-context-menu', data: menuData }, '*');
+}
+
+
+function pushUndoAction(action) {
+    undoStack.push(action);
+    if(undoStack.length > 20) undoStack.shift(); // Limit undo history
+}
+
+function handleUndo() {
+    if (undoStack.length === 0) return;
+    const lastAction = undoStack.pop();
+    switch (lastAction.action) {
+        case 'create': lastAction.items.forEach(item => vfs.createItem(item.path, item.name, item.data.type, item.data)); break;
+        case 'delete': lastAction.items.forEach(item => vfs.deleteItem(item.path, item.name)); break;
+        case 'rename': vfs.renameItem(lastAction.path, lastAction.newName, lastAction.oldName); break;
+        case 'paste': lastAction.items.forEach(item => vfs.deleteItem(item.path, item.name)); break;
+    }
+    showToast(`Undo: ${lastAction.action}`);
+    renderContent();
+}
+
+function createNewItem(type) {
+    if (currentPath === 'C:\\Home') return;
+    const baseName = type === 'directory' ? 'New Folder' : 'New Text Document.txt';
+    let finalName = baseName, counter = 1, existingItems = vfs.list(currentPath);
+    while (existingItems[finalName]) {
+        const parts = baseName.split('.');
+        const ext = parts.length > 1 ? '.' + parts.pop() : '';
+        finalName = `${parts.join('.')} (${counter++})${ext}`;
+    }
+    const itemData = vfs._generateItemData(type);
+    const result = vfs.createItem(currentPath, finalName, type, itemData);
+    if(result.success) {
+        pushUndoAction({action: 'delete', items: [{path: currentPath, name: finalName}]});
+        renderContent();
+        const newItemEl = Array.from(fileListContainer.querySelectorAll('.file-item')).find(el => el.dataset.name === finalName);
+        if (newItemEl) {
+            deselectAll();
+            newItemEl.classList.add('selected');
+            startRename(newItemEl);
+        }
+    }
+}
+
+function startRename(itemElement) {
+    const nameHolder = itemElement.querySelector('.file-item-name');
+    const oldName = nameHolder.textContent;
+    nameHolder.style.display = 'none';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'rename-input';
+    input.value = oldName;
+
+    if(currentView === 'grid') {
+        itemElement.querySelector('.file-item-details').appendChild(input);
+    } else {
+        nameHolder.parentElement.insertBefore(input, nameHolder);
+    }
+    
+    input.focus();
+    input.select();
+    
+    const finishRename = () => {
+        const newName = input.value.trim();
+        if (newName && newName !== oldName) {
+            const result = vfs.renameItem(currentPath, oldName, newName);
+            if(!result.success) showToast(result.error, 'error');
+            else pushUndoAction({action: 'rename', path: currentPath, oldName, newName});
+        }
+        renderContent();
+    };
+    input.addEventListener('blur', finishRename);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); if (e.key === 'Escape') { input.value = oldName; input.blur(); } });
+}
+
+function getSelectedItems() { return Array.from(document.querySelectorAll('.file-item.selected')); }
+function deselectAll() { getSelectedItems().forEach(el => el.classList.remove('selected')); }
+function handleCopy() {
+    const selected = getSelectedItems();
+    if (selected.length === 0) return;
+    clipboard = { action: 'copy', items: selected.map(item => ({ name: item.dataset.name, sourcePath: item.dataset.path || currentPath })) };
+    showToast(`${selected.length} item(s) copied.`);
+    renderContent(); 
+}
+function handleCut() {
+    const selected = getSelectedItems();
+    if (selected.length === 0) return;
+    clipboard = { action: 'cut', items: selected.map(item => ({ name: item.dataset.name, sourcePath: item.dataset.path || currentPath })) };
+    showToast(`${selected.length} item(s) cut.`);
+    renderContent(); 
+}
+function handlePaste() {
+    if (!clipboard || currentPath === 'C:\\Home') return;
+    let pastedItemsForUndo = [];
+    clipboard.items.forEach(itemToPaste => {
+        const sourceItemData = vfs.getItem(itemToPaste.sourcePath, itemToPaste.name);
+        if (!sourceItemData) return;
+        const sourceFullPath = `${itemToPaste.sourcePath}\\${itemToPaste.name}`;
+        if (sourceItemData.type === 'directory' && currentPath.startsWith(sourceFullPath)) {
+            showToast(`Cannot paste '${itemToPaste.name}' into a subfolder of itself.`, 'error');
+            return;
+        }
+
+        let finalName = itemToPaste.name;
+        if (itemToPaste.sourcePath === currentPath && clipboard.action === 'cut') return;
+        
+        let counter = 1;
+        const destChildren = vfs.list(currentPath);
+        const getNewName = (base, ext) => {
+             if (itemToPaste.sourcePath === currentPath && clipboard.action === 'copy') {
+                let copyName = `${base} - Copy${ext}`;
+                while(destChildren[copyName]) copyName = `${base} - Copy (${counter++})${ext}`;
+                return copyName;
+             }
+             let newName = `${base}${ext}`;
+             while (destChildren[newName]) newName = `${base} (${counter++})${ext}`;
+             return newName;
+        };
+
+        if (destChildren[finalName] || (itemToPaste.sourcePath === currentPath && clipboard.action === 'copy')) {
+            const parts = itemToPaste.name.split('.');
+            const ext = parts.length > 1 ? '.' + parts.pop() : '';
+            const baseName = parts.join('.');
+            finalName = getNewName(baseName, ext);
+        }
+
+        const result = vfs.createItem(currentPath, finalName, sourceItemData.type, JSON.parse(JSON.stringify(sourceItemData)));
+        if (result.success) {
+            pastedItemsForUndo.push({ path: currentPath, name: finalName });
+            if (clipboard.action === 'cut') vfs.deleteItem(itemToPaste.sourcePath, itemToPaste.name);
+        }
+    });
+
+    if (pastedItemsForUndo.length > 0) {
+        pushUndoAction({ action: 'paste', items: pastedItemsForUndo });
+        showToast(`${pastedItemsForUndo.length} item(s) pasted.`);
+    }
+    if (clipboard.action === 'cut') clipboard = null;
+    vfs.save();
+    render();
+}
+function handleDelete() {
+    const selected = getSelectedItems();
+    if (selected.length === 0) return;
+    const message = `Are you sure you want to permanently delete these ${selected.length} item(s)?`;
+    showConfirmModal("Delete Item(s)", message, () => {
+        let deletedItemsForUndo = [];
+        selected.forEach(item => {
+            const result = vfs.deleteItem(currentPath, item.dataset.name);
+            if (result.success) deletedItemsForUndo.push({ path: currentPath, name: item.dataset.name, data: result.deletedData });
+        });
+        if (deletedItemsForUndo.length > 0) {
+            pushUndoAction({ action: 'create', items: deletedItemsForUndo });
+            showToast(`${deletedItemsForUndo.length} item(s) deleted.`);
+        }
+        renderContent();
+    });
+}
+function showProperties() {
+    const modal = document.getElementById('properties-modal'), titleEl = document.getElementById('properties-title'),
+          contentEl = document.getElementById('properties-content'), selected = getSelectedItems();
+    let contentHTML = '';
+    if (selected.length === 1) {
+        const item = selected[0], name = item.dataset.name, type = item.dataset.type;
+        const itemData = vfs.getItem(currentPath, name);
+        titleEl.textContent = `Properties: ${name}`;
+        contentHTML = `<span>Name:</span><span>${name}</span><span>Type:</span><span>${type}</span><span>Location:</span><span style="word-break: break-all;">${currentPath}</span>`;
+        if(itemData) contentHTML += `<span>Size:</span><span>${formatBytes(itemData.size)}</span><span>Modified:</span><span>${new Date(itemData.dateModified).toLocaleString()}</span>`;
+    } else {
+        const dirName = currentPath.split('\\').pop(), items = vfs.list(currentPath) || {};
+        const itemCount = Object.keys(items).length, folderCount = Object.values(items).filter(i => i.type === 'directory').length;
+        titleEl.textContent = `Properties: ${dirName}`;
+        contentHTML = `<span>Name:</span><span>${dirName}</span><span>Type:</span><span>File Folder</span><hr style="grid-column: 1 / -1; border: none; border-top: 1px solid var(--toolbar-separator); margin: 5px 0;" /><span>Contains:</span><span>${itemCount - folderCount} Files, ${folderCount} Folders</span>`;
+    }
+    contentEl.innerHTML = contentHTML;
+    modal.style.display = 'flex';
+}
+async function handleDroppedFiles(files) {
+    if (currentPath === 'C:\\Home') {
+        showToast("Cannot add files here. Please select a specific folder.", "error");
+        return;
+    }
+
+    const filePromises = Array.from(files).map(file => {
+        return new Promise((resolve) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const itemData = vfs._generateItemData('file', { size: file.size, thumbnail: e.target.result });
+                    const success = vfs.createItem(currentPath, file.name, 'file', itemData).success;
+                    resolve(success);
+                };
+                reader.onerror = () => resolve(false);
+                reader.readAsDataURL(file);
+            } else {
+                const itemData = vfs._generateItemData('file', { size: file.size });
+                const success = vfs.createItem(currentPath, file.name, 'file', itemData).success;
+                resolve(success);
+            }
+        });
+    });
+
+    const results = await Promise.all(filePromises);
+    const filesAdded = results.filter(Boolean).length;
+
+    if (filesAdded > 0) {
+        showToast(`${filesAdded} file(s) added.`);
+        renderContent();
+    }
+}
+
+
+// --- MODALS AND TOASTS ---
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.getElementById('toast-container').appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => toast.remove());
+    }, 3000);
+}
+
+function showConfirmModal(title, message, onConfirm) {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    modal.style.display = 'flex';
+    const okBtn = document.getElementById('confirm-ok-btn'), cancelBtn = document.getElementById('confirm-cancel-btn');
+    const close = () => { modal.style.display = 'none'; okBtn.replaceWith(okBtn.cloneNode(true)); };
+    okBtn.onclick = () => { onConfirm(); close(); };
+    cancelBtn.onclick = close;
+    modal.onclick = e => { if (e.target === modal) close(); };
+}
+
+// --- INITIALIZATION & EVENT LISTENERS ---
+function initialize() {
+    // Window controls
+    let isDragging = false;
+    header.addEventListener('mousedown', (e) => { if (!e.target.closest('.window-control-btn')) { isDragging = true; parent.postMessage({ action: 'bring-explorer-to-front' }, '*'); e.preventDefault(); } });
+    window.addEventListener('mousemove', (e) => { if (isDragging) parent.postMessage({ action: 'drag-explorer-frame', dx: e.movementX, dy: e.movementY }, '*'); });
+    window.addEventListener('mouseup', () => isDragging = false);
+    document.getElementById('close-btn')?.addEventListener('click', () => parent.postMessage({ action: 'close-explorer-frame' }, '*'));
+    document.getElementById('minimize-btn')?.addEventListener('click', () => parent.postMessage({ action: 'minimize-explorer-frame' }, '*'));
+    
+    // Navigation
+    backBtn.addEventListener('click', () => { if (historyIndex > 0) { historyIndex--; currentPath = historyStack[historyIndex]; render(); } });
+    forwardBtn.addEventListener('click', () => { if (historyIndex < historyStack.length - 1) { historyIndex++; currentPath = historyStack[historyIndex]; render(); } });
+    upBtn.addEventListener('click', () => { if (!upBtn.disabled) { const parts = currentPath.split('\\'); parts.pop(); navigateTo(parts.join('\\') || 'C:\\Home'); } });
+    sidebarItems.forEach(item => item.addEventListener('click', () => navigateTo(item.dataset.path)));
+    
+    // Main content area interactions
+    fileListContainer.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); const targetItem = e.target.closest('.file-item'); if (targetItem) { if (!targetItem.classList.contains('selected')) { deselectAll(); targetItem.classList.add('selected'); } showContextMenu('item', e); } else { deselectAll(); showContextMenu('general', e); } });
+    fileListContainer.addEventListener('click', e => { if (!!fileListContainer.querySelector('.rename-input') && !e.target.classList.contains('rename-input')) { fileListContainer.querySelector('.rename-input').blur(); } const targetItem = e.target.closest('.file-item'); if (!e.ctrlKey && !e.shiftKey) deselectAll(); if (targetItem) targetItem.classList.toggle('selected'); });
+    fileListContainer.addEventListener('dblclick', e => { const itemEl = e.target.closest('.file-item'); if (itemEl) { const {name, type} = itemEl.dataset; if (type === 'directory' || type === 'drive') navigateTo(itemEl.dataset.path || `${currentPath}\\${name}`); } });
+    
+    // Global click listener
+    document.addEventListener('click', (e) => {
+        const headerCol = e.target.closest('[data-sort-header]');
+        if(headerCol) {
+            const sortBy = headerCol.dataset.sortHeader;
+            if (currentSort.by === sortBy) { currentSort.asc = !currentSort.asc; } 
+            else { currentSort.by = sortBy; currentSort.asc = true; }
+            renderContent();
+        }
+    });
+
+    // Drag & Drop
+    fileListContainer.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); fileListContainer.classList.add('drag-over-area'); });
+    fileListContainer.addEventListener('dragleave', e => { e.preventDefault(); e.stopPropagation(); fileListContainer.classList.remove('drag-over-area'); });
+    fileListContainer.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); fileListContainer.classList.remove('drag-over-area'); handleDroppedFiles(e.dataTransfer.files); });
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') { if(e.key === 'Escape') e.target.blur(); return; } if (e.ctrlKey && e.key.toLowerCase() === 'c') { e.preventDefault(); handleCopy(); } else if (e.ctrlKey && e.key.toLowerCase() === 'x') { e.preventDefault(); handleCut(); } else if (e.ctrlKey && e.key.toLowerCase() === 'v') { e.preventDefault(); handlePaste(); } else if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); handleUndo(); } else if (e.key === 'F2') { const s = getSelectedItems(); if (s.length === 1) { e.preventDefault(); startRename(s[0]); } } else if (e.key === 'Delete') { e.preventDefault(); handleDelete(); } else if (e.key === 'F5') { e.preventDefault(); render(); } });
+    
+    // Modal controls
+    document.getElementById('properties-close-btn').addEventListener('click', () => { document.getElementById('properties-modal').style.display = 'none'; });
+    document.getElementById('properties-modal').addEventListener('click', e => { if (e.target.id === 'properties-modal') document.getElementById('properties-modal').style.display = 'none'; });
+
+    // Communication with parent
+    window.addEventListener('message', (event) => {
+        const { action, isDark, value } = event.data;
+        switch (action) {
+            case 'theme-change':
+                document.body.classList.toggle('dark', isDark);
+                break;
+            case 'toggle-fancy-mode':
+                document.body.classList.toggle('fancy-mode', value);
+                break;
+            case 'execute-explorer-command':
+                // Handle commands from parent's context menu
+                switch(value) {
+                    case 'refresh': render(); break;
+                    case 'undo': handleUndo(); break;
+                    case 'paste': handlePaste(); break;
+                    case 'new-folder': createNewItem('directory'); break;
+                    case 'new-file': createNewItem('file'); break;
+                    case 'properties-general': deselectAll(); showProperties(); break;
+                    case 'open': 
+                        const selected = getSelectedItems();
+                        if (selected.length > 0) selected[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+                        break;
+                    case 'cut': handleCut(); break;
+                    case 'copy': handleCopy(); break;
+                    case 'delete': handleDelete(); break;
+                    case 'rename': 
+                        const selectedToRename = getSelectedItems();
+                        if (selectedToRename.length === 1) startRename(selectedToRename[0]);
+                        break;
+                    case 'properties-item': showProperties(); break;
+                    case 'view-grid': currentView = 'grid'; renderContent(); break;
+                    case 'view-list': currentView = 'list'; renderContent(); break;
+                    case 'view-details': currentView = 'details'; renderContent(); break;
+                    case 'sort-name': currentSort.by = 'name'; currentSort.asc = !currentSort.asc; renderContent(); break;
+                    case 'sort-dateModified': currentSort.by = 'dateModified'; currentSort.asc = !currentSort.asc; renderContent(); break;
+                    case 'sort-type': currentSort.by = 'type'; currentSort.asc = !currentSort.asc; renderContent(); break;
+                    case 'sort-size': currentSort.by = 'size'; currentSort.asc = !currentSort.asc; renderContent(); break;
+                }
+                break;
+        }
+    });
+
+    render();
+}
+
+initialize();
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,14 +43,15 @@
             --control-hover-bg: #3c3c3c;
             --progress-bar-bg: #4b5563;
             --controls-bg: rgba(255, 255, 255, 0.1);
-            
+
             /* Variabel Liquid Glass - Mode Gelap */
             --c-glass: #2b2b2b;
             --glass-reflex-dark: 2;
             --glass-reflex-light: 0.3;
         }
 
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             background-color: transparent;
@@ -58,23 +60,26 @@
             overflow: hidden;
             user-select: none;
         }
-        
+
         /* --- Window Style --- */
         .app-window {
-            display: flex; flex-direction: column; width: 100vw; height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
             border: 1px solid var(--window-border);
             border-radius: 8px;
             background-color: var(--window-bg);
             transition: background-color 0.3s, box-shadow 0.3s;
-            position: relative; 
-            overflow: hidden; 
+            position: relative;
+            overflow: hidden;
         }
 
         body.fancy-mode .app-window {
             background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
             backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
             -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-            box-shadow: 
+            box-shadow:
                 inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
                 inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
                 inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
@@ -87,15 +92,63 @@
                 0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
         }
 
-        .window-header { display: flex; justify-content: space-between; align-items: center; cursor: move; flex-shrink: 0; padding: 3px 3px 3px 6px; }
-        .window-title-container { display: flex; align-items: center; gap: 6px; }
-        h2 { font-weight: 400; font-size: 13px; }
-        .window-controls { display: flex; }
-        .window-control-btn { width: 45px; height: 29px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--window-text); }
-        .window-control-btn:hover { background-color: var(--control-hover-bg); }
-        .close-window-btn { font-size: 22px; font-weight: 300; padding-bottom: 4px; }
-        .close-window-btn:hover { background-color: var(--control-close-hover-bg); color: var(--control-close-hover-text); }
-        .window-content-area { flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; }
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+            padding: 3px 3px 3px 6px;
+        }
+
+        .window-title-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .window-controls {
+            display: flex;
+        }
+
+        .window-control-btn {
+            width: 45px;
+            height: 29px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--window-text);
+        }
+
+        .window-control-btn:hover {
+            background-color: var(--control-hover-bg);
+        }
+
+        .close-window-btn {
+            font-size: 22px;
+            font-weight: 300;
+            padding-bottom: 4px;
+        }
+
+        .close-window-btn:hover {
+            background-color: var(--control-close-hover-bg);
+            color: var(--control-close-hover-text);
+        }
+
+        .window-content-area {
+            flex-grow: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
         /* --- Gaya Slider Baru --- */
         .slider-container {
@@ -121,8 +174,10 @@
             position: absolute;
             top: 50%;
             transform: translate(-50%, -50%);
-            width: 30px; /* Ukuran default untuk handle progress */
-            height: 20px; /* Ukuran default untuk handle progress */
+            width: 30px;
+            /* Ukuran default untuk handle progress */
+            height: 20px;
+            /* Ukuran default untuk handle progress */
             border-radius: 999px;
             cursor: grab;
             z-index: 2;
@@ -130,14 +185,16 @@
             box-shadow: 0 1px 8px 0 rgba(0, 30, 63, 0.1), 0 0 2px 0 rgba(0, 9, 20, 0.1);
             transition: transform 0.15s ease, background-color 0.2s, box-shadow 0.2s, backdrop-filter 0.2s;
         }
-        
+
         /* PERUBAHAN: Ukuran spesifik untuk handle volume agar lebih kecil */
         #volume-thumb.slider-thumb-glass {
             width: 16px;
             height: 16px;
         }
 
-        .slider-thumb-glass:active { cursor: grabbing; }
+        .slider-thumb-glass:active {
+            cursor: grabbing;
+        }
 
         body.dark .slider-thumb-glass {
             box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 0 2px 0 rgba(0, 0, 0, 0.2);
@@ -147,18 +204,18 @@
             background-color: color-mix(in srgb, var(--window-text) 5%, var(--window-bg));
             box-shadow: none;
         }
-        
+
         body.fancy-mode .slider-thumb-glass.active {
             background-color: color-mix(in srgb, var(--c-glass) 40%, transparent);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 20%), transparent);
         }
-        
+
         .slider-thumb-glass:active {
             transform: translate(-50%, -50%) scaleY(0.98) scaleX(1.1);
         }
-        
+
         /* --- Gaya Kontrol Baru --- */
         .controls-container {
             display: flex;
@@ -183,34 +240,45 @@
             padding: 0;
             line-height: 1;
         }
+
         .control-button:hover {
             opacity: 1;
         }
+
         .control-button:active {
             transform: scale(0.9);
         }
-        
+
         #play-pause-btn #play-icon {
-            padding-left: 4px; /* Optical alignment for play icon */
+            padding-left: 4px;
+            /* Optical alignment for play icon */
         }
-        
+
         /* Gaya lain-lain */
-        .drag-over { background-color: rgba(0,0,0,0.1); }
-        body.dark .drag-over { background-color: rgba(255,255,255,0.1); }
+        .drag-over {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark .drag-over {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
+
 <body>
     <!-- Filter SVG untuk efek Liquid Glass -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1;">
         <svg>
             <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
-                <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>
+                <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none"
+                    href="img/svg-filter.jpg" />
                 <feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
-                <feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+                <feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
+                </feDisplacementMap>
             </filter>
         </svg>
     </div>
-    
+
     <audio id="audio-player" class="hidden"></audio>
     <div class="app-window">
         <div id="music-window-header" class="window-header">
@@ -220,26 +288,35 @@
             </div>
             <div class="window-controls">
                 <button id="minimize-btn" class="window-control-btn" title="Minimize">
-                    <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1H10V2H0V1Z" fill="currentColor"/></svg>
+                    <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg>
                 </button>
                 <button class="window-control-btn" title="Maximize">
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
+                    </svg>
                 </button>
                 <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
             </div>
         </div>
-        
+
         <div id="music-drop-zone" class="window-content-area">
-            <div id="album-art-container" class="w-48 h-48 rounded-lg mb-4 mx-auto flex items-center justify-center text-center text-slate-500 dark:text-slate-400 text-sm p-4">
+            <div id="album-art-container"
+                class="w-48 h-48 rounded-lg mb-4 mx-auto flex items-center justify-center text-center text-slate-500 dark:text-slate-400 text-sm p-4">
                 <img id="album-art" class="w-full h-full rounded-lg object-cover hidden" alt="Album Art">
                 <div id="album-art-placeholder" class="flex flex-col items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-slate-400 dark:text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-16 w-16 mx-auto text-slate-400 dark:text-slate-500 mb-2" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z">
+                        </path>
                     </svg>
                     No Song Loaded
                 </div>
             </div>
-            
+
             <!-- Struktur Slider -->
             <div class="w-full mb-3">
                 <div class="slider-container" id="progress-slider-container">
@@ -257,354 +334,527 @@
                 <h3 id="song-title" class="text-xl font-bold truncate">No song playing</h3>
                 <p id="song-artist" class="text-sm opacity-70 truncate">Drop a music file to start</p>
             </div>
-            
+
             <!-- KONTROL PEMUTAR BARU -->
             <div class="controls-container">
                 <!-- Tombol Favorite (placeholder) -->
                 <button class="control-button" title="Favorite">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                     </svg>
                 </button>
-                
+
+                <button id="stop-btn" class="control-button" title="Stop"><svg xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h12v12H6z" />
+                    </svg></button>
+
                 <div class="flex items-center justify-center gap-x-4">
                     <!-- Tombol Mundur/Lagu Sebelumnya -->
                     <button id="rewind-btn" class="control-button" title="Rewind 10s">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
+                        </svg>
                     </button>
-                    
+
                     <!-- Tombol Putar/Jeda -->
                     <button id="play-pause-btn" class="control-button" title="Play/Pause">
-                        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                            viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                            viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                        </svg>
                     </button>
-                    
+
                     <!-- Tombol Maju/Lagu Berikutnya -->
                     <button id="forward-btn" class="control-button" title="Forward 10s">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zm-4.5 6L6 6v12z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path d="M16 6h2v12h-2zm-4.5 6L6 6v12z" />
+                        </svg>
                     </button>
                 </div>
-                
+
                 <!-- KONTROL VOLUME BARU -->
                 <div class="flex items-center gap-x-2 w-24">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="opacity-80"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="opacity-80">
+                        <path
+                            d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                    </svg>
                     <div class="slider-container my-0" id="volume-slider-container">
                         <div class="slider-progress" id="volume-track"></div>
                         <div class="slider-thumb-glass" id="volume-thumb"></div>
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
-<script>
-    // Elemen DOM
-    const header = document.getElementById('music-window-header');
-    const closeBtn = document.getElementById('close-btn');
-    const minimizeBtn = document.getElementById('minimize-btn');
-    const musicDropZone = document.getElementById('music-drop-zone');
-    const audioPlayer = document.getElementById('audio-player');
-    const albumArt = document.getElementById('album-art');
-    const albumArtPlaceholder = document.getElementById('album-art-placeholder');
-    const songTitle = document.getElementById('song-title');
-    const songArtist = document.getElementById('song-artist');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
-    const rewindBtn = document.getElementById('rewind-btn');
-    const forwardBtn = document.getElementById('forward-btn');
+    <script>
+        // Elemen DOM
+        const header = document.getElementById('music-window-header');
+        const closeBtn = document.getElementById('close-btn');
+        const minimizeBtn = document.getElementById('minimize-btn');
+        const musicDropZone = document.getElementById('music-drop-zone');
+        const audioPlayer = document.getElementById('audio-player');
+        const albumArt = document.getElementById('album-art');
+        const albumArtPlaceholder = document.getElementById('album-art-placeholder');
+        const songTitle = document.getElementById('song-title');
+        const songArtist = document.getElementById('song-artist');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const rewindBtn = document.getElementById('rewind-btn');
+        const forwardBtn = document.getElementById('forward-btn');
+        const stopBtn = document.getElementById('stop-btn');
 
-    // Elemen Slider Progres
-    const progressBarContainer = document.getElementById('progress-slider-container');
-    const progressTrack = document.getElementById('progress-track');
-    const progressThumb = document.getElementById('progress-thumb');
+        // Elemen Slider Progres
+        const progressBarContainer = document.getElementById('progress-slider-container');
+        const progressTrack = document.getElementById('progress-track');
+        const progressThumb = document.getElementById('progress-thumb');
 
-    // Elemen Slider Volume
-    const volumeSliderContainer = document.getElementById('volume-slider-container');
-    const volumeTrack = document.getElementById('volume-track');
-    const volumeThumb = document.getElementById('volume-thumb');
+        // Elemen Slider Volume
+        const volumeSliderContainer = document.getElementById('volume-slider-container');
+        const volumeTrack = document.getElementById('volume-track');
+        const volumeThumb = document.getElementById('volume-thumb');
 
-    // Variabel state
-    let isWindowDragging = false;
-    let audioContext, analyser, source, dataArray, bufferLength;
-    let isAudioSetup = false;
-    let currentAlbumArtUrl = null;
+        // Variabel state
+        let isWindowDragging = false;
+        let audioContext, analyser, source, dataArray, bufferLength;
+        let isAudioSetup = false;
+        let currentAlbumArtUrl = null;
 
-    function setupAudioContext() {
-        if (isAudioSetup) return;
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        source = audioContext.createMediaElementSource(audioPlayer);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        analyser.fftSize = 256;
-        bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-        isAudioSetup = true;
-    }
-
-    function sendVisualizerData() {
-        requestAnimationFrame(sendVisualizerData);
-        if (!isAudioSetup) return;
-        analyser.getByteFrequencyData(dataArray);
-        parent.postMessage({ 
-            action: 'visualizer-data', 
-            data: dataArray,
-            bufferLength: Math.floor(bufferLength * 0.66),
-            isPaused: audioPlayer.paused
-        }, '*');
-    }
-    
-    function formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${minutes}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function playMusic(file) {
-        if (!isAudioSetup) setupAudioContext();
-        
-        if (currentAlbumArtUrl) {
-            URL.revokeObjectURL(currentAlbumArtUrl);
+        function setupAudioContext() {
+            if (isAudioSetup) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            analyser.fftSize = 256;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            isAudioSetup = true;
         }
 
-        // Show album art image, hide placeholder
-        albumArtPlaceholder.style.display = 'none';
-        albumArt.style.display = 'block';
-        albumArt.src = "https://img.icons8.com/fluency/96/000000/apple-music.png"; // Set a default icon
-
-        const fileURL = URL.createObjectURL(file);
-        audioPlayer.src = fileURL;
-        audioPlayer.play();
-        
-        const fileName = file.name.replace(/\.[^/.]+$/, "");
-        let [artist, title] = fileName.split(' - ');
-        if (!title) { 
-            title = artist; 
-            artist = 'Unknown Artist'; 
-        }
-        songTitle.textContent = title.trim();
-        songArtist.textContent = artist.trim();
-        
-        window.jsmediatags.read(file, {
-            onSuccess: function(tag) {
-                const tags = tag.tags;
-                songTitle.textContent = tags.title || title.trim();
-                songArtist.textContent = tags.artist || artist.trim();
-                const picture = tags.picture;
-                if (picture) {
-                    const blob = new Blob([new Uint8Array(picture.data)], { type: picture.format });
-                    currentAlbumArtUrl = URL.createObjectURL(blob);
-                    albumArt.src = currentAlbumArtUrl;
-                } // If no picture, default icon remains
-            },
-            onError: function(error) {
-                console.log('Error reading metadata:', error.type, error.info);
-                // On error, default icon remains
-            }
-        });
-        
-        sendVisualizerData();
-    }
-    
-    // Logika Slider Progres
-    let isSliderDragging = false;
-    
-    function updateThumbAndProgress(percent) {
-        percent = Math.max(0, Math.min(100, percent));
-        const sliderWidth = progressBarContainer.offsetWidth;
-        const px = (percent / 100) * sliderWidth;
-        progressTrack.style.width = `${percent}%`;
-        progressThumb.style.left = `${px}px`;
-    }
-
-    function getPercentFromClientX(container, clientX) {
-        const sliderRect = container.getBoundingClientRect();
-        const offsetX = clientX - sliderRect.left;
-        const sliderWidth = container.offsetWidth;
-        return (offsetX / sliderWidth) * 100;
-    }
-    
-    function onSliderMove(clientX) {
-        if (!audioPlayer.src || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
-        const percent = getPercentFromClientX(progressBarContainer, clientX);
-        updateThumbAndProgress(percent);
-        const newTime = (percent / 100) * audioPlayer.duration;
-        currentTimeEl.textContent = formatTime(newTime);
-    }
-    
-    function seekAudio(clientX) {
-        if (!audioPlayer.src || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
-        const percent = getPercentFromClientX(progressBarContainer, clientX);
-        updateThumbAndProgress(percent);
-        audioPlayer.currentTime = (percent / 100) * audioPlayer.duration;
-    }
-
-    function setupSliderEvents() {
-        progressThumb.addEventListener('mousedown', (e) => {
-            isSliderDragging = true;
-            progressThumb.classList.add('active');
-            document.body.style.cursor = 'grabbing';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isSliderDragging) onSliderMove(e.clientX);
-        });
-
-        document.addEventListener('mouseup', (e) => {
-            if (isSliderDragging) {
-                isSliderDragging = false;
-                progressThumb.classList.remove('active');
-                document.body.style.cursor = 'default';
-                seekAudio(e.clientX);
-            }
-        });
-        
-        progressBarContainer.addEventListener('mousedown', (e) => {
-            if (e.target !== progressThumb) seekAudio(e.clientX);
-        });
-    }
-
-    // Logika Slider Volume
-    let isVolumeSliderDragging = false;
-
-    function updateVolumeSlider(volume) { // volume is 0 to 1
-        const percent = volume * 100;
-        const sliderWidth = volumeSliderContainer.offsetWidth;
-        const px = (percent / 100) * sliderWidth;
-        volumeTrack.style.width = `${percent}%`;
-        volumeThumb.style.left = `${px}px`;
-    }
-
-    function setVolumeFromSlider(clientX) {
-        const percent = getPercentFromClientX(volumeSliderContainer, clientX);
-        const volume = Math.max(0, Math.min(100, percent)) / 100;
-        audioPlayer.volume = volume;
-    }
-
-    function setupVolumeSliderEvents() {
-        volumeThumb.addEventListener('mousedown', (e) => {
-            isVolumeSliderDragging = true;
-            volumeThumb.classList.add('active');
-            document.body.style.cursor = 'grabbing';
-            e.stopPropagation();
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isVolumeSliderDragging) {
-                setVolumeFromSlider(e.clientX);
-            }
-        });
-
-        document.addEventListener('mouseup', (e) => {
-            if (isVolumeSliderDragging) {
-                isVolumeSliderDragging = false;
-                volumeThumb.classList.remove('active');
-                document.body.style.cursor = 'default';
-            }
-        });
-
-        volumeSliderContainer.addEventListener('mousedown', (e) => {
-            if (e.target !== volumeThumb) {
-                setVolumeFromSlider(e.clientX);
-            }
-        });
-    }
-
-    function setupMusicPlayerControls() {
-        playPauseBtn.addEventListener('click', () => {
-            if (!audioPlayer.src) return;
-            if (audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause();
-        });
-        audioPlayer.addEventListener('play', () => {
-            playIcon.style.display = 'none'; pauseIcon.style.display = 'block';
-            if(audioContext && audioContext.state === 'suspended') audioContext.resume();
-        });
-        audioPlayer.addEventListener('pause', () => { playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; });
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(audioPlayer.duration);
-            updateThumbAndProgress(0);
-        });
-        audioPlayer.addEventListener('timeupdate', () => {
-            if (!isSliderDragging) {
-                const percent = (audioPlayer.duration > 0) ? (audioPlayer.currentTime / audioPlayer.duration) * 100 : 0;
-                updateThumbAndProgress(percent);
-            }
-            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
-        });
-        rewindBtn.addEventListener('click', () => { if(audioPlayer.src) audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10); });
-        forwardBtn.addEventListener('click', () => { if(audioPlayer.src) audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10); });
-        
-        musicDropZone.addEventListener('dragover', (e) => { 
-            e.preventDefault(); 
-            musicDropZone.classList.add('drag-over'); 
-        });
-        musicDropZone.addEventListener('dragleave', () => musicDropZone.classList.remove('drag-over'));
-        musicDropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            musicDropZone.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('audio/')) playMusic(file);
-        });
-
-        // Listener untuk perubahan volume, akan mengirim pesan ke desktop
-        audioPlayer.addEventListener('volumechange', () => {
-            const currentVolume = audioPlayer.volume;
-            // 1. Perbarui slider volume utama di jendela ini
-            updateVolumeSlider(currentVolume);
-
-            // 2. Kirim data ke parent (desktop) untuk menampilkan flyout di sana
-            const percent = Math.round(currentVolume * 100);
+        function sendVisualizerData() {
+            requestAnimationFrame(sendVisualizerData);
+            if (!isAudioSetup) return;
+            analyser.getByteFrequencyData(dataArray);
             parent.postMessage({
-                action: 'show-volume-flyout',
-                volume: percent 
+                action: 'visualizer-data',
+                data: dataArray,
+                bufferLength: Math.floor(bufferLength * 0.66),
+                isPaused: audioPlayer.paused
             }, '*');
-        });
-    }
-
-    // Logika window
-    header.addEventListener('mousedown', (e) => {
-        isWindowDragging = true;
-        parent.postMessage({ action: 'bring-music-to-front' }, '*');
-        e.preventDefault();
-    });
-    window.addEventListener('mousemove', (e) => {
-        if (isWindowDragging) parent.postMessage({ action: 'drag-music-frame', dx: e.movementX, dy: e.movementY }, '*');
-    });
-    window.addEventListener('mouseup', () => isWindowDragging = false);
-
-    closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-music-frame' }, '*'));
-    minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-music-frame' }, '*'));
-
-    window.addEventListener('message', (event) => {
-        const { action, isDark, value } = event.data;
-        if (action === 'stop') {
-            audioPlayer.pause();
-            audioPlayer.src = "";
-            songTitle.textContent = 'No song playing';
-            songArtist.textContent = 'Drop a music file to start';
-            updateThumbAndProgress(0);
-            
-            // Hide album art image, show placeholder
-            albumArt.style.display = 'none';
-            albumArt.src = '';
-            albumArtPlaceholder.style.display = 'flex';
         }
-        if (action === 'theme-change') document.body.classList.toggle('dark', isDark);
-        if (action === 'toggle-fancy-mode') document.body.classList.toggle('fancy-mode', value);
-    });
 
-    // Inisialisasi
-    setupMusicPlayerControls();
-    setupSliderEvents();
-    setupVolumeSliderEvents(); 
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
 
-    window.addEventListener('load', () => {
-        updateVolumeSlider(audioPlayer.volume); // Inisialisasi posisi slider volume setelah layout dihitung
-        parent.postMessage({ action: 'request-settings' }, '*');
-    });
-</script>
+        // music_player.html
+        async function playMusic(file) {
+            console.log('[Music Player] Starting playMusic for file:', file.name); // LOG 1
+            if (!isAudioSetup) setupAudioContext();
+            if (currentAlbumArtUrl) { URL.revokeObjectURL(currentAlbumArtUrl); } // Hapus URL lama
+            albumArtPlaceholder.style.display = 'none';
+            albumArt.style.display = 'block';
+            const defaultIcon = "https://img.icons8.com/fluency/96/000000/apple-music.png";
+            albumArt.src = defaultIcon;
+            const fileURL = URL.createObjectURL(file);
+            audioPlayer.src = fileURL; // Atur src dulu
+
+            // Ekstrak nama file sebagai fallback
+            const fileName = file.name.replace(/\.[^/.]+$/, ""); // Hapus ekstensi
+            let [artist, title] = fileName.split(' - '); // Pisahkan berdasarkan ' - '
+            if (!title) { // Jika tidak ada ' - ', anggap seluruh nama adalah judul
+                title = artist;
+                artist = 'Unknown Artist';
+            }
+            songTitle.textContent = title.trim();
+            songArtist.textContent = artist.trim();
+
+            // --- Bagian yang diubah ---
+            // Kirim notifikasi segera dengan info fallback dan ikon default
+            // Kita kirim ini terlepas dari apakah play() berhasil atau tidak
+            const fallbackNotification = {
+                action: 'show-media-notification',
+                title: title.trim(),
+                artist: artist.trim(),
+                albumArt: defaultIcon // Gunakan ikon default dulu
+            };
+            console.log('[Music Player] Posting fallback notification on playMusic start:', fallbackNotification); // LOG 2
+            parent.postMessage(fallbackNotification, '*');
+            // --- Akhir bagian yang diubah ---
+
+            // Setel event listener oncanplay sebagai fallback untuk notifikasi akhir
+            audioPlayer.oncanplay = function () {
+                console.log('[Music Player] audioPlayer.oncanplay triggered. Sending fallback notification if metadata read failed/timed out.');
+                // Jika jsmediatags belum mengirim notifikasi akhir, kirim notifikasi default ini
+                const canPlayNotification = {
+                    action: 'show-media-notification',
+                    title: songTitle.textContent, // Gunakan teks yang sudah ditampilkan
+                    artist: songArtist.textContent,
+                    albumArt: albumArt.src // Gunakan src yang saat ini ditampilkan (bisa default atau yang sudah di-set oleh jsmediatags)
+                };
+                console.log('[Music Player] Posting oncanplay notification (fallback):', canPlayNotification);
+                parent.postMessage(canPlayNotification, '*');
+                // Hapus listener setelah dipicu untuk mencegah pemanggilan berulang
+                audioPlayer.oncanplay = null;
+            };
+
+            // Mulai pemutaran
+            try {
+                await audioPlayer.play(); // Tunggu play() selesai
+                console.log('[Music Player] Audio playback started successfully.');
+                // --- Baris yang ditambahkan ---
+                // Mulai kirim data ke visualizer *setelah* play sukses
+                sendVisualizerData();
+                // --- Akhir baris yang ditambahkan ---
+            } catch (e) {
+                console.error('[Music Player] Error playing audio:', e);
+                // Jika play gagal (misalnya karena autoplay policy), notifikasi awal tetap terkirim
+                // dan listener oncanplay tidak akan pernah dipicu tanpa pemutaran yang sukses
+                // Mungkin tambahkan pesan ke pengguna di sini
+            }
+
+            // - Timeout safety net -
+            let hasReadFinished = false;
+            const readTimeout = setTimeout(() => {
+                if (!hasReadFinished) {
+                    console.error('[Music Player] jsmediatags TIMEOUT. Using filename as metadata.');
+                    // Hapus listener oncanplay jika jsmediatags timeout, karena notifikasi akhir akan dikirim oleh jsmediatags onError
+                    // atau oleh fallback oncanplay (jika play() sukses).
+                    // Kita biarkan oncanplay untuk fallback jika play() sukses dan metadata gagal.
+                    if (audioPlayer.src) { // Hanya kirim jika file benar-benar dimuat
+                        const timeoutNotification = {
+                            action: 'show-media-notification',
+                            title: songTitle.textContent,
+                            artist: songArtist.textContent,
+                            albumArt: albumArt.src // Gunakan src yang saat ini ditampilkan
+                        };
+                        console.log('[Music Player] Posting TIMEOUT notification (fallback):', timeoutNotification);
+                        parent.postMessage(timeoutNotification, '*');
+                    }
+                }
+            }, 1500); // Tunggu 1.5 detik
+
+            window.jsmediatags.read(file, {
+                onSuccess: function (tag) {
+                    hasReadFinished = true;
+                    clearTimeout(readTimeout);
+                    console.log('[Music Player] jsmediatags SUCCESS. Full tag data:', tag); // LOG 3
+                    const tags = tag.tags;
+                    const finalTitle = tags.title || title.trim();
+                    const finalArtist = tags.artist || artist.trim();
+                    songTitle.textContent = finalTitle;
+                    songArtist.textContent = finalArtist;
+
+                    let finalAlbumArt = defaultIcon; // Mulai dengan default
+                    const picture = tags.picture;
+                    if (picture) {
+                        console.log('[Music Player] Album art data FOUND in tags.', picture); // LOG 4
+                        const blob = new Blob([new Uint8Array(picture.data)], { type: picture.format });
+                        currentAlbumArtUrl = URL.createObjectURL(blob);
+                        albumArt.src = currentAlbumArtUrl;
+                        finalAlbumArt = currentAlbumArtUrl; // Gunakan URL blob
+                        console.log('[Music Player] Created Blob URL for album art:', finalAlbumArt); // LOG 5
+                    } else {
+                        console.log('[Music Player] No album art data found in tags. Using default icon.'); // LOG 6
+                    }
+
+                    // --- Bagian yang diubah ---
+                    // Kirim notifikasi lagi dengan data lengkap
+                    // Hapus listener oncanplay karena kita sudah mendapatkan metadata dan mengirim notifikasi akhir
+                    audioPlayer.oncanplay = null;
+                    const finalNotification = {
+                        action: 'show-media-notification',
+                        title: finalTitle,
+                        artist: finalArtist,
+                        albumArt: finalAlbumArt // Gunakan album art yang ditemukan atau default
+                    };
+                    console.log('[Music Player] Posting FINAL notification (with album art if found):', finalNotification); // LOG 7
+                    parent.postMessage(finalNotification, '*');
+                    // --- Akhir bagian yang diubah ---
+                },
+                onError: function (error) {
+                    hasReadFinished = true;
+                    clearTimeout(readTimeout);
+                    console.error('[Music Player] jsmediatags ERROR reading meta', error.type, error.info);
+                    // Hapus listener oncanplay karena kita menangani error dan mengirim notifikasi akhir
+                    audioPlayer.oncanplay = null;
+                    // Kirim notifikasi akhir dengan fallback (judul/artis dari filename, ikon default)
+                    // Gunakan teks yang mungkin sudah diperbarui oleh jsmediatags onSuccess jika sebagian data baca
+                    const errorNotification = {
+                        action: 'show-media-notification',
+                        title: songTitle.textContent, // Gunakan teks yang ditampilkan (bisa nama file)
+                        artist: songArtist.textContent, // Gunakan teks yang ditampilkan (bisa 'Unknown Artist')
+                        albumArt: albumArt.src // Gunakan src yang ditampilkan (harusnya defaultIcon)
+                    };
+                    console.log('[Music Player] Posting ERROR notification (fallback):', errorNotification);
+                    parent.postMessage(errorNotification, '*');
+                }
+            });
+        }
+
+        // Logika Slider Progres
+        let isSliderDragging = false;
+
+        function updateThumbAndProgress(percent) {
+            percent = Math.max(0, Math.min(100, percent));
+            const sliderWidth = progressBarContainer.offsetWidth;
+            const px = (percent / 100) * sliderWidth;
+            progressTrack.style.width = `${percent}%`;
+            progressThumb.style.left = `${px}px`;
+        }
+
+        function getPercentFromClientX(container, clientX) {
+            const sliderRect = container.getBoundingClientRect();
+            const offsetX = clientX - sliderRect.left;
+            const sliderWidth = container.offsetWidth;
+            return (offsetX / sliderWidth) * 100;
+        }
+
+        function onSliderMove(clientX) {
+            if (!audioPlayer.src || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
+            const percent = getPercentFromClientX(progressBarContainer, clientX);
+            updateThumbAndProgress(percent);
+            const newTime = (percent / 100) * audioPlayer.duration;
+            currentTimeEl.textContent = formatTime(newTime);
+        }
+
+        function seekAudio(clientX) {
+            if (!audioPlayer.src || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
+            const percent = getPercentFromClientX(progressBarContainer, clientX);
+            updateThumbAndProgress(percent);
+            audioPlayer.currentTime = (percent / 100) * audioPlayer.duration;
+        }
+
+        function setupSliderEvents() {
+            progressThumb.addEventListener('mousedown', (e) => {
+                isSliderDragging = true;
+                progressThumb.classList.add('active');
+                document.body.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isSliderDragging) onSliderMove(e.clientX);
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isSliderDragging) {
+                    isSliderDragging = false;
+                    progressThumb.classList.remove('active');
+                    document.body.style.cursor = 'default';
+                    seekAudio(e.clientX);
+                }
+            });
+
+            progressBarContainer.addEventListener('mousedown', (e) => {
+                if (e.target !== progressThumb) seekAudio(e.clientX);
+            });
+        }
+
+        // Logika Slider Volume
+        let isVolumeSliderDragging = false;
+
+        function updateVolumeSlider(volume) { // volume is 0 to 1
+            const percent = volume * 100;
+            const sliderWidth = volumeSliderContainer.offsetWidth;
+            const px = (percent / 100) * sliderWidth;
+            volumeTrack.style.width = `${percent}%`;
+            volumeThumb.style.left = `${px}px`;
+        }
+
+        function setVolumeFromSlider(clientX) {
+            const percent = getPercentFromClientX(volumeSliderContainer, clientX);
+            const volume = Math.max(0, Math.min(100, percent)) / 100;
+            audioPlayer.volume = volume;
+        }
+
+        function setupVolumeSliderEvents() {
+            volumeThumb.addEventListener('mousedown', (e) => {
+                isVolumeSliderDragging = true;
+                volumeThumb.classList.add('active');
+                document.body.style.cursor = 'grabbing';
+                e.stopPropagation();
+                parent.postMessage({ action: 'volume-change-start' }, '*');
+                console.log('[Music Player] volume-change-start message sent.'); // Debug log
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isVolumeSliderDragging) {
+                    setVolumeFromSlider(e.clientX);
+                }
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isVolumeSliderDragging) {
+                    isVolumeSliderDragging = false;
+                    volumeThumb.classList.remove('active');
+                    document.body.style.cursor = 'default';
+                    parent.postMessage({ action: 'volume-change-end' }, '*');
+                    console.log('[Music Player] volume-change-end message sent.'); // Debug log
+                }
+            });
+
+            volumeSliderContainer.addEventListener('mousedown', (e) => {
+                if (e.target !== volumeThumb) {
+                    setVolumeFromSlider(e.clientX);
+                }
+            });
+        }
+
+        function setupMusicPlayerControls() {
+            playPauseBtn.addEventListener('click', () => {
+                // Jika tidak ada file yang dipilih/dimuat, jangan lakukan apa-apa
+                if (!audioPlayer.src) {
+                    console.log("[Music Player] No source to play/pause.");
+                    return;
+                }
+
+                // Cek apakah sedang dipause (termasuk state 'stopped' karena currentTime = 0)
+                if (audioPlayer.paused) {
+                    // Jika dipause, coba play
+                    // Karena kita di sini, artinya mungkin sedang di-pause atau di-stop (currentTime = 0)
+                    // Kita ingin kirim notifikasi fallback lagi seperti saat pertama kali play
+                    // Ambil info dari elemen yang saat ini ditampilkan
+                    const currentTitle = songTitle.textContent || 'Unknown Title';
+                    const currentArtist = songArtist.textContent || 'Unknown Artist';
+                    const currentAlbumArt = albumArt.src; // Bisa saja album art dari metadata atau default icon
+
+                    // Kirim notifikasi fallback sebelum mencoba play
+                    const restartNotification = {
+                        action: 'show-media-notification',
+                        title: currentTitle,
+                        artist: currentArtist,
+                        albumArt: currentAlbumArt
+                    };
+                    console.log('[Music Player] Posting notification on play button click (restart/pause->play):', restartNotification);
+                    parent.postMessage(restartNotification, '*');
+
+                    audioPlayer.play().then(() => {
+                        console.log("[Music Player] Play initiated successfully from button click.");
+                        // sendVisualizerData() mungkin sudah dipanggil sebelumnya saat lagu pertama kali dimuat
+                        // Tapi jika visualisasi dihentikan saat stop, mungkin perlu dipastikan aktif lagi
+                        // sendVisualizerData(); // Aktifkan ini jika visualisasi tidak berjalan otomatis setelah play
+                    }).catch(e => {
+                        console.error("[Music Player] Failed to play from button click:", e);
+                        // Mungkin tampilkan pesan ke pengguna
+                    });
+                } else {
+                    // Jika sedang diputar, pause
+                    audioPlayer.pause();
+                }
+            });
+            stopBtn.addEventListener('click', () => {
+                if (audioPlayer.src) { // Hanya lakukan jika ada sumber audio
+                    audioPlayer.pause();
+                    audioPlayer.currentTime = 0; // Gulir ke awal
+                    // Kirim pesan ke index.html bahwa pemutar dihentikan
+                    parent.postMessage({ action: 'stop-music-frame' }, '*');
+                }
+            });
+            audioPlayer.addEventListener('play', () => {
+                playIcon.style.display = 'none'; pauseIcon.style.display = 'block';
+                if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+            });
+            audioPlayer.addEventListener('pause', () => { playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; });
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audioPlayer.duration);
+                updateThumbAndProgress(0);
+            });
+            audioPlayer.addEventListener('timeupdate', () => {
+                if (!isSliderDragging) {
+                    const percent = (audioPlayer.duration > 0) ? (audioPlayer.currentTime / audioPlayer.duration) * 100 : 0;
+                    updateThumbAndProgress(percent);
+                }
+                currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            });
+            rewindBtn.addEventListener('click', () => { if (audioPlayer.src) audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10); });
+            forwardBtn.addEventListener('click', () => { if (audioPlayer.src) audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10); });
+
+            musicDropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                musicDropZone.classList.add('drag-over');
+            });
+            musicDropZone.addEventListener('dragleave', () => musicDropZone.classList.remove('drag-over'));
+            musicDropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                musicDropZone.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('audio/')) playMusic(file);
+            });
+
+            // Listener untuk perubahan volume, akan mengirim pesan ke desktop
+            audioPlayer.addEventListener('volumechange', () => {
+                const currentVolume = audioPlayer.volume;
+                // 1. Perbarui slider volume utama di jendela ini
+                updateVolumeSlider(currentVolume);
+
+                // 2. Kirim data ke parent (desktop) untuk menampilkan flyout di sana
+                const percent = Math.round(currentVolume * 100);
+                parent.postMessage({
+                    action: 'show-volume-flyout',
+                    volume: percent
+                }, '*');
+            });
+        }
+
+        // Logika window
+        header.addEventListener('mousedown', (e) => {
+            isWindowDragging = true;
+            parent.postMessage({ action: 'bring-music-to-front' }, '*');
+            e.preventDefault();
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (isWindowDragging) parent.postMessage({ action: 'drag-music-frame', dx: e.movementX, dy: e.movementY }, '*');
+        });
+        window.addEventListener('mouseup', () => isWindowDragging = false);
+
+        closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-music-frame' }, '*'));
+        minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-music-frame' }, '*'));
+
+        window.addEventListener('message', (event) => {
+            const { action, isDark, value } = event.data;
+            if (action === 'stop') {
+                audioPlayer.pause();
+                audioPlayer.src = "";
+                songTitle.textContent = 'No song playing';
+                songArtist.textContent = 'Drop a music file to start';
+                updateThumbAndProgress(0);
+
+                // Hide album art image, show placeholder
+                albumArt.style.display = 'none';
+                albumArt.src = '';
+                albumArtPlaceholder.style.display = 'flex';
+            }
+            if (action === 'theme-change') document.body.classList.toggle('dark', isDark);
+            if (action === 'toggle-fancy-mode') document.body.classList.toggle('fancy-mode', value);
+        });
+
+        // Inisialisasi
+        setupMusicPlayerControls();
+        setupSliderEvents();
+        setupVolumeSliderEvents();
+
+        window.addEventListener('load', () => {
+            updateVolumeSlider(audioPlayer.volume); // Inisialisasi posisi slider volume setelah layout dihitung
+            parent.postMessage({ action: 'request-settings' }, '*');
+        });
+    </script>
 </body>
+
 </html>

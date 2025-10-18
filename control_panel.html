@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Panel</title>
-    <!-- Tailwind Offline CSS (In case of CDN failures) --> 
+    <!-- Tailwind Offline CSS (In case of CDN failures) -->
     <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
-	<script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet"> -->
     <style>
         /* CSS yang relevan dari file asli, disesuaikan untuk iframe */
@@ -45,27 +46,31 @@
             --select-text: #f0f0f0;
             --toggle-bg-off: #4b5563;
             --toggle-handle-border: #4b5563;
-            
+
             /* Variabel baru untuk efek Liquid Glass - Mode Gelap */
             --c-glass: #2b2b2b;
             --glass-reflex-dark: 2;
             --glass-reflex-light: 0.3;
         }
 
-        html, body { 
-            margin: 0; 
-            padding: 0; 
-            background-color: transparent; 
-            font-family: var(--font-family); 
-            color: var(--window-text); 
-            overflow: hidden; 
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            font-family: var(--font-family);
+            color: var(--window-text);
+            overflow: hidden;
             user-select: none;
         }
 
         /* --- Window Style --- */
         /* Default "Safe Mode" style for the window */
         .app-window {
-            display: flex; flex-direction: column; width: 100vw; height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
             border: 1px solid var(--window-border);
             border-radius: 8px;
             background-color: var(--window-bg);
@@ -77,7 +82,7 @@
             background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
             backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
             -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-            box-shadow: 
+            box-shadow:
                 inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
                 inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
                 inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
@@ -90,57 +95,132 @@
                 0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
         }
 
-        .window-header { display: flex; justify-content: space-between; align-items: center; cursor: move; flex-shrink: 0; padding: 3px 3px 3px 6px; }
-        .window-title-container { display: flex; align-items: center; gap: 6px; }
-        h2 { font-weight: 400; font-size: 13px; }
-        .window-controls { display: flex; }
-        .window-control-btn { width: 45px; height: 29px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--window-text); }
-        .window-control-btn:hover { background-color: var(--control-hover-bg); }
-        .close-window-btn { font-size: 22px; font-weight: 300; padding-bottom: 4px; }
-        .close-window-btn:hover { background-color: var(--control-close-hover-bg); color: var(--control-close-hover-text); }
-        .window-content-area { flex-grow: 1; overflow-y: auto; padding: 1rem; }
-        .window-content-area select { background-color: var(--select-bg); color: var(--select-text); border: 1px solid var(--select-border); }
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+            padding: 3px 3px 3px 6px;
+        }
+
+        .window-title-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .window-controls {
+            display: flex;
+        }
+
+        .window-control-btn {
+            width: 45px;
+            height: 29px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--window-text);
+        }
+
+        .window-control-btn:hover {
+            background-color: var(--control-hover-bg);
+        }
+
+        .close-window-btn {
+            font-size: 22px;
+            font-weight: 300;
+            padding-bottom: 4px;
+        }
+
+        .close-window-btn:hover {
+            background-color: var(--control-close-hover-bg);
+            color: var(--control-close-hover-text);
+        }
+
+        .window-content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .window-content-area select {
+            background-color: var(--select-bg);
+            color: var(--select-text);
+            border: 1px solid var(--select-border);
+        }
 
         /* Toggle Switch Styles */
-        .toggle-label { background-color: var(--toggle-bg-off); }
-        .toggle-checkbox { border-color: var(--toggle-handle-border); }
-        .toggle-checkbox:checked { right: 0; border-color: var(--toggle-bg-on); }
-        .toggle-checkbox:checked + .toggle-label { background-color: var(--toggle-bg-on); }
+        .toggle-label {
+            background-color: var(--toggle-bg-off);
+        }
+
+        .toggle-checkbox {
+            border-color: var(--toggle-handle-border);
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: var(--toggle-bg-on);
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: var(--toggle-bg-on);
+        }
     </style>
 </head>
+
 <body>
     <!-- Filter SVG for Liquid Glass effect -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1;">
         <svg>
-          <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
-            <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="img/svg-filter.jpg"/>       
-			
-			<feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
-			<feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
-			</feDisplacementMap>
-          </filter>
+            <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
+                <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none"
+                    href="img/svg-filter.jpg" />
+
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+                <feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
+                </feDisplacementMap>
+            </filter>
         </svg>
     </div>
 
     <div class="app-window">
         <div id="cp-window-header" class="window-header">
             <div class="window-title-container">
-                <img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel Icon" class="h-4 w-4">
+                <img src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel Icon"
+                    class="h-4 w-4">
                 <h2>Control Panel</h2>
             </div>
             <div class="window-controls">
-                <button id="minimize-btn" class="window-control-btn" title="Minimize"><svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1H10V2H0V1Z" fill="currentColor"/></svg></button>
-                <button class="window-control-btn" title="Maximize"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg></button>
+                <button id="minimize-btn" class="window-control-btn" title="Minimize"><svg width="10" height="2"
+                        viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg></button>
+                <button class="window-control-btn" title="Maximize"><svg width="10" height="10" viewBox="0 0 10 10"
+                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
+                    </svg></button>
                 <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
             </div>
         </div>
         <div class="window-content-area">
-             <div class="space-y-4 divide-y divide-gray-300 dark:divide-gray-600">
+            <div class="space-y-4 divide-y divide-gray-300 dark:divide-gray-600">
                 <div class="pb-4">
                     <h3 class="font-bold text-lg mb-2">Overall Theme</h3>
                     <div>
                         <label for="theme-select" class="block mb-1 text-sm font-medium">Window & Taskbar Theme</label>
-                        <select id="theme-select" class="w-full p-2 rounded"><option value="light" selected>Light</option><option value="dark">Dark</option></select>
+                        <select id="theme-select" class="w-full p-2 rounded">
+                            <option value="light" selected>Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
                     </div>
                 </div>
                 <!-- New Appearance Section -->
@@ -148,9 +228,12 @@
                     <h3 class="font-bold text-lg mb-2">Appearance</h3>
                     <div class="flex items-center justify-between">
                         <label for="toggle-fancy-mode" class="text-sm font-medium">Fancy Mode (Liquid Glass)</label>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                            <input type="checkbox" name="toggle-fancy-mode" id="toggle-fancy-mode" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                            <label for="toggle-fancy-mode" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
+                        <div
+                            class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-fancy-mode" id="toggle-fancy-mode"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
+                            <label for="toggle-fancy-mode"
+                                class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
                         </div>
                     </div>
                 </div>
@@ -158,15 +241,33 @@
                     <h3 class="font-bold text-lg mb-2">Pengaturan Wallpaper</h3>
                     <div>
                         <label for="bg-size" class="block mb-1 text-sm font-medium">Posisi Gambar (Fit)</label>
-                        <select id="bg-size" class="w-full p-2 rounded"><option value="cover" selected>Cover (Isi Penuh)</option><option value="contain">Contain (Dalam Layar)</option><option value="auto">Auto (Ukuran Asli)</option></select>
+                        <select id="bg-size" class="w-full p-2 rounded">
+                            <option value="cover" selected>Cover (Isi Penuh)</option>
+                            <option value="contain">Contain (Dalam Layar)</option>
+                            <option value="auto">Auto (Ukuran Asli)</option>
+                        </select>
                     </div>
                     <div class="mt-2">
-                        <label for="bg-repeat" class="block mb-1 text-sm font-medium">Pengulangan Gambar (Repeat)</label>
-                        <select id="bg-repeat" class="w-full p-2 rounded"><option value="no-repeat" selected>No Repeat</option><option value="repeat">Repeat (Ulangi)</option><option value="repeat-x">Repeat Horizontally</option><option value="repeat-y">Repeat Vertically</option><option value="space">Space</option><option value="round">Round</option></select>
+                        <label for="bg-repeat" class="block mb-1 text-sm font-medium">Pengulangan Gambar
+                            (Repeat)</label>
+                        <select id="bg-repeat" class="w-full p-2 rounded">
+                            <option value="no-repeat" selected>No Repeat</option>
+                            <option value="repeat">Repeat (Ulangi)</option>
+                            <option value="repeat-x">Repeat Horizontally</option>
+                            <option value="repeat-y">Repeat Vertically</option>
+                            <option value="space">Space</option>
+                            <option value="round">Round</option>
+                        </select>
                     </div>
                     <div class="mt-2">
                         <label for="bg-position" class="block mb-1 text-sm font-medium">Posisi Gambar</label>
-                        <select id="bg-position" class="w-full p-2 rounded"><option value="center" selected>Tengah (Center)</option><option value="top">Atas (Top)</option><option value="bottom">Bawah (Bottom)</option><option value="left">Kiri (Left)</option><option value="right">Kanan (Right)</option></select>
+                        <select id="bg-position" class="w-full p-2 rounded">
+                            <option value="center" selected>Tengah (Center)</option>
+                            <option value="top">Atas (Top)</option>
+                            <option value="bottom">Bawah (Bottom)</option>
+                            <option value="left">Kiri (Left)</option>
+                            <option value="right">Kanan (Right)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="pt-4">
@@ -174,120 +275,154 @@
                     <div class="space-y-2">
                         <div>
                             <label for="taskbar-style" class="block mb-1 text-sm font-medium">Gaya Taskbar</label>
-                            <select id="taskbar-style" class="w-full p-2 rounded"><option value="default" selected>Default (Penuh)</option><option value="island-single">Island (Menyatu)</option><option value="island-split">Island (Terpisah)</option></select>
+                            <select id="taskbar-style" class="w-full p-2 rounded">
+                                <option value="default" selected>Default (Penuh)</option>
+                                <option value="island-single">Island (Menyatu)</option>
+                                <option value="island-split">Island (Terpisah)</option>
+                            </select>
                         </div>
                         <div id="space-between-container" class="flex items-center justify-between mt-2 hidden">
-                            <label for="toggle-space-between" class="text-sm font-medium">Jarak Antar Grup (Island)</label>
-                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle-space-between" id="toggle-space-between" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/><label for="toggle-space-between" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                            <label for="toggle-space-between" class="text-sm font-medium">Jarak Antar Grup
+                                (Island)</label>
+                            <div
+                                class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle-space-between" id="toggle-space-between"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" /><label
+                                    for="toggle-space-between"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
+                            </div>
                         </div>
                         <div>
                             <label for="taskbar-position" class="block mb-1 text-sm font-medium">Posisi Taskbar</label>
-                            <select id="taskbar-position" class="w-full p-2 rounded"><option value="bottom" selected>Bawah (Bottom)</option><option value="top">Atas (Top)</option><option value="left">Kiri (Left)</option><option value="right">Kanan (Right)</option></select>
+                            <select id="taskbar-position" class="w-full p-2 rounded">
+                                <option value="bottom" selected>Bawah (Bottom)</option>
+                                <option value="top">Atas (Top)</option>
+                                <option value="left">Kiri (Left)</option>
+                                <option value="right">Kanan (Right)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="mt-4">
                         <h4 class="text-sm font-medium mb-2">Ikon Sistem</h4>
                         <div class="flex items-center justify-between">
                             <label for="toggle-clock">Tampilkan Jam & Tanggal</label>
-                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle-clock" id="toggle-clock" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-clock" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                            <div
+                                class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle-clock" id="toggle-clock"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                                    checked /><label for="toggle-clock"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
+                            </div>
                         </div>
                     </div>
+                </div>
+                <div class="pt-4">
+                    <h3 class="font-bold text-lg mb-2">System Actions</h3>
+                    <button id="test-toast-btn" class="w-full p-2 rounded text-sm font-medium"
+                        style="background-color: var(--control-hover-bg); border: 1px solid var(--window-border);">
+                        Test Toast Notification
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-<script>
-    // Element declarations
-    const header = document.getElementById('cp-window-header');
-    const closeBtn = document.getElementById('close-btn');
-    const minimizeBtn = document.getElementById('minimize-btn');
+    <script>
+        // Element declarations
+        const header = document.getElementById('cp-window-header');
+        const closeBtn = document.getElementById('close-btn');
+        const minimizeBtn = document.getElementById('minimize-btn');
+        const testToastBtn = document.getElementById('test-toast-btn');
 
-    // Control elements
-    const themeSelect = document.getElementById('theme-select');
-    const toggleFancyMode = document.getElementById('toggle-fancy-mode'); // New fancy mode toggle
-    const bgSizeSelect = document.getElementById('bg-size');
-    const bgRepeatSelect = document.getElementById('bg-repeat');
-    const bgPositionSelect = document.getElementById('bg-position');
-    const taskbarStyleSelect = document.getElementById('taskbar-style');
-    const spaceBetweenContainer = document.getElementById('space-between-container');
-    const toggleSpaceBetween = document.getElementById('toggle-space-between');
-    const taskbarPositionSelect = document.getElementById('taskbar-position');
-    const toggleClock = document.getElementById('toggle-clock');
+        // Control elements
+        const themeSelect = document.getElementById('theme-select');
+        const toggleFancyMode = document.getElementById('toggle-fancy-mode'); // New fancy mode toggle
+        const bgSizeSelect = document.getElementById('bg-size');
+        const bgRepeatSelect = document.getElementById('bg-repeat');
+        const bgPositionSelect = document.getElementById('bg-position');
+        const taskbarStyleSelect = document.getElementById('taskbar-style');
+        const spaceBetweenContainer = document.getElementById('space-between-container');
+        const toggleSpaceBetween = document.getElementById('toggle-space-between');
+        const taskbarPositionSelect = document.getElementById('taskbar-position');
+        const toggleClock = document.getElementById('toggle-clock');
 
-    // State
-    let isDragging = false;
-    
-    // --- Window Interaction Logic (communicates with parent) ---
-    header.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        parent.postMessage({ action: 'bring-cp-to-front' }, '*');
-        e.preventDefault();
-    });
+        // State
+        let isDragging = false;
 
-    window.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            parent.postMessage({ action: 'drag-cp-frame', dx: e.movementX, dy: e.movementY }, '*');
-        }
-    });
+        // --- Window Interaction Logic (communicates with parent) ---
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            parent.postMessage({ action: 'bring-cp-to-front' }, '*');
+            e.preventDefault();
+        });
 
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                parent.postMessage({ action: 'drag-cp-frame', dx: e.movementX, dy: e.movementY }, '*');
+            }
+        });
 
-    closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-cp-frame' }, '*'));
-    minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-cp-frame' }, '*'));
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
 
-    // --- Control Logic (sends messages to parent) ---
-    themeSelect.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'change-theme', value: e.target.value }, '*');
-    });
+        closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-cp-frame' }, '*'));
+        minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-cp-frame' }, '*'));
 
-    // New listener for Fancy Mode
-    toggleFancyMode.addEventListener('change', (e) => {
-        const isFancy = e.target.checked;
-        document.body.classList.toggle('fancy-mode', isFancy);
-        parent.postMessage({ action: 'toggle-fancy-mode', value: isFancy }, '*');
-    });
+        // --- Control Logic (sends messages to parent) ---
+        themeSelect.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'change-theme', value: e.target.value }, '*');
+        });
 
-    bgSizeSelect.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'change-bg-size', value: e.target.value }, '*');
-    });
-    bgRepeatSelect.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'change-bg-repeat', value: e.target.value }, '*');
-    });
-    bgPositionSelect.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'change-bg-position', value: e.target.value }, '*');
-    });
-    taskbarPositionSelect.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'change-taskbar-position', value: e.target.value }, '*');
-    });
-    taskbarStyleSelect.addEventListener('change', (e) => {
-        const style = e.target.value;
-        spaceBetweenContainer.classList.toggle('flex', style.startsWith('island'));
-        spaceBetweenContainer.classList.toggle('hidden', !style.startsWith('island'));
-        if (!style.startsWith('island')) { toggleSpaceBetween.checked = false; }
-        parent.postMessage({ action: 'change-taskbar-style', value: e.target.value }, '*');
-        parent.postMessage({ action: 'toggle-taskbar-space-between', value: toggleSpaceBetween.checked }, '*');
-    });
-    toggleSpaceBetween.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'toggle-taskbar-space-between', value: e.target.checked }, '*');
-    });
-    toggleClock.addEventListener('change', (e) => {
-        parent.postMessage({ action: 'toggle-clock', value: e.target.checked }, '*');
-    });
-    
-    // --- Message Listener (receives messages from parent) ---
-    window.addEventListener('message', (event) => {
-        const { action, isDark } = event.data;
-        if (action === 'theme-change') {
-            document.body.classList.toggle('dark', isDark);
-        }
-        // FIX: Listen for requests from other apps for the current settings
-        if (action === 'request-settings') {
-            // Respond with the current state of the fancy mode toggle
-            parent.postMessage({ action: 'toggle-fancy-mode', value: toggleFancyMode.checked }, '*');
-        }
-    });
-</script>
+        // New listener for Fancy Mode
+        toggleFancyMode.addEventListener('change', (e) => {
+            const isFancy = e.target.checked;
+            document.body.classList.toggle('fancy-mode', isFancy);
+            parent.postMessage({ action: 'toggle-fancy-mode', value: isFancy }, '*');
+        });
+
+        bgSizeSelect.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'change-bg-size', value: e.target.value }, '*');
+        });
+        bgRepeatSelect.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'change-bg-repeat', value: e.target.value }, '*');
+        });
+        bgPositionSelect.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'change-bg-position', value: e.target.value }, '*');
+        });
+        taskbarPositionSelect.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'change-taskbar-position', value: e.target.value }, '*');
+        });
+        taskbarStyleSelect.addEventListener('change', (e) => {
+            const style = e.target.value;
+            spaceBetweenContainer.classList.toggle('flex', style.startsWith('island'));
+            spaceBetweenContainer.classList.toggle('hidden', !style.startsWith('island'));
+            if (!style.startsWith('island')) { toggleSpaceBetween.checked = false; }
+            parent.postMessage({ action: 'change-taskbar-style', value: e.target.value }, '*');
+            parent.postMessage({ action: 'toggle-taskbar-space-between', value: toggleSpaceBetween.checked }, '*');
+        });
+        toggleSpaceBetween.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'toggle-taskbar-space-between', value: e.target.checked }, '*');
+        });
+        toggleClock.addEventListener('change', (e) => {
+            parent.postMessage({ action: 'toggle-clock', value: e.target.checked }, '*');
+        });
+        testToastBtn.addEventListener('click', () => {
+            parent.postMessage({ action: 'test-toast-notification' }, '*');
+        });
+
+        // --- Message Listener (receives messages from parent) ---
+        window.addEventListener('message', (event) => {
+            const { action, isDark } = event.data;
+            if (action === 'theme-change') {
+                document.body.classList.toggle('dark', isDark);
+            }
+            // FIX: Listen for requests from other apps for the current settings
+            if (action === 'request-settings') {
+                // Respond with the current state of the fancy mode toggle
+                parent.postMessage({ action: 'toggle-fancy-mode', value: toggleFancyMode.checked }, '*');
+            }
+        });
+    </script>
 </body>
+
 </html>
