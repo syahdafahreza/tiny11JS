@@ -261,17 +261,17 @@ const hidePill = () => {
 
         // Sembunyikan pill bersamaan dengan animasi morphing
         pillContainer.classList.remove('show');
-        
+
         // B. Tampilkan taskbar asli dan mulai fade in konten taskbar
         taskbar.style.opacity = '1';
         taskbar.style.pointerEvents = 'auto';
 
         // Set transisi untuk fade in konten taskbar (350ms, 50ms delay)
         const taskbarContentFadeInDuration = 350;
-        taskbarMainGroup.style.transition = `opacity ${taskbarContentFadeInDuration}ms ease-in 0.05s`; 
-        systemTray.style.transition = `opacity ${taskbarContentFadeInDuration}ms ease-in 0.05s`; 
+        taskbarMainGroup.style.transition = `opacity ${taskbarContentFadeInDuration}ms ease-in 0.05s`;
+        systemTray.style.transition = `opacity ${taskbarContentFadeInDuration}ms ease-in 0.05s`;
         visualizerCanvas.style.transition = `opacity ${taskbarContentFadeInDuration}ms ease-in 0.05s`;
-        
+
         // Mulai fade in konten taskbar
         taskbarMainGroup.style.opacity = '1';
         systemTray.style.opacity = '1';
@@ -715,8 +715,13 @@ function minimizeApp(appName) {
 function maximizeApp(appName) {
     let appFrame, isMaximizedState, originalRectStorage;
     const taskbarHeight = taskbar.offsetHeight;
+    const taskbarWidth = taskbar.offsetWidth;
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
+
+    // Nilai Konstanta untuk Border Radius & Gap
+    const MAXIMIZED_RADIUS = '8px';
+    const WINDOW_GAP = 8; // Jarak tepi layar (8px)
 
     // Tentukan frame dan state yang sesuai
     if (appName === 'music') {
@@ -755,23 +760,74 @@ function maximizeApp(appName) {
             else if (appName === 'explorer') originalExplorerRect = rect;
         }
 
-        // Tentukan batas maksimal, disesuaikan dengan posisi taskbar
-        let top = 0;
-        let left = 0;
-        let width = windowWidth;
-        let height = windowHeight;
+        // --- Perhitungan Batas Kerja (Work Area) ---
+        let top = WINDOW_GAP;
+        let left = WINDOW_GAP;
+        let width = windowWidth - (2 * WINDOW_GAP);
+        let height = windowHeight - (2 * WINDOW_GAP);
+        let borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
 
-        // Atur posisi dan ukuran berdasarkan taskbar
-        if (currentTaskbarPosition === 'top') {
-            top = taskbarHeight;
-            height = windowHeight - taskbarHeight;
-        } else if (currentTaskbarPosition === 'bottom') {
-            height = windowHeight - taskbarHeight;
-        } else if (currentTaskbarPosition === 'left') {
-            left = taskbar.offsetWidth;
-            width = windowWidth - taskbar.offsetWidth;
-        } else if (currentTaskbarPosition === 'right') {
-            width = windowWidth - taskbar.offsetWidth;
+        const isTaskbarIsland = currentTaskbarStyle.startsWith('island');
+        // const isVizVisible = visualizerCanvas.style.display === 'block' && visualizerCanvas.style.opacity !== '0'; // TIDAK DIPERLUKAN LAGI
+
+        if (isTaskbarIsland) {
+            
+            if (currentTaskbarPosition === 'top') {
+                // Taskbar di Atas: Batasan adalah di bawah taskbar + gap
+                const taskbarBottom = taskbar.getBoundingClientRect().bottom;
+                top = taskbarBottom + WINDOW_GAP;
+                height = windowHeight - top - WINDOW_GAP;
+                // Border Radius: Kiri-Atas (TL), Kanan-Atas (TR) adalah 0
+                // Jendela berjarak dari atas layar, tetapi menempel di taskbar top.
+                borderRadius = `0 0 ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
+            } else if (currentTaskbarPosition === 'bottom') {
+                // Taskbar di Bawah (Island):
+                
+                // Ambil posisi Taskbar, yang merupakan batas bawah mutlak.
+                const taskbarRect = taskbar.getBoundingClientRect();
+
+                // Batas Y (dari atas layar) yang tidak boleh dilewati jendela adalah:
+                // Posisi Y Taskbar - Jarak Gap
+                const bottomLimitY = taskbarRect.top - WINDOW_GAP;
+
+                // Tinggi Jendela = Batas Y Bawah - Posisi Y Atas (WINDOW_GAP)
+                height = bottomLimitY - top;
+                
+                // Border Radius: Kiri-Bawah (BL), Kanan-Bawah (BR) adalah 0
+                borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
+                
+            } else if (currentTaskbarPosition === 'left') {
+                // Taskbar di Kiri: Batasan adalah di sebelah kanan taskbar + gap
+                const taskbarRight = taskbar.getBoundingClientRect().right;
+                left = taskbarRight + WINDOW_GAP;
+                width = windowWidth - left - WINDOW_GAP;
+                // Border Radius: Kiri-Atas (TL), Kiri-Bawah (BL) adalah 0
+                borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} 0`;
+            } else if (currentTaskbarPosition === 'right') {
+                // Taskbar di Kanan: Batasan adalah di sebelah kiri taskbar + gap
+                const taskbarLeft = taskbar.getBoundingClientRect().left;
+                width = taskbarLeft - left - WINDOW_GAP; 
+                // Border Radius: Kanan-Atas (TR), Kanan-Bawah (BR) adalah 0
+                borderRadius = `${MAXIMIZED_RADIUS} 0 0 ${MAXIMIZED_RADIUS}`;
+            }
+
+        } else {
+            // Taskbar Default (Full Width/Height) - Maksimalisasi menutupi taskbar
+            // Di mode default, radius harus 0 dan tidak ada gap di sisi taskbar
+            left = 0; top = 0; width = windowWidth; height = windowHeight;
+            borderRadius = '0'; // Default: semua sudut tajam
+
+            if (currentTaskbarPosition === 'top') {
+                top = taskbarHeight;
+                height = windowHeight - taskbarHeight;
+            } else if (currentTaskbarPosition === 'bottom') {
+                height = windowHeight - taskbarHeight;
+            } else if (currentTaskbarPosition === 'left') {
+                left = taskbarWidth;
+                width = windowWidth - taskbarWidth;
+            } else if (currentTaskbarPosition === 'right') {
+                width = windowWidth - taskbarWidth;
+            }
         }
 
         // Terapkan transisi halus
@@ -780,13 +836,16 @@ function maximizeApp(appName) {
         appFrame.style.top = `${top}px`;
         appFrame.style.width = `${width}px`;
         appFrame.style.height = `${height}px`;
-
+        // Terapkan border radius
+        appFrame.style.borderRadius = borderRadius;
+        
         // Hapus properti transform dan z-index jika ada dari draggable
         appFrame.style.transform = 'none';
         
         // Tandai sebagai maximized
         appFrame.dataset.isMaximized = 'true';
-        appFrame.contentWindow.postMessage({ action: 'set-maximized-state', isMaximized: true }, '*');
+        // Kirim borderRadius ke iframe agar ia bisa menyesuaikan border intern
+        appFrame.contentWindow.postMessage({ action: 'set-maximized-state', isMaximized: true, borderRadius: borderRadius }, '*');
 
         // Perbarui status global
         if (appName === 'music') isMusicPlayerMaximized = true;
@@ -801,7 +860,7 @@ function maximizeApp(appName) {
 // Fungsi untuk mengembalikan jendela aplikasi ke ukuran semula
 function restoreMaximizedApp(appName) {
     let appFrame, originalRect;
-    
+
     // Tentukan frame dan originalRect yang sesuai
     if (appName === 'music') {
         appFrame = musicPlayerFrame;
@@ -833,7 +892,7 @@ function restoreMaximizedApp(appName) {
         appFrame.style.width = `${originalRect.width}px`;
         appFrame.style.height = `${originalRect.height}px`;
     }
-    
+
     // Tandai sebagai tidak maximized
     appFrame.dataset.isMaximized = 'false';
     appFrame.contentWindow.postMessage({ action: 'set-maximized-state', isMaximized: false }, '*');
@@ -1319,13 +1378,13 @@ function initialize() {
                 break;
             }
             // --- MUSIC PLAYER ACTIONS ---
-            case 'drag-music-frame': { 
+            case 'drag-music-frame': {
                 // Jika sedang maximized, abaikan drag
                 if (musicPlayerFrame.dataset.isMaximized === 'true') return;
-                const rect = musicPlayerFrame.getBoundingClientRect(); 
-                musicPlayerFrame.style.left = `${rect.left + dx}px`; 
-                musicPlayerFrame.style.top = `${rect.top + dy}px`; 
-                break; 
+                const rect = musicPlayerFrame.getBoundingClientRect();
+                musicPlayerFrame.style.left = `${rect.left + dx}px`;
+                musicPlayerFrame.style.top = `${rect.top + dy}px`;
+                break;
             }
             case 'close-music-frame': closeApp('music'); break;
             case 'minimize-music-frame': minimizeApp('music'); break;
@@ -1335,13 +1394,13 @@ function initialize() {
             case 'show-volume-flyout': { showVolumeNotification(event.data.volume); break; }
 
             // --- CONTROL PANEL ACTIONS ---
-            case 'drag-cp-frame': { 
+            case 'drag-cp-frame': {
                 // Jika sedang maximized, abaikan drag
                 if (controlPanelFrame.dataset.isMaximized === 'true') return;
-                const rect = controlPanelFrame.getBoundingClientRect(); 
-                controlPanelFrame.style.left = `${rect.left + dx}px`; 
-                controlPanelFrame.style.top = `${rect.top + dy}px`; 
-                break; 
+                const rect = controlPanelFrame.getBoundingClientRect();
+                controlPanelFrame.style.left = `${rect.left + dx}px`;
+                controlPanelFrame.style.top = `${rect.top + dy}px`;
+                break;
             }
             case 'close-cp-frame': closeApp('cp'); break;
             case 'minimize-cp-frame': minimizeApp('cp'); break;
@@ -1349,13 +1408,13 @@ function initialize() {
             case 'maximize-cp-frame': maximizeApp('cp'); break;
 
             // --- FILE EXPLORER ACTIONS ---
-            case 'drag-explorer-frame': { 
+            case 'drag-explorer-frame': {
                 // Jika sedang maximized, abaikan drag
                 if (fileExplorerFrame.dataset.isMaximized === 'true') return;
-                const rect = fileExplorerFrame.getBoundingClientRect(); 
-                fileExplorerFrame.style.left = `${rect.left + dx}px`; 
-                fileExplorerFrame.style.top = `${rect.top + dy}px`; 
-                break; 
+                const rect = fileExplorerFrame.getBoundingClientRect();
+                fileExplorerFrame.style.left = `${rect.left + dx}px`;
+                fileExplorerFrame.style.top = `${rect.top + dy}px`;
+                break;
             }
             case 'close-explorer-frame': closeApp('explorer'); break;
             case 'minimize-explorer-frame': minimizeApp('explorer'); break;
@@ -1363,19 +1422,19 @@ function initialize() {
             case 'maximize-explorer-frame': maximizeApp('explorer'); break;
 
             // --- LIVE2D WALLPAPER ACTIONS ---
-            case 'drag-live2d-frame': { 
+            case 'drag-live2d-frame': {
                 // Jika sedang maximized, abaikan drag
                 if (live2dWallpaperFrame.dataset.isMaximized === 'true') return;
-                const rect = live2dWallpaperFrame.getBoundingClientRect(); 
-                live2dWallpaperFrame.style.left = `${rect.left + dx}px`; 
-                live2dWallpaperFrame.style.top = `${rect.top + dy}px`; 
-                break; 
+                const rect = live2dWallpaperFrame.getBoundingClientRect();
+                live2dWallpaperFrame.style.left = `${rect.left + dx}px`;
+                live2dWallpaperFrame.style.top = `${rect.top + dy}px`;
+                break;
             }
             case 'close-live2d-frame': closeApp('live2d'); break;
             case 'minimize-live2d-frame': minimizeApp('live2d'); break;
             case 'bring-live2d-to-front': bringToFront('live2d'); break;
             case 'maximize-live2d-frame': maximizeApp('live2d'); break; // <-- BARU: Maximize Live2D App
-            
+
             case 'set-live-wallpaper':
                 wallpaperIframe.src = value;
                 wallpaperIframe.style.display = 'block';

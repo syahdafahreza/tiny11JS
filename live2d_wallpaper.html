@@ -306,7 +306,7 @@
 
         // Message Listener (receives messages from parent for theme consistency & maximize state)
         window.addEventListener('message', (event) => {
-            const { action, isDark, value, isMaximized } = event.data; // BARU: Tambah isMaximized
+            const { action, isDark, value, isMaximized, borderRadius } = event.data; // Menerima borderRadius
             const windowElement = document.querySelector('.app-window'); // BARU: Akses elemen window
 
             if (action === 'theme-change') {
@@ -322,7 +322,8 @@
                     maximizeBtn.title = "Restore Down";
                     // Ganti ikon menjadi kotak bertumpuk untuk "restore"
                     maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
-                    windowElement.style.borderRadius = '0'; // Hapus sudut saat maximized
+                    // Menggunakan borderRadius dari parent
+                    windowElement.style.borderRadius = borderRadius || '0'; 
 
                     // Nonaktifkan Drag saat Maximized
                     header.style.cursor = 'default';
