@@ -185,8 +185,8 @@
                         viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 1H10V2H0V1Z" fill="currentColor" />
                     </svg></button>
-                <button class="window-control-btn" title="Maximize"><svg width="10" height="10" viewBox="0 0 10 10"
-                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                <button id="maximize-btn" class="window-control-btn" title="Maximize"><svg width="10" height="10"
+                        viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
                     </svg></button>
                 <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
@@ -215,6 +215,7 @@
         const header = document.getElementById('live2d-window-header');
         const closeBtn = document.getElementById('close-btn');
         const minimizeBtn = document.getElementById('minimize-btn');
+        const maximizeBtn = document.getElementById('maximize-btn'); // <-- BARU: Deklarasi tombol Maximize
         const urlInput = document.getElementById('url-input');
         const setWallpaperBtn = document.getElementById('set-wallpaper-btn');
         const clearWallpaperBtn = document.getElementById('clear-wallpaper-btn');
@@ -286,6 +287,11 @@
         closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-live2d-frame' }, '*'));
         minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-live2d-frame' }, '*'));
 
+        // BARU: Event listener untuk maximize
+        maximizeBtn.addEventListener('click', () => {
+            parent.postMessage({ action: 'maximize-live2d-frame' }, '*');
+        });
+
         // App Functionality Logic
         setWallpaperBtn.addEventListener('click', () => {
             const url = urlInput.value;
@@ -298,14 +304,39 @@
             parent.postMessage({ action: 'clear-live-wallpaper' }, '*');
         });
 
-        // Message Listener (receives messages from parent for theme consistency)
+        // Message Listener (receives messages from parent for theme consistency & maximize state)
         window.addEventListener('message', (event) => {
-            const { action, isDark, value } = event.data;
+            const { action, isDark, value, isMaximized } = event.data; // BARU: Tambah isMaximized
+            const windowElement = document.querySelector('.app-window'); // BARU: Akses elemen window
+
             if (action === 'theme-change') {
                 document.body.classList.toggle('dark', isDark);
             }
             if (action === 'toggle-fancy-mode') {
                 document.body.classList.toggle('fancy-mode', value);
+            }
+
+            // BARU: Logika Maximize/Restore
+            if (action === 'set-maximized-state') {
+                if (isMaximized) {
+                    maximizeBtn.title = "Restore Down";
+                    // Ganti ikon menjadi kotak bertumpuk untuk "restore"
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
+                    windowElement.style.borderRadius = '0'; // Hapus sudut saat maximized
+
+                    // Nonaktifkan Drag saat Maximized
+                    header.style.cursor = 'default';
+                    isDragging = false;
+
+                } else {
+                    maximizeBtn.title = "Maximize";
+                    // Ganti ikon kembali menjadi kotak tunggal untuk "maximize"
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
+                    windowElement.style.borderRadius = '8px'; // Kembalikan sudut
+
+                    // Aktifkan kembali Drag saat Restore
+                    header.style.cursor = 'move';
+                }
             }
         });
     </script>
