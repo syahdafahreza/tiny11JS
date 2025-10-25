@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Variabel CSS disinkronkan dengan tema desktop (index.html) */
+        :root {
+            --window-bg: #f0f0f0;
+            --window-text: #000;
+            --window-border: #a0a0a0;
+            --control-hover-bg: #e6e6e6;
+            --control-close-hover-bg: #e81123;
+            --control-close-hover-text: white;
+
+            /* Variabel Liquid Glass dari Control Panel */
+            --c-glass: #f0f0f0;
+            --c-light: #ffffff;
+            --c-dark: #000000;
+            --glass-reflex-dark: 1;
+            --glass-reflex-light: 1;
+            --saturation: 150%;
+
+            /* --- NEW: Control Panel Theme Vars (Light/Default) --- */
+            --control-bg: rgba(255, 255, 255, 0.9);
+            /* Semi-transparent White */
+            --control-text: #000000;
+            --control-highlight: #ff6e40;
+            /* Oranye/Coral agar sesuai referensi */
+
+            /* Video Display Area Background (Always Dark) */
+            --player-bg: #1c1c1c;
+        }
+
+        body.dark {
+            --window-bg: #2b2b2b;
+            --window-text: #f0f0f0;
+            --window-border: #555555;
+            --control-hover-bg: #3c3c3c;
+
+            /* Variabel Liquid Glass - Mode Gelap */
+            --c-glass: #2b2b2b;
+            --glass-reflex-dark: 2;
+            --glass-reflex-light: 0.3;
+
+            /* --- NEW: Control Panel Theme Vars (Dark) --- */
+            --control-bg: rgba(0, 0, 0, 0.9);
+            /* Semi-transparent Black */
+            --control-text: #f0f0f0;
+        }
+
+        /* --- Window Style --- */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--window-text);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Default "Safe Mode" style for the window */
+        .app-window {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            border: 1px solid var(--window-border);
+            border-radius: 8px;
+            background-color: var(--window-bg);
+            transition:
+                background-color 0.3s,
+                border-radius 0.3s,
+                box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        /* "Fancy Mode" style with Liquid Glass effect for the main window */
+        body.fancy-mode .app-window {
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow:
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+        }
+
+        /* Header/Title Bar */
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+            padding: 3px 3px 3px 6px;
+        }
+
+        .window-title-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .window-controls {
+            display: flex;
+        }
+
+        /* Control Buttons (Minimize, Maximize) */
+        .window-control-btn {
+            width: 45px;
+            height: 29px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--window-text);
+            font-size: 13px;
+        }
+
+        .window-control-btn:hover {
+            background-color: var(--control-hover-bg);
+        }
+
+        /* Close Button */
+        .close-window-btn {
+            font-size: 22px;
+            font-weight: 300;
+            padding-bottom: 4px;
+        }
+
+        .close-window-btn:hover {
+            background-color: var(--control-close-hover-bg);
+            color: var(--control-close-hover-text);
+        }
+
+        /* Player specific styles (Menggunakan Variabel Baru) */
+        .player-controls {
+            color: var(--control-text);
+            /* NEW */
+            background-color: var(--control-bg);
+            /* NEW */
+            /* Padding disesuaikan agar pas */
+            padding: 8px 16px 12px 16px;
+            flex-shrink: 0;
+            /* UPDATED: Tambahkan border-radius dan transisinya */
+            border-radius: 0 0 8px 8px;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, border-radius 0.3s;
+        }
+
+        /* --- NEW: Fancy Mode for Controls --- */
+        body.fancy-mode .player-controls {
+            /* Terapkan Liquid Glass ke control bar */
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow:
+                0px -1px 3px 0px color-mix(in srgb, var(--c-dark) 5%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 20%), transparent);
+        }
+
+        /* ------------------------------------- */
+
+        .player-controls button {
+            color: var(--control-text);
+            /* NEW */
+            transition: color 0.15s, background-color 0.15s, filter 0.15s;
+            opacity: 0.9;
+        }
+        
+        /* Tombol non-utama saat di-hover */
+        .player-controls button:not(#play-pause-btn):hover {
+            color: var(--control-highlight);
+            /* NEW */
+            opacity: 1;
+        }
+
+        /* Tombol Play/Pause Utama (Gaya Baru) */
+        #play-pause-btn {
+            width: 44px;
+            /* w-11 */
+            height: 44px;
+            /* h-11 */
+            border-radius: 9999px;
+            background-color: var(--control-highlight);
+            /* Warna solid agar menonjol */
+            color: white;
+            /* Ikon putih di atas warna highlight */
+            opacity: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #play-pause-btn svg {
+            width: 24px;
+            /* w-6 */
+            height: 24px;
+            /* h-6 */
+        }
+        
+        #play-pause-btn:hover {
+            filter: brightness(1.1);
+            /* Sedikit lebih terang saat di-hover */
+            color: white;
+            /* Pastikan tetap putih */
+        }
+        
+        /* Tombol non-aktif (disabled) */
+        .player-controls button:disabled {
+            opacity: 0.4;
+            color: var(--control-text);
+            cursor: not-allowed;
+        }
+        
+        #play-pause-btn:disabled {
+            background-color: var(--control-highlight);
+            opacity: 0.5;
+            color: white;
+        }
+
+
+        /* Timeline Slider */
+        .timeline-container {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            /* Latar belakang timeline tetap netral agar highlight terlihat jelas */
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 999px;
+            cursor: pointer;
+            margin-top: 4px;
+            /* Sedikit jarak dari atas */
+        }
+
+        .timeline-fill {
+            position: absolute;
+            height: 100%;
+            background: var(--control-highlight);
+            /* NEW */
+            border-radius: 999px;
+            width: 0%;
+            z-index: 1;
+        }
+
+        .timeline-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 999px;
+            background-color: var(--control-highlight);
+            /* NEW */
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+            cursor: grab;
+            z-index: 2;
+            transition: transform 0.1s;
+        }
+
+        .timeline-thumb:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .timeline-thumb:active {
+            cursor: grabbing;
+        }
+
+        /* Drag and Drop Zone Style */
+        .drop-zone {
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            border: 2px dashed var(--control-highlight) !important;
+        }
+
+        /* Video element style */
+        #video-player {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Memastikan video tidak terpotong (sesuai permintaan) */
+        }
+
+        /* NEW: Video Display Area (Menggantikan #video-display dan #video-content-area) */
+        #video-display-area {
+            position: relative;
+            flex-grow: 1;
+            background-color: var(--player-bg);
+            overflow: hidden;
+        }
+
+        /* Overlay sekarang berada di atas #video-display-area */
+        #video-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 4px;
+            transition: opacity 0.3s;
+            pointer-events: auto;
+        }
+
+        /* Time Display (Baru: di samping timeline) */
+        .time-display {
+            color: var(--control-text);
+            opacity: 0.8;
+            transition: color 0.3s;
+            font-size: 12px;
+            font-family: monospace;
+            white-space: nowrap;
+        }
+
+
+        #video-overlay.hidden-overlay {
+            pointer-events: none;
+            cursor: none;
+        }
+
+        /* CSS tambahan untuk memastikan tidak ada clipping di mode maximize (UPDATED) */
+        .app-window.maximized {
+            border: none;
+        }
+        
+        .app-window.maximized .player-controls {
+            border-radius: 0 !important;
+            /* NEW: Ratakan sudut bawah saat maximize */
+        }
+        
+        /* NEW: Info Video di Kiri Bawah */
+        #video-info-display {
+            min-width: 0;
+            /* Biarkan flexbox yang mengatur */
+        }
+        
+        #video-title-display {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 14px;
+            max-width: 200px;
+            /* Batasi lebar agar tidak mendominasi */
+        }
+        
+        /* Style untuk menampilkan subtitle tepat di atas video */
+        #subtitle-display {
+            position: absolute;
+            bottom: 6%; /* Jarak dari bawah video */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            z-index: 10;
+            pointer-events: none; /* Penting agar tidak menghalangi video click */
+            color: white; /* Warna default subtitle */
+            text-shadow: 
+                1px 1px 2px black, 
+                -1px -1px 2px black, 
+                1px -1px 2px black, 
+                -1px 1px 2px black;
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
+
+
+        /* NEW: Subtitle Menu Styling */
+        #subtitle-menu {
+            border: 1px solid var(--window-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        #subtitle-menu button {
+            color: var(--control-text);
+            background-color: var(--control-bg);
+            opacity: 0.9;
+        }
+
+        body.dark #subtitle-menu button {
+            color: var(--control-text);
+            background-color: var(--control-bg);
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Filter SVG for Liquid Glass effect -->
+    <div style="position: absolute; width: 0; height: 0; z-index: -1">
+        <svg>
+            <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
+                <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none"
+                    href="img/svg-filter.jpg" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+                <feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
+                </feDisplacementMap>
+            </filter>
+        </svg>
+    </div>
+
+    <div class="app-window">
+        <!-- Window Header (Drag area) -->
+        <div id="vp-window-header" class="window-header">
+            <div class="window-title-container">
+                <img src="img/films-and-tv_171100.png" alt="Video Icon" class="h-4 w-4" />
+                <h2 class="text-sm font-normal">Video Player</h2>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="window-control-btn" title="Minimize">
+                    <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <button id="maximize-btn" class="window-control-btn" title="Maximize">
+                    <!-- Ikon default Maximize (kotak tunggal) -->
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <button id="close-btn" class="window-control-btn close-window-btn" title="Close">
+                    &times;
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area: (UPDATED) Struktur diubah -->
+        <div id="video-display-area" class="flex-grow relative drop-zone border-2 border-transparent"
+            style="background-color: var(--player-bg); overflow: hidden;" title="Drop video file here">
+
+            <!-- Elemen VIDEO -->
+            <!-- Tambahkan attribute 'crossorigin' agar WebVTT bisa bekerja dari Blob URL (Chrome/Firefox) -->
+            <video id="video-player" poster="https://placehold.co/600x400/1c1c1c/ffffff?text=Drop+Video" crossorigin="anonymous"></video>
+
+            <!-- Overlay untuk tampilan Drag and Drop dan Pesan -->
+            <div id="video-overlay" class="transition-opacity duration-300" style="opacity: 1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="currentColor"
+                    class="text-gray-300 mb-4">
+                    <path
+                        d="M18 10V5l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-9c-.7-.7-1.7-1-3-1zm1 1h-2v2h2v-2zm-2-12v4c0 1.1.9 2 2 2h4l-6-6zm-7 14.5l-4 3v-6l4 3z" />
+                </svg>
+                <p class="text-xl font-bold">Video Player</p>
+                <p class="text-sm text-gray-300">
+                    Drop a video file here (.mp4, .webm, **.mkv**)
+                </p>
+            </div>
+            
+            <!-- Elemen untuk menampilkan pesan error subtitle/status -->
+            <div id="subtitle-status-message" class="absolute top-2 left-2 text-sm p-1 rounded-md text-red-400 bg-gray-800 hidden"></div>
+        </div>
+
+        <!-- (UPDATED) Kontrol wrapper sekarang menjadi anak langsung dari .app-window -->
+        <div id="controls-wrapper" class="player-controls">
+
+            <!-- NEW: Baris 1: Timeline dan Waktu -->
+            <div class="flex items-center gap-3 w-full">
+                <span id="time-display-current" class="time-display">00:00</span>
+                <!-- Timeline Slider -->
+                <div class="timeline-container flex-grow" id="timeline-container">
+                    <div id="timeline-fill" class="timeline-fill"></div>
+                    <div id="timeline-thumb" class="timeline-thumb"></div>
+                </div>
+                <span id="time-display-duration" class="time-display">00:00</span>
+            </div>
+
+
+            <!-- NEW: Baris 2: Tombol Kontrol Utama -->
+            <div class="flex items-center justify-between w-full mt-1">
+
+                <!-- Kiri: Info Video (Seperti di referensi) -->
+                <div id="video-info-display" class="flex items-center gap-2 w-1/3 hidden">
+                    <svg class="w-8 h-8 opacity-70" viewBox="0 0 24 24" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 10h-2v2h-2v-2H8v-2h2V8h2v2h2v2z" />
+                    </svg>
+                    <span id="video-title-display" class="text-sm">Nama Video</span>
+                </div>
+
+                <!-- Tengah: Kontrol Utama -->
+                <div class="flex items-center justify-center gap-3 w-1/3">
+                    <button id="shuffle-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Shuffle" disabled>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+                        </svg>
+                    </button>
+
+                    <button id="prev-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Skip Back 10s" disabled>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 6h2v12H6zm3.5 6L18 18V6z" />
+                        </svg>
+                    </button>
+
+                    <!-- Tombol Play/Pause (Gaya Baru) -->
+                    <button id="play-pause-btn" title="Play/Pause" disabled>
+                        <!-- Ikon Play: Segitiga -->
+                        <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <!-- Ikon Pause: Dua baris (Disembunyikan) -->
+                        <svg id="pause-icon" class="hidden" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                        </svg>
+                    </button>
+
+                    <button id="next-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Skip Forward 10s" disabled>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 6h2v12h-2zm-4.5 6L6 18V6z" />
+                        </svg>
+                    </button>
+
+                    <button id="repeat-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Repeat" disabled>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v3z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Kanan: Kontrol Sekunder (Tambahkan 'relative' untuk menu dropdown) -->
+                <div class="flex items-center justify-end gap-2 w-1/3 relative">
+                    <button id="volume-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Volume">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                        </svg>
+                    </button>
+
+                    <!-- NEW: Cast Button (Placeholder) -->
+                    <button id="cast-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Cast (Not Implemented)" disabled>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M21 3H3c-1.1 0-2 .9-2 2v3h2V5h18v14h-7v2h7c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM1 18v3h3c0-1.66-1.34-3-3-3zm0-4v2c2.76 0 5 2.24 5 5h2c0-3.87-3.13-7-7-7zm0-4v2c4.97 0 9 4.03 9 9h2c0-6.08-4.93-11-11-11z" />
+                        </svg>
+                    </button>
+
+                    <!-- NEW: Tombol Subtitle -->
+                    <button id="subtitle-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Subtitles">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M18 5v14H6V5h12m2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 9h6v2H9V9zm0 4h6v2H9v-2z" />
+                        </svg>
+                    </button>
+
+                    <!-- NEW: Menu Subtitle Dropdown -->
+                    <!-- Gunakan bg-opacity-90 untuk glass effect yang lebih baik -->
+                    <div id="subtitle-menu"
+                        class="absolute bottom-full right-0 mb-2 w-48 rounded-lg shadow-xl py-1 z-30 hidden"
+                        style="background-color: var(--control-bg);">
+                        <div class="px-3 py-2 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Subtitle
+                            Tracks</div>
+                        <!-- Konten akan diisi oleh JS -->
+                        <div id="subtitle-track-list">
+                            <!-- Tracks akan dimasukkan di sini -->
+                        </div>
+                    </div>
+
+                    <button id="fullscreen-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="Fullscreen">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                        </svg>
+                    </button>
+
+                    <!-- NEW: More Button (Placeholder) -->
+                    <button id="more-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
+                        title="More (Not Implemented)" disabled>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- file matroska-subtitle.min.js yang ada di dir js/ -->
+    <script src="js/matroska-subtitles.min.js"></script>
+
+    <script>
+        // Elemen DOM
+        const header = document.getElementById("vp-window-header");
+        const closeBtn = document.getElementById("close-btn");
+        const minimizeBtn = document.getElementById("minimize-btn");
+        const maximizeBtn = document.getElementById("maximize-btn");
+        const appWindow = document.querySelector(".app-window");
+        const videoDisplayArea = document.getElementById("video-display-area");
+        const videoPlayer = document.getElementById("video-player");
+        const videoOverlay = document.getElementById("video-overlay");
+
+        // --- Kontrol Wrapper (Sekarang Statis) ---
+        const controlsWrapper = document.getElementById("controls-wrapper");
+
+        // Tombol Kontrol
+        const shuffleBtn = document.getElementById("shuffle-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        const playPauseBtn = document.getElementById("play-pause-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const repeatBtn = document.getElementById("repeat-btn");
+
+        // Ikon Play/Pause
+        const playIcon = document.getElementById("play-icon");
+        const pauseIcon = document.getElementById("pause-icon");
+
+        // Kontrol Timeline & Info
+        const timeDisplayCurrent = document.getElementById("time-display-current");
+        const timeDisplayDuration = document.getElementById("time-display-duration");
+        const timelineContainer = document.getElementById("timeline-container");
+        const timelineFill = document.getElementById("timeline-fill");
+        const timelineThumb = document.getElementById("timeline-thumb");
+
+        // Info Video
+        const videoInfoDisplay = document.getElementById("video-info-display");
+        const videoTitleDisplay = document.getElementById("video-title-display");
+
+        // Kontrol Window
+        const volumeBtn = document.getElementById("volume-btn");
+        const castBtn = document.getElementById("cast-btn");
+        const fullscreenBtn = document.getElementById("fullscreen-btn");
+        const moreBtn = document.getElementById("more-btn");
+
+        // NEW: Elemen Subtitle
+        const subtitleBtn = document.getElementById("subtitle-btn");
+        const subtitleMenu = document.getElementById("subtitle-menu");
+        const subtitleTrackList = document.getElementById("subtitle-track-list");
+        const subtitleStatusMsg = document.getElementById("subtitle-status-message");
+
+
+        let isDragging = false;
+        let isMaximized = false;
+        let isTimelineDragging = false;
+        let currentFileURL = null;
+        let subtitleTracks = []; // Menyimpan data subtitle yang diekstrak (metadata & content)
+        let currentTrackURL = null; // Menyimpan URL blob VTT yang aktif
+        let videoFileReference = null; // Menyimpan referensi File object untuk dibaca oleh FileReader
+
+        // --- Fungsi Helper ---
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds < 0) return '00:00';
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function toggleControlsActive(active) {
+            // Perbarui semua elemen kontrol
+            const elements = [shuffleBtn, prevBtn, playPauseBtn, nextBtn, repeatBtn, fullscreenBtn, volumeBtn, subtitleBtn]; 
+            
+            // --- PERBAIKAN 1: Aktifkan semua kontrol jika media dimuat (active = true) ---
+            elements.forEach(el => {
+                // Shuffle, Repeat, Cast, More tetap dinonaktifkan sementara
+                if (el.id === 'shuffle-btn' || el.id === 'repeat-btn' || el.id === 'cast-btn' || el.id === 'more-btn') {
+                    el.disabled = !active || true; 
+                } else {
+                    el.disabled = !active;
+                }
+            });
+
+            // Tampilkan/sembunyikan info video
+            if (active) {
+                videoInfoDisplay.classList.remove('hidden');
+            } else {
+                videoInfoDisplay.classList.add('hidden');
+            }
+
+
+            // Sembunyikan/tampilkan overlay utama (drag and drop / paused state)
+            if (active) {
+                // Jika media aktif, perbarui overlay berdasarkan status pause
+                if (videoPlayer.paused) {
+                    videoOverlay.style.opacity = '1';
+                    videoOverlay.classList.remove('hidden-overlay');
+                    videoOverlay.querySelector('.text-xl').textContent = 'Video Paused';
+                    videoOverlay.querySelector('p').textContent = 'Press Play or Spacebar';
+                    videoOverlay.querySelector('svg').classList.add('hidden');
+                } else {
+                    videoOverlay.style.opacity = '0';
+                    videoOverlay.classList.add('hidden-overlay');
+                }
+            } else {
+                // Mode tidak aktif/Belum ada media
+                videoOverlay.style.opacity = '1';
+                videoOverlay.classList.remove('hidden-overlay');
+                videoOverlay.querySelector('p').textContent = 'Drop a video file here (.mp4, .webm, **.mkv**)';
+                videoOverlay.querySelector('.text-xl').textContent = 'Video Player';
+                videoOverlay.querySelector('svg').classList.remove('hidden');
+                // Reset waktu saat tidak aktif
+                timeDisplayCurrent.textContent = '00:00';
+                timeDisplayDuration.textContent = '00:00';
+            }
+        }
+
+        // --- FUNGSI SUBTITLE BARU (Diperbarui untuk matroska-subtitles.min.js) ---
+
+        function showSubtitleStatus(message, isError = false) {
+            subtitleStatusMsg.textContent = message;
+            subtitleStatusMsg.classList.remove('hidden');
+            if (isError) {
+                subtitleStatusMsg.classList.remove('text-red-400', 'text-yellow-400');
+                subtitleStatusMsg.classList.add('text-red-400');
+            } else {
+                subtitleStatusMsg.classList.remove('text-red-400', 'text-yellow-400');
+                subtitleStatusMsg.classList.add('text-yellow-400');
+            }
+            setTimeout(() => {
+                subtitleStatusMsg.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Fungsi untuk menghapus track subtitle yang ada
+        function removeExistingSubtitleTracks() {
+            const existingTracks = videoPlayer.querySelectorAll('track');
+            existingTracks.forEach(track => {
+                // Cabut URL blob sebelum menghapus track
+                if (currentTrackURL) {
+                    URL.revokeObjectURL(currentTrackURL);
+                    currentTrackURL = null;
+                }
+                track.remove();
+            });
+            // Nonaktifkan semua text track yang mungkin tersisa
+            for (let i = 0; i < videoPlayer.textTracks.length; i++) {
+                videoPlayer.textTracks[i].mode = 'disabled';
+            }
+        }
+
+        // Fungsi untuk menambahkan track VTT ke video player
+        function addVTTTrackToVideo(vttContent, label) {
+            removeExistingSubtitleTracks(); // Hapus track lama
+
+            // Format waktu untuk WebVTT: hh:mm:ss.ms
+            // Konversi dari format milidetik/detik jika diperlukan. 
+            // Karena matroska-subtitles.js seharusnya sudah memberikan text VTT/SRT/ASS yang di-unpack.
+            
+            // Konversi format subtitle umum ke WebVTT (sangat disederhanakan)
+            let vttFormattedContent = "WEBVTT\n\n";
+            // Jika konten sudah berupa VTT, gunakan apa adanya. Jika tidak (ASS/SRT), perlu konversi kompleks.
+            // Karena konversi kompleks tidak praktis di sini, kita mengasumsikan parser MKV sudah 
+            // memberikan teks yang cukup "bersih" atau VTT.
+            if (vttContent.toUpperCase().includes("WEBVTT")) {
+                vttFormattedContent = vttContent;
+            } else if (vttContent.includes("Dialogue: ")) {
+                // S_ASS (Sangat Sederhana: hapus baris header ASS dan konversi ke WebVTT format)
+                showSubtitleStatus("Peringatan: Track S_ASS memerlukan konversi kompleks. Format mungkin tidak sempurna.", true);
+                const lines = vttContent.split('\n');
+                let cueCounter = 1;
+                for (const line of lines) {
+                    if (line.startsWith('Dialogue:')) {
+                        // Contoh format Dialogue: 0,0:00:05.00,0:00:09.00,Default,,0,0,0,,Teks Subtitle
+                        const parts = line.split(',');
+                        if (parts.length > 9) {
+                            const startTime = parts[1].replace('.', ','); // ganti . jadi , untuk ASS/SRT time
+                            const endTime = parts[2].replace('.', ',');
+                            let text = parts.slice(9).join(',').replace(/\{.*?\}|\\N/g, ' ').trim(); // Hapus tag styling ASS
+                            
+                            // Konversi waktu ASS/SRT (H:MM:SS.CS) ke WebVTT (HH:MM:SS.mmm)
+                            const formatTimeForVTT = (timeStr) => {
+                                // H:MM:SS.CS -> HH:MM:SS.mmm
+                                const [h, mm, ss_cs] = timeStr.split(':');
+                                const [ss, cs] = ss_cs.split('.');
+                                const ms = String(parseInt(cs) * 10).padStart(3, '0'); // CS (centisecond) ke milidetik
+                                return `${String(parseInt(h)).padStart(2, '0')}:${mm}:${ss}.${ms}`;
+                            };
+
+                            vttFormattedContent += `${cueCounter++}\n`;
+                            vttFormattedContent += `${formatTimeForVTT(parts[1])} --> ${formatTimeForVTT(parts[2])}\n`;
+                            vttFormattedContent += `${text}\n\n`;
+                        }
+                    }
+                }
+            } else {
+                 // Format VTT umum (Sangat Sederhana, mengasumsikan sudah dekat dengan VTT)
+                 showSubtitleStatus("Peringatan: Format subtitle tidak terdeteksi (S_TEXT?). Mengasumsikan format VTT dasar.", true);
+                 vttFormattedContent += vttContent;
+            }
+
+
+            const vttBlob = new Blob([vttFormattedContent], {
+                type: 'text/vtt'
+            });
+            currentTrackURL = URL.createObjectURL(vttBlob);
+
+            const track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.label = label;
+            track.srclang = track.language || 'und'; // Gunakan bahasa yang terdeteksi
+            track.src = currentTrackURL;
+            track.default = true;
+
+            // Tambahkan track ke video player
+            videoPlayer.appendChild(track);
+
+            // Pastikan track terlihat
+            track.addEventListener('load', function () {
+                this.track.mode = 'showing';
+                showSubtitleStatus(`Track Subtitle dimuat: ${label}`, false);
+                // Tambahkan class untuk styling subtitle bawaan browser agar terlihat lebih baik di atas video
+                videoPlayer.classList.add('has-subtitle'); 
+            });
+
+            // Handler error
+            track.addEventListener('error', function(e) {
+                console.error("[Subtitle] Error memuat track VTT:", e, this.src);
+                showSubtitleStatus(`Gagal memuat track VTT untuk: ${label}. Lihat konsol untuk detail.`, true);
+            });
+            
+            // Nonaktifkan semua track lain yang mungkin ada (misalnya dari file VTT eksternal)
+            for (let i = 0; i < videoPlayer.textTracks.length; i++) {
+                if (videoPlayer.textTracks[i].label !== label) {
+                    videoPlayer.textTracks[i].mode = 'disabled';
+                }
+            }
+            console.log(`[Subtitle] Subtitle track added: ${label}`);
+        }
+
+        /**
+         * FUNGSI PENTING: Ekstraksi Subtitle MKV menggunakan MatroskaSubtitles.
+         * Ini adalah implementasi non-blocking untuk mem-parse seluruh file.
+         */
+        async function attemptLoadEmbeddedSubtitles(file) {
+            if (!file.name.toLowerCase().endsWith('.mkv')) {
+                return [];
+            }
+            
+            if (typeof MatroskaSubtitles === 'undefined' || !MatroskaSubtitles.SubtitleParser) {
+                console.error("[MatroskaSubtitles] Pustaka MatroskaSubtitles tidak ditemukan! Pastikan file dimuat.");
+                showSubtitleStatus("Pustaka MatroskaSubtitles (matroska-subtitles.min.js) tidak ditemukan.", true);
+                return [];
+            }
+
+            // Gunakan FileReader untuk membaca seluruh file
+            const reader = new FileReader();
+            
+            // Simpan track yang ditemukan
+            let tracksMetadata = [];
+            let subtitleData = new Map(); // Map untuk menyimpan data subtitle berdasarkan TrackNumber
+
+            const parser = new MatroskaSubtitles.SubtitleParser();
+
+            parser.on('tracks', (tracks) => {
+                // Filter hanya track subtitle (TrackType 17)
+                tracksMetadata = tracks
+                    .filter(t => t.type === 'text')
+                    .map(t => ({
+                        number: t.number,
+                        label: t.name || `${t.type.toUpperCase()} Track (${t.language || 'und'})`,
+                        language: t.language || 'und',
+                        codec: t.codec,
+                        // Gunakan header dari CodecPrivate jika tersedia (penting untuk ASS)
+                        header: t.header || '' 
+                    }));
+                
+                if (tracksMetadata.length === 0) {
+                     showSubtitleStatus("Tidak ada track subtitle yang ditemukan di file MKV ini.", false);
+                } else {
+                     showSubtitleStatus(`Ditemukan ${tracksMetadata.length} track subtitle MKV.`, false);
+                }
+            });
+
+            parser.on('subtitle', (subtitle, trackNumber) => {
+                const track = tracksMetadata.find(t => t.number === trackNumber);
+                if (!track) return;
+                
+                // Ambil atau buat array untuk track ini
+                if (!subtitleData.has(trackNumber)) {
+                    subtitleData.set(trackNumber, []);
+                }
+                
+                // Tambahkan subtitle (sudah di-convert ke string UTF8 oleh parser jika tidak compressed)
+                // Format: {text: string, time: number (detik), duration: number (detik)}
+                subtitleData.get(trackNumber).push(subtitle);
+            });
+            
+            parser.on('end', () => {
+                // Proses data yang dikumpulkan
+                const finalTracks = tracksMetadata.map(t => {
+                    const data = subtitleData.get(t.number) || [];
+                    
+                    // Bangun konten WebVTT dari potongan subtitle
+                    // Ini adalah langkah kritis untuk mengonversi data MKV Block menjadi WebVTT.
+                    const vttContent = buildVttFromBlocks(t, data);
+                    
+                    return {
+                        ...t,
+                        content: vttContent,
+                    };
+                });
+                
+                // Resolve promise
+                resolve({ tracks: finalTracks, error: null });
+            });
+            
+            parser.on('error', (err) => {
+                 console.error("[MatroskaSubtitles] Error parsing EBML stream:", err);
+                 showSubtitleStatus(`Error parsing MKV: ${err.message || 'Unknown error'}.`, true);
+                 resolve({ tracks: [], error: err });
+            });
+
+
+            return new Promise((resolve) => {
+                reader.onload = async (event) => {
+                    const buffer = event.target.result;
+                    
+                    // Tulis seluruh buffer ke parser
+                    parser.write(new Uint8Array(buffer));
+                    parser.end();
+
+                    // Hasil akan ditangani di event 'end' parser, lalu di-resolve
+                };
+
+                reader.onerror = () => {
+                    console.error("[FileReader] Error reading file.");
+                    showSubtitleStatus("Gagal membaca file video.", true);
+                    resolve({ tracks: [], error: new Error("File read error") });
+                };
+
+                // Mulai membaca seluruh file sebagai ArrayBuffer
+                reader.readAsArrayBuffer(file); 
+            }).then(result => {
+                // Pastikan untuk mereset track data setelah selesai
+                subtitleData.clear();
+                tracksMetadata = [];
+                return result.tracks;
+            });
+        }
+        
+        // Helper untuk mengonversi Subtitle Block/Frame menjadi format WebVTT
+        // Catatan: Ini SANGAT Sederhana. Untuk ASS/SSA, ini akan gagal untuk styling kompleks.
+        function buildVttFromBlocks(trackInfo, blocks) {
+            let vtt = "WEBVTT\n\n";
+
+            // Tambahkan header ASS/SSA ke VTT jika ada (ini tidak standar, tapi untuk debugging)
+            if (trackInfo.header && (trackInfo.codec.includes('ASS') || trackInfo.codec.includes('SSA'))) {
+                // Untuk ASS/SSA, format header *harus* di-parse dan diterapkan sebagai gaya WebVTT
+                // Tapi kita hanya akan melewatkannya sebagai komentar karena konversi penuh terlalu kompleks.
+                // Anda bisa mencoba menggunakan tools eksternal seperti ass-to-vtt-js untuk konversi penuh.
+                // Di sini, kita hanya mengandalkan WebVTT native.
+            }
+            
+            // Fungsi konversi waktu: detik ke HH:MM:SS.mmm
+            const formatTimeVTT = (seconds) => {
+                const totalMilliseconds = Math.round(seconds * 1000);
+                const ms = totalMilliseconds % 1000;
+                const totalSeconds = Math.floor(totalMilliseconds / 1000);
+                const s = totalSeconds % 60;
+                const totalMinutes = Math.floor(totalSeconds / 60);
+                const m = totalMinutes % 60;
+                const h = Math.floor(totalMinutes / 60);
+                
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
+            };
+
+            let cueCounter = 1;
+            for (const block of blocks) {
+                // Gunakan duration jika tersedia, atau hitung end time dari block.time
+                const startTime = block.time;
+                const endTime = block.time + (block.duration || 0);
+                const text = block.text;
+
+                if (!text || text.trim() === '') continue;
+
+                // Strip tag ASS/SSA: { ... } atau \N (newline)
+                let cleanedText = text.replace(/\{[^}]*\}|\\N/g, ' ').trim();
+                
+                // Ganti tag styling ASS menjadi tag WebVTT sederhana
+                // Ini SANGAT TIDAK LENGKAP. Hanya untuk demonstrasi fungsionalitas.
+                cleanedText = cleanedText.replace(/\\i1/g, '<i>').replace(/\\i0/g, '</i>');
+                cleanedText = cleanedText.replace(/\\b1/g, '<b>').replace(/\\b0/g, '</b>');
+                
+                // Pisahkan baris dengan enter
+                cleanedText = cleanedText.replace(/\\n/g, '\n');
+
+                vtt += `${cueCounter++}\n`;
+                vtt += `${formatTimeVTT(startTime)} --> ${formatTimeVTT(endTime)}\n`;
+                vtt += `${cleanedText}\n\n`;
+            }
+            
+            return vtt;
+        }
+
+
+        // Fungsi untuk me-render menu subtitle
+        function renderSubtitleMenu(tracks) {
+            subtitleTrackList.innerHTML = '';
+            
+            // Tombol 'Off'
+            const offBtn = document.createElement('button');
+            offBtn.dataset.trackIndex = '-1'; // -1 untuk Off
+            offBtn.className = "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 font-bold";
+            offBtn.textContent = 'Off';
+            offBtn.addEventListener('click', () => {
+                removeExistingSubtitleTracks();
+                subtitleMenu.classList.add('hidden');
+                subtitleBtn.classList.remove('text-orange-400'); // Hapus highlight
+            });
+            subtitleTrackList.appendChild(offBtn);
+
+
+            if (tracks.length === 0) {
+                // Tampilkan pesan jika tidak ada track (setelah tombol Off)
+                const noTrackDiv = document.createElement('div');
+                noTrackDiv.className = "px-4 py-2 text-sm text-gray-500 dark:text-gray-400";
+                noTrackDiv.textContent = "No tracks found.";
+                subtitleTrackList.appendChild(noTrackDiv);
+                // Non-aktifkan tombol jika tidak ada media atau track tertanam
+                subtitleBtn.disabled = true;
+                return;
+            }
+
+            subtitleBtn.disabled = false;
+
+
+            // Daftar track yang diekstrak
+            tracks.forEach((track, index) => {
+                const btn = document.createElement('button');
+                btn.dataset.trackIndex = index;
+                btn.className = "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
+                btn.textContent = track.label;
+                btn.addEventListener('click', () => {
+                    selectSubtitleTrack(track);
+                    subtitleMenu.classList.add('hidden');
+                });
+                subtitleTrackList.appendChild(btn);
+            });
+        }
+
+        function selectSubtitleTrack(track) {
+            if (track && track.content) {
+                addVTTTrackToVideo(track.content, track.label);
+                subtitleBtn.classList.add('text-orange-400'); // Tambahkan highlight pada tombol
+            }
+        }
+
+
+        // --- Logika Pemutar Video ---
+        async function loadVideo(file) {
+            videoFileReference = file; // Simpan referensi file untuk dibaca oleh parser
+
+            if (currentFileURL) {
+                URL.revokeObjectURL(currentFileURL);
+            }
+
+            // Hapus track lama dan atur ulang status
+            removeExistingSubtitleTracks();
+            subtitleTracks = [];
+            renderSubtitleMenu([]);
+            subtitleBtn.classList.remove('text-orange-400');
+            subtitleStatusMsg.classList.add('hidden');
+            
+            currentFileURL = URL.createObjectURL(file);
+            videoPlayer.src = currentFileURL;
+            console.log(`[Video Player] Loaded video: ${file.name}`);
+
+            // Set judul video
+            const fileName = file.name;
+            videoTitleDisplay.textContent = fileName.length > 30 ? fileName.substring(0, 27) + '...' : fileName;
+
+            // PENTING: Panggil toggleControlsActive(true) setelah videoPlayer.src di-set
+            // untuk mengaktifkan tombol.
+            toggleControlsActive(true);
+
+
+            // >> LANGKAH BARU: Coba muat subtitle tertanam
+            if (file.name.toLowerCase().endsWith('.mkv')) {
+                 showSubtitleStatus("Memproses file MKV... Mohon tunggu.", false);
+                 const loadedTracks = await attemptLoadEmbeddedSubtitles(file);
+                 subtitleTracks = loadedTracks;
+                 renderSubtitleMenu(subtitleTracks);
+                 
+                 // Secara default, pilih track pertama jika ada
+                 if (loadedTracks.length > 0) {
+                     selectSubtitleTrack(loadedTracks[0]);
+                 }
+            }
+
+
+            videoPlayer.play().catch(e => {
+                console.error("[Video Player] Autoplay was prevented:", e);
+                // Jika autoplay gagal, video akan berada di status 'paused',
+                // yang akan ditangani oleh event listener 'pause' atau `updatePlayPauseIcon()`
+                updatePlayPauseIcon();
+                toggleControlsActive(true); // Memastikan overlay 'Paused' muncul
+            });
+        }
+
+        function updatePlayPauseIcon() {
+            if (videoPlayer.paused) {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            } else {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
+        }
+
+        function setupPlayerEvents() {
+            // Event Play/Pause
+            playPauseBtn.addEventListener("click", () => {
+                if (!videoPlayer.src) return;
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
+            });
+
+            // Event Previous (Skip Back 10s)
+            prevBtn.addEventListener("click", () => {
+                if (!videoPlayer.src) return;
+                videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+            });
+
+            // Event Next (Skip Forward 10s)
+            nextBtn.addEventListener("click", () => {
+                if (!videoPlayer.src) return;
+                videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+            });
+
+            // Event Video State
+            videoPlayer.addEventListener('play', () => {
+                updatePlayPauseIcon();
+                toggleControlsActive(true);
+                parent.postMessage({
+                    action: "show-media-notification",
+                    title: videoTitleDisplay.textContent,
+                    artist: "Video Player",
+                    albumArt: "img/films-and-tv_171100.png",
+                }, "*");
+            });
+            videoPlayer.addEventListener('pause', () => {
+                updatePlayPauseIcon();
+                toggleControlsActive(true); // Tampilkan overlay "Paused"
+            });
+            videoPlayer.addEventListener('ended', () => {
+                updatePlayPauseIcon();
+                // Opsional: kembali ke awal dan pause
+                videoPlayer.currentTime = 0;
+                videoPlayer.pause();
+                // toggleControlsActive(false); // Atau biarkan aktif tapi di-pause
+            });
+
+            videoPlayer.addEventListener('timeupdate', () => {
+                if (!isTimelineDragging) {
+                    const percent = (videoPlayer.duration > 0) ? (videoPlayer.currentTime / videoPlayer.duration) * 100 : 0;
+                    updateTimeline(percent);
+                }
+                // Perbarui waktu saat ini
+                timeDisplayCurrent.textContent = formatTime(videoPlayer.currentTime);
+            });
+
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                // Set durasi total
+                timeDisplayCurrent.textContent = '00:00';
+                timeDisplayDuration.textContent = formatTime(videoPlayer.duration);
+                // Set volume awal
+                parent.postMessage({
+                    action: 'request-volume'
+                }, '*');
+                
+                // PERBAIKAN 3: Pastikan kontrol diperbarui setelah metadata dimuat (jika tombol dinonaktifkan karena masalah autoplay)
+                toggleControlsActive(true);
+                updatePlayPauseIcon();
+
+            });
+
+            // Mengatur Fullscreen API (jika didukung)
+            fullscreenBtn.addEventListener('click', () => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else if (videoDisplayArea.requestFullscreen) {
+                    videoDisplayArea.requestFullscreen(); // Fullscreen seluruh area player
+                } else if (videoDisplayArea.webkitRequestFullscreen) {
+                    videoDisplayArea.webkitRequestFullscreen();
+                } else if (videoDisplayArea.msRequestFullscreen) {
+                    videoDisplayArea.msRequestFullscreen();
+                }
+            });
+
+            // Mengabaikan Volume Button, karena volume diatur oleh Desktop
+            volumeBtn.addEventListener('click', () => {
+                parent.postMessage({
+                    action: 'toggle-volume-flyout'
+                }, '*');
+            });
+            
+            // Tambahkan dukungan keyboard untuk play/pause (spacebar)
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && videoPlayer.src) {
+                    e.preventDefault();
+                    if (videoPlayer.paused) {
+                        videoPlayer.play();
+                    } else {
+                        videoPlayer.pause();
+                    }
+                }
+            });
+
+        }
+
+        // --- Logika Timeline Slider ---
+        function updateTimeline(percent) {
+            percent = Math.max(0, Math.min(100, percent));
+            const containerWidth = timelineContainer.offsetWidth;
+            const px = (percent / 100) * containerWidth;
+            timelineFill.style.width = `${percent}%`;
+
+            // Pastikan thumb tidak keluar batas
+            const containerRect = timelineContainer.getBoundingClientRect();
+            const thumbWidth = timelineThumb.offsetWidth;
+            const maxPx = containerRect.width - (thumbWidth / 2);
+            const thumbPx = (percent / 100) * containerWidth;
+            timelineThumb.style.left = `${Math.max(0, Math.min(thumbPx, containerWidth))}px`;
+
+        }
+
+        function getPercentFromClientX(container, clientX) {
+            const sliderRect = container.getBoundingClientRect();
+            const offsetX = clientX - sliderRect.left;
+            const containerWidth = container.offsetWidth;
+            // Batasi antara 0 dan 100
+            return Math.max(0, Math.min(100, (offsetX / containerWidth) * 100));
+        }
+
+        function seekVideo(clientX) {
+            if (!videoPlayer.src || isNaN(videoPlayer.duration) || videoPlayer.duration === 0) return;
+            const percent = getPercentFromClientX(timelineContainer, clientX);
+            updateTimeline(percent);
+            videoPlayer.currentTime = (percent / 100) * videoPlayer.duration;
+        }
+
+        function setupTimelineEvents() {
+            timelineThumb.addEventListener('mousedown', (e) => {
+                if (!videoPlayer.src) return;
+                isTimelineDragging = true;
+                timelineThumb.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                document.body.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isTimelineDragging) {
+                    const percent = getPercentFromClientX(timelineContainer, e.clientX);
+                    updateTimeline(percent);
+                    const newTime = (percent / 100) * videoPlayer.duration;
+                    // Perbarui waktu saat menyeret
+                    timeDisplayCurrent.textContent = formatTime(newTime);
+                }
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isTimelineDragging) {
+                    isTimelineDragging = false;
+                    timelineThumb.style.transform = 'translate(-50%, -50%)';
+                    document.body.style.cursor = 'default';
+                    seekVideo(e.clientX);
+                }
+            });
+
+            timelineContainer.addEventListener('mousedown', (e) => {
+                if (e.target !== timelineThumb) seekVideo(e.clientX);
+            });
+        }
+
+        // --- Setup Subtitle Events ---
+        function setupSubtitleEvents() {
+            subtitleBtn.addEventListener('click', (e) => {
+                if (subtitleBtn.disabled) return;
+                e.stopPropagation(); // Cegah event menyebar ke document
+                subtitleMenu.classList.toggle('hidden');
+            });
+
+            // Tutup menu jika mengklik di luar
+            document.addEventListener('click', (e) => {
+                if (!subtitleMenu.contains(e.target) && e.target !== subtitleBtn) {
+                    subtitleMenu.classList.add('hidden');
+                }
+            });
+
+            // Awalnya, sembunyikan tombol subtitle dan render menu kosong
+            renderSubtitleMenu([]);
+        }
+
+
+        // --- Logika Drag and Drop ---
+        function setupDragAndDrop() {
+            const dropZone = videoDisplayArea; // FIX: Menggunakan videoDisplayArea
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const types = e.dataTransfer.types;
+                // Periksa apakah ada file video
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const fileName = e.dataTransfer.files[0].name.toLowerCase();
+                    // Mendukung tipe video atau ekstensi MKV
+                    if (e.dataTransfer.files[0].type.startsWith('video/') || fileName.endsWith('.mkv') || fileName.endsWith('.webm')) {
+                        dropZone.classList.add('drag-over');
+                    }
+                } else if (types.includes('Files')) {
+                    // Fallback jika 'items' tidak tersedia
+                    dropZone.classList.add('drag-over');
+                }
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    const fileNameLower = file.name.toLowerCase();
+
+                    if (file && (file.type.startsWith('video/') || fileNameLower.endsWith('.mkv') || fileNameLower.endsWith('.webm'))) {
+                        loadVideo(file);
+                    } else {
+                        videoOverlay.style.opacity = '1';
+                        videoOverlay.classList.remove('hidden-overlay');
+                        videoOverlay.querySelector('.text-xl').textContent = 'File Not Supported';
+                        videoOverlay.querySelector('p').textContent = 'Please drop a video file (.mp4, .webm, .mkv, etc.)';
+                    }
+                }
+            });
+        }
+
+
+        // --- Logika Interaksi Jendela ---
+        header.addEventListener("mousedown", (e) => {
+            if (isMaximized) return;
+            isDragging = true;
+            parent.postMessage({
+                action: "bring-vp-to-front"
+            }, "*");
+            e.preventDefault();
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                parent.postMessage({
+                    action: "drag-vp-frame",
+                    dx: e.movementX,
+                    dy: e.movementY,
+                }, "*");
+            }
+        });
+
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+
+        closeBtn.addEventListener("click", () =>
+            parent.postMessage({
+                action: "close-vp-frame"
+            }, "*"),
+        );
+        minimizeBtn.addEventListener("click", () =>
+            parent.postMessage({
+                action: "minimize-vp-frame"
+            }, "*"),
+        );
+
+        maximizeBtn.addEventListener("click", () =>
+            parent.postMessage({
+                action: "maximize-vp-frame"
+            }, "*"),
+        );
+
+        // --- Message Listener (receives messages from parent) ---
+        window.addEventListener("message", (event) => {
+            const {
+                action,
+                isDark,
+                value,
+                volume,
+                isMaximized: newMaximizedState,
+                borderRadius,
+            } = event.data;
+
+            if (action === "theme-change") {
+                // Tema Light/Dark
+                document.body.classList.toggle("dark", isDark);
+            }
+            if (action === "toggle-fancy-mode") {
+                // Tema Fancy Mode
+                document.body.classList.toggle(
+                    "fancy-mode",
+                    value,
+                );
+            }
+
+            if (action === "set-volume") {
+                if (videoPlayer.volume !== volume) {
+                    videoPlayer.volume = volume / 100;
+                }
+            }
+
+            if (action === "set-maximized-state") {
+                isMaximized = newMaximizedState;
+
+                // Tambahkan/Hapus class 'maximized' pada appWindow
+                appWindow.classList.toggle('maximized', isMaximized);
+
+                if (isMaximized) {
+                    maximizeBtn.title = "Restore Down";
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
+
+                    appWindow.style.borderRadius = borderRadius || "0";
+                    header.style.padding = '3px 3px 3px 6px';
+                } else {
+                    maximizeBtn.title = "Maximize";
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
+
+                    appWindow.style.borderRadius = "8px";
+                    header.style.padding = '3px 3px 3px 6px';
+                }
+            }
+        });
+
+        // Inisialisasi
+        window.addEventListener('load', () => {
+            setupPlayerEvents();
+            setupTimelineEvents();
+            setupDragAndDrop();
+            setupSubtitleEvents(); // Panggil event setup subtitle
+            // Minta pengaturan awal dari parent
+            parent.postMessage({
+                action: 'request-settings'
+            }, '*');
+        });
+
+        // Pastikan kontrol dinonaktifkan dan overlay terlihat saat inisialisasi
+        toggleControlsActive(false);
+    </script>
+</body>
+
+</html>

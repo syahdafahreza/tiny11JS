@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="css/index-main.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet"> -->
-    
 </head>
 
 <body class="bg-gray-800 select-none">
@@ -53,8 +52,8 @@
 
         <!-- MODIFIED: Changed to flex-row for multi-column layout -->
         <div id="desktop-icons" class="absolute top-4 left-4 flex flex-row gap-4 z-10">
-            <!-- Column 1 -->
-            <div class="flex flex-col gap-2">
+            <!-- Column 1 (MENGHAPUS class 'gap-2') -->
+            <div class="flex flex-col">
                 <!-- [KEPT] Mempertahankan ID dari file lokal -->
                 <div id="this-pc-icon" class="desktop-icon" tabindex="0"><img
                         src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC" /><span>This PC</span>
@@ -69,12 +68,16 @@
                         src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin" /><span>Recycle
                         Bin</span></div>
             </div>
-            <!-- Column 2 -->
-            <div class="flex flex-col gap-2">
+            <!-- Column 2 (MENGHAPUS class 'gap-2') -->
+            <div class="flex flex-col">
                 <!-- MOVED: Live2D Wallpaper icon is now the first in the second column -->
                 <div id="live2d-icon" class="desktop-icon" tabindex="0"><img
                         src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /><span>Live
                         Wallpaper</span></div>
+                <!-- NEW: Video Player Icon -->
+                <div id="video-player-icon" class="desktop-icon" tabindex="0"><img
+                        src="img/films-and-tv_171100.png" alt="Video Player" /><span>Video
+                        Player</span></div>
             </div>
         </div>
 
@@ -109,6 +112,12 @@
                         <div class="app-item">
                             <div class="app-icon bg-green-700"><img src="https://img.icons8.com/fluency/48/ms-excel.png"
                                     alt="Excel" /></div><span>Excel</span>
+                        </div>
+                        <!-- NEW: Video Player Start Menu Item -->
+                        <div id="start-menu-video-player" class="app-item">
+                            <div class="app-icon bg-[#ff6e40]"><img
+                                    src="https://img.icons8.com/fluency/48/000000/video-clip.png" alt="Video" /></div>
+                            <span>Video Player</span>
                         </div>
                         <div class="app-item">
                             <div class="app-icon bg-red-500"><img src="img/winstoreapp-dark.png" alt="Store" /></div>
@@ -179,6 +188,11 @@
 
         <iframe id="music-player-frame" class="app-iframe" src="music_player.html" allowtransparency="true"
             style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
+        </iframe>
+
+        <!-- NEW: Video Player Iframe -->
+        <iframe id="video-player-frame" class="app-iframe" src="video_player.html" allowtransparency="true"
+            style="top: 25%; left: 15%; width: 640px; height: 500px; min-width: 400px; min-height: 300px;">
         </iframe>
 
         <!-- NEW: Iframe for the Live2D Wallpaper App window -->
@@ -383,7 +397,7 @@
                 <li id="explorer-item-properties" data-command="properties-item" class="context-menu-item"><img
                         class="context-menu-item-icon"
                         src="https://img.icons8.com/fluent-systems-filled/48/show-property.png" /><span
-                        class="context-menu-item-text">Properties</span></li>
+                        class="menu-text">Properties</span></li>
             </ul>
         </div>
 
@@ -405,6 +419,9 @@
                     </div>
                     <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img
                             src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player" /></div>
+                    <!-- NEW: Taskbar icon for Video Player -->
+                    <div id="taskbar-video-player-icon" class="taskbar-icon" style="display: none;"><img
+                            src="img/films-and-tv_171100.png" alt="Video Player" /></div>
                     <!-- NEW: Taskbar icon for Live Wallpaper -->
                     <div id="taskbar-live2d-icon" class="taskbar-icon" style="display: none;"><img
                             src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /></div>
@@ -523,7 +540,7 @@
         <script src="js/jquery-3.7.1.min.js"></script>
         <script src="js/jquery-ui.min.js"></script>
         <script src="js/index-main.js"></script>
-        
+
 </body>
 
 </html>

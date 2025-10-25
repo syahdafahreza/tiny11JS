@@ -343,6 +343,16 @@ body.fancy-mode #notification-center {
     z-index: -1;
 }
 
+.desktop-icon {
+            align-items: flex-start;
+            height: 120px;
+            margin-bottom: 8px;
+        }
+        
+        #desktop-icons .flex-col > .desktop-icon:last-child {
+            margin-bottom: 0;
+        }
+
 #desktop {
     width: 100vw;
     height: 100vh;

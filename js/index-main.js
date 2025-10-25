@@ -1,102 +1,118 @@
 // === ALL ELEMENT DECLARATIONS ===
-const desktop = document.getElementById('desktop');
-const desktopImage = document.querySelector('.desktop-image'); // FIX: Deklarasikan elemen gambar wallpaper
-const wallpaperIframe = document.getElementById('wallpaper-iframe');
-const clickInterceptor = document.getElementById('click-interceptor'); // NEW: Invisible layer
+const desktop = document.getElementById("desktop");
+const desktopImage = document.querySelector(".desktop-image"); // FIX: Deklarasikan elemen gambar wallpaper
+const wallpaperIframe = document.getElementById("wallpaper-iframe");
+const clickInterceptor = document.getElementById("click-interceptor"); // NEW: Invisible layer
 
 // for notification item
-const notificationList = document.getElementById('notification-list');
-const notificationPlaceholder = document.getElementById('notification-placeholder');
+const notificationList = document.getElementById("notification-list");
+const notificationPlaceholder = document.getElementById(
+    "notification-placeholder",
+);
 
-const clearAllBtn = document.getElementById('clear-all-notifications-btn');
+const clearAllBtn = document.getElementById("clear-all-notifications-btn");
 
 // App Iframes
-const controlPanelIcon = document.getElementById('control-panel-icon');
-const controlPanelFrame = document.getElementById('control-panel-frame');
-const musicPlayerIcon = document.getElementById('music-player-icon');
-const musicPlayerFrame = document.getElementById('music-player-frame');
-const live2dIcon = document.getElementById('live2d-icon');
-const notificationCenterTrigger = document.getElementById('notification-center-trigger');
-const live2dWallpaperFrame = document.getElementById('live2d-wallpaper-frame');
+const controlPanelIcon = document.getElementById("control-panel-icon");
+const controlPanelFrame = document.getElementById("control-panel-frame");
+const musicPlayerIcon = document.getElementById("music-player-icon");
+const musicPlayerFrame = document.getElementById("music-player-frame");
+const live2dIcon = document.getElementById("live2d-icon");
+const notificationCenterTrigger = document.getElementById(
+    "notification-center-trigger",
+);
+const live2dWallpaperFrame = document.getElementById("live2d-wallpaper-frame");
+// BARU: Video Player elements
+const videoPlayerIcon = document.getElementById("video-player-icon");
+const videoPlayerFrame = document.getElementById("video-player-frame");
 // [KEPT] Deklarasi dari file lokal
-const thisPcIcon = document.getElementById('this-pc-icon');
-const fileExplorerFrame = document.getElementById('file-explorer-frame');
+const thisPcIcon = document.getElementById("this-pc-icon");
+const fileExplorerFrame = document.getElementById("file-explorer-frame");
 
 // Visualizer Elements
-const visualizerCanvas = document.getElementById('visualizer');
-const visualizerCtx = visualizerCanvas.getContext('2d');
+const visualizerCanvas = document.getElementById("visualizer");
+const visualizerCtx = visualizerCanvas.getContext("2d");
 
 // Taskbar Elements
-const taskbar = document.getElementById('taskbar');
-const datetimeContainer = document.getElementById('datetime-container');
-const clockElement = document.getElementById('clock');
-const dateElement = document.getElementById('date');
-const systemTray = document.getElementById('system-tray');
-const taskbarMainGroup = document.getElementById('taskbar-main-group');
-const appIconsContainer = document.getElementById('app-icons');
-const taskbarControlPanelIcon = document.getElementById('taskbar-cp-icon');
-const taskbarMusicIcon = document.getElementById('taskbar-music-icon');
-const taskbarLive2dIcon = document.getElementById('taskbar-live2d-icon');
-const notificationCenter = document.getElementById('notification-center');
+const taskbar = document.getElementById("taskbar");
+const datetimeContainer = document.getElementById("datetime-container");
+const clockElement = document.getElementById("clock");
+const dateElement = document.getElementById("date");
+const systemTray = document.getElementById("system-tray");
+const taskbarMainGroup = document.getElementById("taskbar-main-group");
+const appIconsContainer = document.getElementById("app-icons");
+const taskbarControlPanelIcon = document.getElementById("taskbar-cp-icon");
+const taskbarMusicIcon = document.getElementById("taskbar-music-icon");
+const taskbarLive2dIcon = document.getElementById("taskbar-live2d-icon");
+// BARU: Taskbar Video Player icon
+const taskbarVideoPlayerIcon = document.getElementById(
+    "taskbar-video-player-icon",
+);
+const notificationCenter = document.getElementById("notification-center");
 // [KEPT] Deklarasi dari file lokal
-const taskbarExplorerIcon = document.getElementById('taskbar-explorer-icon');
+const taskbarExplorerIcon = document.getElementById("taskbar-explorer-icon");
 
 // Start Menu Elements
-const startButton = document.getElementById('start-button');
+const startButton = document.getElementById("start-button");
 // GANTI: Gunakan ID yang benar: #start-menu
-const startMenu = document.getElementById('start-menu');
+const startMenu = document.getElementById("start-menu");
 
 // Context Menu Elements
-const contextMenu = document.getElementById('context-menu');
-const contextMenuSettings = document.getElementById('context-menu-settings');
-const contextMenuRefresh = document.getElementById('context-menu-refresh');
+const contextMenu = document.getElementById("context-menu");
+const contextMenuSettings = document.getElementById("context-menu-settings");
+const contextMenuRefresh = document.getElementById("context-menu-refresh");
 // NEW: Explorer Context Menu elements
-const explorerGeneralMenu = document.getElementById('explorer-context-menu-general');
-const explorerItemMenu = document.getElementById('explorer-context-menu-item');
-
+const explorerGeneralMenu = document.getElementById(
+    "explorer-context-menu-general",
+);
+const explorerItemMenu = document.getElementById("explorer-context-menu-item");
 
 // BARU: Elemen Flyout Volume di Desktop
-const volumeContent = document.getElementById('volume-content');
-const volumeIcon = document.getElementById('volume-icon');
-const volumeBarFill = document.getElementById('volume-bar-fill');
-const volumeValue = document.getElementById('volume-value');
+const volumeContent = document.getElementById("volume-content");
+const volumeIcon = document.getElementById("volume-icon");
+const volumeBarFill = document.getElementById("volume-bar-fill");
+const volumeValue = document.getElementById("volume-value");
 
 // Toast Notification
-const notificationContent = document.getElementById('notification-content');
-const pillContainer = document.getElementById('pill-container');
-const closeButton = document.getElementById('close-button');
-const notifIcon = document.getElementById('notification-icon');
-const notifTitle = document.getElementById('notification-title');
-const notifMessage = document.getElementById('notification-message');
+const notificationContent = document.getElementById("notification-content");
+const pillContainer = document.getElementById("pill-container");
+const closeButton = document.getElementById("close-button");
+const notifIcon = document.getElementById("notification-icon");
+const notifTitle = document.getElementById("notification-title");
+const notifMessage = document.getElementById("notification-message");
 
 // Global State Variables
 let isMusicPlayerOpen = false;
 let isControlPanelOpen = false;
 let isLive2dOpen = false;
+let isVideoPlayerOpen = false; // BARU
 let isExplorerOpen = false; // [KEPT] Dari file lokal
 let lastMusicPlayerRect = null;
 let lastControlPanelRect = null;
 let lastLive2dRect = null;
+let lastVideoPlayerRect = null; // BARU
 let lastExplorerRect = null; // [KEPT] Dari file lokal
 let visualizerData = null;
 let previousBarHeights = [];
-let currentTaskbarPosition = 'bottom';
-let currentTaskbarStyle = 'default';
+let currentTaskbarPosition = "bottom";
+let currentTaskbarStyle = "default";
 let isTaskbarSpaceBetween = false;
 let isMusicPlayerMaximized = false;
 let isControlPanelMaximized = false;
 let isLive2dMaximized = false;
+let isVideoPlayerMaximized = false; // BARU
 let isExplorerMaximized = false;
 
 let originalMusicPlayerRect = null;
 let originalControlPanelRect = null;
 let originalLive2dRect = null;
+let originalVideoPlayerRect = null; // BARU
 let originalExplorerRect = null;
 
 // For toast notification
 let originalTaskbarClasses = taskbar.className;
-let originalTaskbarInlineStyles = '';
-let originalTaskbarStyles = '';
+let originalTaskbarInlineStyles = "";
+let originalTaskbarStyles = "";
 let pillTimer; // Menggantikan notificationTimer & volumeFlyoutTimer
 let volumeChangeTimer; // Timer untuk menandai bahwa volume sedang berubah
 let isPillActive = false; // Menggantikan isNotifActive
@@ -107,20 +123,24 @@ let isVolumeChanging = false; // Status apakah volume sedang berubah
 function debugTaskbarState(phase) {
     const rect = taskbar.getBoundingClientRect();
     const computed = getComputedStyle(taskbar);
-    console.log(`%c[DEBUG ${phase}] TASKBAR:`, 'background: #222; color: #fff; padding: 2px 5px;', {
-        classes: taskbar.className,
-        position: computed.position,
-        display: computed.display,
-        left: computed.left,
-        bottom: computed.bottom,
-        width: computed.width,
-        borderRadius: computed.borderRadius,
-        actualRect: {
-            left: rect.left.toFixed(1),
+    console.log(
+        `%c[DEBUG ${phase}] TASKBAR:`,
+        "background: #222; color: #fff; padding: 2px 5px;",
+        {
+            classes: taskbar.className,
+            position: computed.position,
+            display: computed.display,
+            left: computed.left,
             bottom: (window.innerHeight - rect.bottom).toFixed(1),
-            width: rect.width.toFixed(1)
-        }
-    });
+            width: rect.width.toFixed(1),
+            borderRadius: computed.borderRadius,
+            actualRect: {
+                left: rect.left.toFixed(1),
+                bottom: (window.innerHeight - rect.bottom).toFixed(1),
+                width: rect.width.toFixed(1),
+            },
+        },
+    );
 }
 
 // debugTaskbarState('Before Show Pill');
@@ -130,7 +150,7 @@ const showPill = (type, duration = 5000) => {
         // Jika tipe sama, hanya reset timer
         clearTimeout(pillTimer);
         pillTimer = setTimeout(() => {
-            if (type === 'volume' && isVolumeChanging) return;
+            if (type === "volume" && isVolumeChanging) return;
             hidePill();
         }, duration);
         return;
@@ -138,31 +158,34 @@ const showPill = (type, duration = 5000) => {
 
     // Jika pill sudah aktif tapi tipenya BEDA (misal dari notif ke volume)
     if (isPillActive && type !== activePillType) {
-        const currentContent = activePillType === 'notification' ? notificationContent : volumeContent;
-        const newContent = type === 'notification' ? notificationContent : volumeContent;
+        const currentContent =
+            activePillType === "notification"
+                ? notificationContent
+                : volumeContent;
+        const newContent =
+            type === "notification" ? notificationContent : volumeContent;
 
         // 1. Fade out konten lama
-        currentContent.style.opacity = '0';
+        currentContent.style.opacity = "0";
 
         // 2. Setelah fade out, ganti konten dan fade in
         setTimeout(() => {
-            currentContent.style.display = 'none';
-            newContent.style.display = 'flex';
+            currentContent.style.display = "none";
+            newContent.style.display = "flex";
             // Beri sedikit waktu untuk browser me-render display:flex
             setTimeout(() => {
-                newContent.style.opacity = '1';
+                newContent.style.opacity = "1";
             }, 20);
         }, 300); // Sesuaikan dengan durasi transisi opacity konten
 
         activePillType = type;
         clearTimeout(pillTimer);
         pillTimer = setTimeout(() => {
-            if (type === 'volume' && isVolumeChanging) return;
+            if (type === "volume" && isVolumeChanging) return;
             hidePill();
         }, duration);
         return;
     }
-
 
     // --- Animasi Muncul Pertama Kali ---
     isPillActive = true;
@@ -171,15 +194,15 @@ const showPill = (type, duration = 5000) => {
     // 1. Dapatkan posisi & gaya taskbar saat ini
     const taskbarRect = taskbar.getBoundingClientRect();
     const taskbarStyle = getComputedStyle(taskbar);
-    $(pillContainer).data('originalRect', taskbarRect); // Simpan untuk animasi kembali
+    $(pillContainer).data("originalRect", taskbarRect); // Simpan untuk animasi kembali
 
     // 2. Sembunyikan konten taskbar & visualizer
-    taskbarMainGroup.style.opacity = '0';
-    systemTray.style.opacity = '0';
-    visualizerCanvas.style.opacity = '0';
+    taskbarMainGroup.style.opacity = "0";
+    systemTray.style.opacity = "0";
+    visualizerCanvas.style.opacity = "0";
 
     // 3. Atur posisi awal pill agar sama persis dengan taskbar (tapi masih transparan)
-    pillContainer.style.transition = 'none'; // Matikan transisi sementara
+    pillContainer.style.transition = "none"; // Matikan transisi sementara
     pillContainer.style.left = `${taskbarRect.left}px`;
     pillContainer.style.top = `${taskbarRect.top}px`;
     pillContainer.style.width = `${taskbarRect.width}px`;
@@ -187,26 +210,28 @@ const showPill = (type, duration = 5000) => {
     pillContainer.style.borderRadius = taskbarStyle.borderRadius;
 
     // 4. Siapkan konten yang akan ditampilkan di dalam pill
-    const activeContent = type === 'notification' ? notificationContent : volumeContent;
-    notificationContent.style.display = 'none';
-    volumeContent.style.display = 'none';
-    activeContent.style.display = 'flex';
-    activeContent.style.opacity = '0';
+    const activeContent =
+        type === "notification" ? notificationContent : volumeContent;
+    notificationContent.style.display = "none";
+    volumeContent.style.display = "none";
+    activeContent.style.display = "flex";
+    activeContent.style.opacity = "0";
 
     // 5. Jalankan animasi secara sinkron
     requestAnimationFrame(() => {
         // Sembunyikan taskbar asli
-        taskbar.style.opacity = '0';
-        taskbar.style.pointerEvents = 'none';
+        taskbar.style.opacity = "0";
+        taskbar.style.pointerEvents = "none";
 
         // Aktifkan lagi transisi dan mulai animasi pill
-        pillContainer.style.transition = 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
-        pillContainer.classList.add('show');
+        pillContainer.style.transition =
+            "all 0.45s cubic-bezier(0.4, 0, 0.2, 1)";
+        pillContainer.classList.add("show");
 
         // Tentukan target posisi & ukuran pill
         const pillWidth = 380;
         const pillHeight = 56;
-        const targetLeft = (window.innerWidth / 2) - (pillWidth / 2);
+        const targetLeft = window.innerWidth / 2 - pillWidth / 2;
         // KEMBALIKAN: Posisi seperti semula, dekat bagian bawah
         const targetTop = window.innerHeight - pillHeight - 8;
 
@@ -215,18 +240,18 @@ const showPill = (type, duration = 5000) => {
         pillContainer.style.width = `${pillWidth}px`;
         pillContainer.style.height = `${pillHeight}px`;
         // KEMBALIKAN: Bentuk sudut seperti semula
-        pillContainer.style.borderRadius = '12px';
+        pillContainer.style.borderRadius = "12px";
 
         // 6. Fade-in konten di dalam pill setelah animasi morphing berjalan setengah jalan
         setTimeout(() => {
-            activeContent.style.opacity = '1';
+            activeContent.style.opacity = "1";
         }, 200);
     });
 
     // 7. Atur timer untuk menyembunyikan pill secara otomatis
     pillTimer = setTimeout(() => {
         // Jangan sembunyikan jika pengguna masih menggeser volume
-        if (type === 'volume' && isVolumeChanging) return;
+        if (type === "volume" && isVolumeChanging) return;
         hidePill();
     }, duration);
 };
@@ -235,7 +260,7 @@ const hidePill = () => {
     if (!isPillActive) return;
 
     clearTimeout(pillTimer);
-    const originalRect = $(pillContainer).data('originalRect');
+    const originalRect = $(pillContainer).data("originalRect");
     const morphDuration = 450; // ms (sesuai dengan 0.45s di CSS showPill)
     const contentFadeDuration = 150; // ms untuk fade out konten pill
 
@@ -246,8 +271,9 @@ const hidePill = () => {
     }
 
     // 1. Sembunyikan konten di dalam pill (Fade out: 150ms)
-    const activeContent = activePillType === 'notification' ? notificationContent : volumeContent;
-    activeContent.style.opacity = '0';
+    const activeContent =
+        activePillType === "notification" ? notificationContent : volumeContent;
+    activeContent.style.opacity = "0";
 
     // 2. Setelah konten pill hilang, mulai animasi morphing balik dan tampilkan konten taskbar
     setTimeout(() => {
@@ -257,14 +283,15 @@ const hidePill = () => {
         pillContainer.style.width = `${originalRect.width}px`;
         pillContainer.style.height = `${originalRect.height}px`;
         // Ambil border radius taskbar saat ini (bisa berubah)
-        pillContainer.style.borderRadius = getComputedStyle(taskbar).borderRadius;
+        pillContainer.style.borderRadius =
+            getComputedStyle(taskbar).borderRadius;
 
         // Sembunyikan pill bersamaan dengan animasi morphing
-        pillContainer.classList.remove('show');
+        pillContainer.classList.remove("show");
 
         // B. Tampilkan taskbar asli dan mulai fade in konten taskbar
-        taskbar.style.opacity = '1';
-        taskbar.style.pointerEvents = 'auto';
+        taskbar.style.opacity = "1";
+        taskbar.style.pointerEvents = "auto";
 
         // Set transisi untuk fade in konten taskbar (350ms, 50ms delay)
         const taskbarContentFadeInDuration = 350;
@@ -273,80 +300,82 @@ const hidePill = () => {
         visualizerCanvas.style.transition = `opacity ${taskbarContentFadeInDuration}ms ease-in 0.05s`;
 
         // Mulai fade in konten taskbar
-        taskbarMainGroup.style.opacity = '1';
-        systemTray.style.opacity = '1';
-        if (visualizerCanvas.style.display !== 'none') {
-            visualizerCanvas.style.opacity = '1';
+        taskbarMainGroup.style.opacity = "1";
+        systemTray.style.opacity = "1";
+        if (visualizerCanvas.style.display !== "none") {
+            visualizerCanvas.style.opacity = "1";
         }
-
     }, contentFadeDuration); // Jeda 150ms
 
     // 3. Setelah morphing dan fade-in taskbar selesai, reset state
-    setTimeout(() => {
-        // Hapus transisi inline untuk menghindari masalah di kemudian hari
-        taskbarMainGroup.style.transition = '';
-        systemTray.style.transition = '';
-        visualizerCanvas.style.transition = '';
-        activeContent.style.display = 'none'; // Sembunyikan konten pill secara permanen
-        resetPillState();
-    }, contentFadeDuration + morphDuration + 100); // Total sekitar 700ms
+    setTimeout(
+        () => {
+            // Hapus transisi inline untuk menghindari masalah di kemudian hari
+            taskbarMainGroup.style.transition = "";
+            systemTray.style.transition = "";
+            visualizerCanvas.style.transition = "";
+            activeContent.style.display = "none"; // Sembunyikan konten pill secara permanen
+            resetPillState();
+        },
+        contentFadeDuration + morphDuration + 100,
+    ); // Total sekitar 700ms
 };
 
 // Fungsi helper untuk menyelesaikan proses hide
 const completePillHide = ($taskbar, originalState) => {
     // Hapus semua style inline dan kembalikan class asli
-    $taskbar.removeAttr('style');
-    $taskbar.attr('class', originalState.classes);
+    $taskbar.removeAttr("style");
+    $taskbar.attr("class", originalState.classes);
     if (originalState.style) {
-        $taskbar.attr('style', originalState.style);
+        $taskbar.attr("style", originalState.style);
     }
 
     // Hapus pill mode
-    $taskbar.removeClass('pill-mode');
+    $taskbar.removeClass("pill-mode");
 
     // Fade in konten asli taskbar
-    const $taskbarContent = $taskbar.find('#taskbar-main-group, #system-tray');
+    const $taskbarContent = $taskbar.find("#taskbar-main-group, #system-tray");
     $taskbarContent.css({
-        transition: 'opacity 0.3s ease-in 0.1s', // Delay sedikit setelah morphing selesai
-        opacity: 0 // Mulai dari opacity 0
+        transition: "opacity 0.3s ease-in 0.1s", // Delay sedikit setelah morphing selesai
+        opacity: 0, // Mulai dari opacity 0
     });
 
     // Tampilkan konten asli dan fade in
-    $taskbarContent.css('display', '');
+    $taskbarContent.css("display", "");
 
     setTimeout(() => {
         $taskbarContent.css({
             opacity: 1,
-            pointerEvents: 'auto'
+            pointerEvents: "auto",
         });
     }, 100);
 
     // Sembunyikan konten pill
-    $taskbar.find('#notification-content, #volume-content').hide();
+    $taskbar.find("#notification-content, #volume-content").hide();
 
     // Tampilkan kembali visualizer jika ada dengan fade
-    if ($('#visualizer').css('display') !== 'none') {
-        $('#visualizer').fadeTo(300, 1);
+    if ($("#visualizer").css("display") !== "none") {
+        $("#visualizer").fadeTo(300, 1);
     }
 
     // Hapus data state dan reset variabel global
-    $taskbar.removeData('originalState');
+    $taskbar.removeData("originalState");
     isPillActive = false;
     activePillType = null;
 
     // Force reflow untuk memastikan taskbar kembali ke posisi semula
     setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
+        window.dispatchEvent(new Event("resize"));
     }, 50);
 };
 
-// Fungsi bantu untuk reset transitions
+// Fungsi helper untuk reset transitions
 const resetTransitions = () => {
-    pillContainer.style.transition = '';
-    notificationContent.style.transition = '';
-    volumeContent.style.transition = '';
-    taskbar.style.transition = '';
-    visualizerCanvas.style.transition = '';
+    pillContainer.style.transition = "";
+    notificationContent.style.transition = "";
+    volumeContent.style.transition = "";
+    taskbar.style.transition = "";
+    visualizerCanvas.style.transition = "";
 };
 
 // Fungsi fallback untuk reset state jika ada error
@@ -354,22 +383,21 @@ const resetPillState = () => {
     isPillActive = false;
     activePillType = null;
     // Matikan transisi agar pillContainer segera hilang
-    pillContainer.style.transition = 'none';
-    pillContainer.classList.remove('show');
+    pillContainer.style.transition = "none";
+    pillContainer.classList.remove("show");
     // Set display to none untuk memastikan elemen tersembunyi
-    notificationContent.style.display = 'none';
-    volumeContent.style.display = 'none';
+    notificationContent.style.display = "none";
+    volumeContent.style.display = "none";
 
     // Pastikan semua state kembali normal
-    taskbar.style.opacity = '1';
-    taskbar.style.pointerEvents = 'auto';
-    taskbarMainGroup.style.opacity = '1';
-    systemTray.style.opacity = '1';
-    if (visualizerCanvas.style.display !== 'none') {
-        visualizerCanvas.style.opacity = '1';
+    taskbar.style.opacity = "1";
+    taskbar.style.pointerEvents = "auto";
+    taskbarMainGroup.style.opacity = "1";
+    systemTray.style.opacity = "1";
+    if (visualizerCanvas.style.display !== "none") {
+        visualizerCanvas.style.opacity = "1";
     }
-}
-
+};
 // debugTaskBarState('After Hide Pill');
 // Fungsi utama untuk menyembunyikan pill, Hide Pill End
 // Show and hide pill End
@@ -379,16 +407,20 @@ const proceedToShowVisualizer = () => {
     console.log("[DEBUG] proceedToShowVisualizer dipanggil."); // Debug log
     // Cek apakah visualizer sedang dalam proses fade IN
     if (isVisualizerFading) {
-        console.log("[DEBUG] proceedToShowVisualizer: Visualizer sedang fading, tunggu dulu."); // Debug log
+        console.log(
+            "[DEBUG] proceedToShowVisualizer: Visualizer sedang fading, tunggu dulu.",
+        ); // Debug log
         // Jika ya, tunggu sebentar dan cek lagi
         const checkAndProceed = () => {
             if (isVisualizerFading) {
                 requestAnimationFrame(checkAndProceed); // Cek lagi di frame berikutnya
             } else {
-                console.log("[DEBUG] proceedToShowVisualizer: Visualizer selesai fading, lanjutkan."); // Debug log
+                console.log(
+                    "[DEBUG] proceedToShowVisualizer: Visualizer selesai fading, lanjutkan.",
+                ); // Debug log
                 // Fade in visualizer setelah status aman
-                visualizerCanvas.style.transition = 'opacity 0.3s ease-in-out'; // Pastikan transisi diterapkan
-                visualizerCanvas.style.opacity = '1'; // Kembalikan ke opacity aktif
+                visualizerCanvas.style.transition = "opacity 0.3s ease-in-out"; // Pastikan transisi diterapkan
+                visualizerCanvas.style.opacity = "1"; // Kembalikan ke opacity aktif
                 isVisualizerFading = true; // Tandai bahwa proses fade in sedang berlangsung
 
                 setTimeout(() => {
@@ -404,8 +436,8 @@ const proceedToShowVisualizer = () => {
     } else {
         console.log("[DEBUG] proceedToShowVisualizer: Fade in langsung."); // Debug log
         // Fade in visualizer
-        visualizerCanvas.style.transition = 'opacity 0.3s ease-in-out'; // Pastikan transisi diterapkan
-        visualizerCanvas.style.opacity = '1'; // Kembalikan ke opacity aktif
+        visualizerCanvas.style.transition = "opacity 0.3s ease-in-out"; // Pastikan transisi diterapkan
+        visualizerCanvas.style.opacity = "1"; // Kembalikan ke opacity aktif
         isVisualizerFading = true; // Tandai bahwa proses fade in sedang berlangsung
 
         setTimeout(() => {
@@ -426,10 +458,10 @@ const showNotification = (title, message, icon) => {
     notifTitle.textContent = title;
     notifMessage.textContent = message;
 
-    notifIcon.classList.add('flex', 'items-center', 'justify-center');
+    notifIcon.classList.add("flex", "items-center", "justify-center");
 
-    if (icon && (icon.startsWith('blob:') || icon.startsWith('http'))) {
-        // Untuk gambar (img), kita juga harus memastikan gambar itu sendiri terpusat, 
+    if (icon && (icon.startsWith("blob:") || icon.startsWith("http"))) {
+        // Untuk gambar (img), kita juga harus memastikan gambar itu sendiri terpusat,
         // meskipun object-cover biasanya sudah baik.
         notifIcon.innerHTML = `<img src="${icon}" class="w-full h-full object-cover rounded" alt="Notification Icon">`;
     } else if (icon) {
@@ -437,24 +469,24 @@ const showNotification = (title, message, icon) => {
         notifIcon.innerHTML = icon;
 
         // Atur ukuran ikon yang dimasukkan (Contoh: untuk ProTipIcon yang ukurannya 24x24)
-        const svg = notifIcon.querySelector('svg');
+        const svg = notifIcon.querySelector("svg");
         if (svg) {
             // Hapus class ukuran lama (w-6 h-6) dan gunakan ukuran yang lebih baik di sini jika diperlukan
             // Atau pastikan SVG menggunakan w-full h-full untuk mengisi div 40x40
-            // Namun, karena `div#notification-icon` adalah w-10 h-10 (40px x 40px), 
+            // Namun, karena `div#notification-icon` adalah w-10 h-10 (40px x 40px),
             // menambahkan `flex items-center justify-center` sudah cukup.
         }
     } else {
-        notifIcon.innerHTML = '';
+        notifIcon.innerHTML = "";
     }
 
-    showPill('notification'); // Panggil fungsi utama
+    showPill("notification"); // Panggil fungsi utama
 };
 
 // Wrapper BARU untuk menampilkan notifikasi volume
 const showVolumeNotification = (percent) => {
     // Pastikan tidak ada race condition
-    if (isPillActive && activePillType !== 'volume') {
+    if (isPillActive && activePillType !== "volume") {
         hidePill();
         // Tunggu sebentar sebelum menampilkan volume pill
         setTimeout(() => {
@@ -476,24 +508,26 @@ const showVolumeNotification = (percent) => {
         volumeIcon.innerHTML = volumeIcons.high;
     }
 
-    showPill('volume', 1800);
-    console.log(`[DEBUG] showVolumeNotification: Meminta showPill('volume', 1800) untuk volume ${percent}%.`);
+    showPill("volume", 1800);
+    console.log(
+        `[DEBUG] showVolumeNotification: Meminta showPill('volume', 1800) untuk volume ${percent}%.`,
+    );
 };
 
 // Event listener untuk tombol close
-closeButton.addEventListener('click', hidePill);
+closeButton.addEventListener("click", hidePill);
 // for toast notification end
 
 // fungsi baru for notification item
 const addNotificationToCenter = (title, message, icon) => {
     // 1. Sembunyikan placeholder jika masih terlihat
-    if (notificationPlaceholder.style.display !== 'none') {
-        notificationPlaceholder.style.display = 'none';
+    if (notificationPlaceholder.style.display !== "none") {
+        notificationPlaceholder.style.display = "none";
     }
 
     // [MODIFIKASI] Tambahkan logika untuk membedakan URL gambar dan SVG
-    let iconContent = '';
-    if (icon && (icon.startsWith('blob:') || icon.startsWith('http'))) {
+    let iconContent = "";
+    if (icon && (icon.startsWith("blob:") || icon.startsWith("http"))) {
         // BARU: Jika ini adalah URL, buat tag <img>
         iconContent = `<img src="${icon}" class="w-full h-full object-cover rounded" alt="Album Art">`;
     } else if (icon) {
@@ -502,8 +536,8 @@ const addNotificationToCenter = (title, message, icon) => {
     }
 
     // 2. Buat elemen notifikasi baru menggunakan iconContent yang sudah diproses
-    const notifItem = document.createElement('div');
-    notifItem.className = 'notification-item';
+    const notifItem = document.createElement("div");
+    notifItem.className = "notification-item";
     notifItem.innerHTML = `
             <div class="notification-item-icon">${iconContent}</div>
             <div class="notification-item-content">
@@ -519,12 +553,14 @@ const addNotificationToCenter = (title, message, icon) => {
     notificationList.prepend(notifItem);
 
     // 4. Tambahkan event listener untuk tombol close pada notifikasi yang baru dibuat
-    const closeBtn = notifItem.querySelector('.notification-item-close');
-    closeBtn.addEventListener('click', () => {
+    const closeBtn = notifItem.querySelector(".notification-item-close");
+    closeBtn.addEventListener("click", () => {
         notifItem.remove();
         // Cek jika tidak ada notifikasi lagi, tampilkan kembali placeholder
-        if (notificationList.querySelectorAll('.notification-item').length === 0) {
-            notificationPlaceholder.style.display = 'block';
+        if (
+            notificationList.querySelectorAll(".notification-item").length === 0
+        ) {
+            notificationPlaceholder.style.display = "block";
         }
     });
 };
@@ -532,20 +568,19 @@ const addNotificationToCenter = (title, message, icon) => {
 
 // Bagian 3: Tambahkan event listener untuk tombol close.
 // Letakkan ini bersama event listener lainnya.
-closeButton.addEventListener('click', hidePill);
-
+closeButton.addEventListener("click", hidePill);
 
 // Bagian 4: Cara Menggunakan/Memanggil Notifikasi
 // Anda bisa memanggil fungsi `showNotification` dari mana saja.
 // Contoh: panggil notifikasi saat halaman selesai dimuat.
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
     const proTipIcon = `<svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`;
 
     setTimeout(() => {
         showNotification(
             "Selamat Datang!",
             "Drag & drop gambar ke desktop untuk mengganti wallpaper.",
-            proTipIcon
+            proTipIcon,
         );
     }, 1500);
 });
@@ -555,160 +590,256 @@ window.addEventListener('load', () => {
 const volumeIcons = {
     mute: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`,
     low: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/></svg>`,
-    high: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`
+    high: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`,
 };
 
 const visualizerSettings = {
-    shadowBlur: 4, smoothingFactor: 0.5, bassMultiplier: 0.75, bassEndPercentage: 0.25, midBoostAmount: 0.8,
-    trebleStartPercentage: 0.5, trebleBoostAmount: 0.2, scalingPower: 2.0,
-    height: 200, width: 120, islandBorderRadius: '12px', islandGap: 6,
+    shadowBlur: 4,
+    smoothingFactor: 0.5,
+    bassMultiplier: 0.75,
+    bassEndPercentage: 0.25,
+    midBoostAmount: 0.8,
+    trebleStartPercentage: 0.5,
+    trebleBoostAmount: 0.2,
+    scalingPower: 2.0,
+    height: 200,
+    width: 120,
+    islandBorderRadius: "12px",
+    islandGap: 6,
 };
 
 // === CORE FUNCTIONS ===
 
 function updateClock() {
     const now = new Date();
-    clockElement.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    dateElement.textContent = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+    clockElement.textContent = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    dateElement.textContent = `${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
 }
 
 function setupWallpaperDragDrop() {
-    desktop.addEventListener('dragover', (e) => { e.preventDefault(); desktop.classList.add('drag-over'); });
-    desktop.addEventListener('dragleave', () => { desktop.classList.remove('drag-over'); });
-    desktop.addEventListener('drop', (e) => {
+    desktop.addEventListener("dragover", (e) => {
         e.preventDefault();
-        desktop.classList.remove('drag-over');
+        desktop.classList.add("drag-over");
+    });
+    desktop.addEventListener("dragleave", () => {
+        desktop.classList.remove("drag-over");
+    });
+    desktop.addEventListener("drop", (e) => {
+        e.preventDefault();
+        desktop.classList.remove("drag-over");
         const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
+        if (file && file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (event) => {
                 // When a new image is dropped, clear the live wallpaper
-                wallpaperIframe.src = 'about:blank';
-                wallpaperIframe.style.display = 'none';
-                clickInterceptor.style.display = 'none'; // NEW: Hide interceptor too
+                wallpaperIframe.src = "about:blank";
+                wallpaperIframe.style.display = "none";
+                clickInterceptor.style.display = "none"; // NEW: Hide interceptor too
 
                 if (desktopImage) {
                     desktopImage.src = event.target.result;
                     // FIX: Ensure we are in <img> mode when a new image is dropped
-                    desktopImage.style.display = 'block';
+                    desktopImage.style.display = "block";
                 }
                 // FIX: Reset background properties on the container div
-                desktop.style.backgroundImage = 'none';
-                desktop.style.backgroundRepeat = 'no-repeat';
+                desktop.style.backgroundImage = "none";
+                desktop.style.backgroundRepeat = "no-repeat";
             };
             reader.readAsDataURL(file);
         }
     });
 }
 
+// Fungsi untuk memperbarui visibilitas ikon Taskbar
+function updateTaskbarIconsVisibility() {
+    // Ikon Taskbar hanya ditampilkan jika aplikasi terkait terbuka
+    // Tidak ada pengecualian untuk mode 'island' (sesuai permintaan pengguna)
+    
+    // Music Player
+    taskbarMusicIcon.style.display = isMusicPlayerOpen ? 'flex' : 'none';
+
+    // Control Panel
+    taskbarControlPanelIcon.style.display = isControlPanelOpen ? 'flex' : 'none';
+
+    // Live Wallpaper App
+    taskbarLive2dIcon.style.display = isLive2dOpen ? 'flex' : 'none';
+
+    // Video Player (FIX: Selalu tampilkan jika terbuka, terlepas dari mode taskbar)
+    taskbarVideoPlayerIcon.style.display = isVideoPlayerOpen ? 'flex' : 'none';
+
+    // BUG FIX: Hapus kontrol visibility untuk File Explorer agar ia selalu terlihat
+    // taskbarExplorerIcon.style.display = isExplorerOpen ? 'flex' : 'none'; 
+}
+
+
 // --- GENERIC APP IFRAME MANAGEMENT ---
 
 function openApp(appName) {
     let appFrame, taskbarIcon;
-    if (appName === 'music') {
+    if (appName === "music") {
         appFrame = musicPlayerFrame;
         taskbarIcon = taskbarMusicIcon;
-        if (isMusicPlayerOpen) { bringToFront(appName); return; }
+        if (isMusicPlayerOpen) {
+            bringToFront(appName);
+            return;
+        }
         isMusicPlayerOpen = true;
-    } else if (appName === 'cp') {
+    } else if (appName === "cp") {
         appFrame = controlPanelFrame;
         taskbarIcon = taskbarControlPanelIcon;
-        if (isControlPanelOpen) { bringToFront(appName); return; }
+        if (isControlPanelOpen) {
+            bringToFront(appName);
+            return;
+        }
         isControlPanelOpen = true;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         appFrame = live2dWallpaperFrame;
         taskbarIcon = taskbarLive2dIcon;
-        if (isLive2dOpen) { bringToFront(appName); return; }
+        if (isLive2dOpen) {
+            bringToFront(appName);
+            return;
+        }
         isLive2dOpen = true;
-    } else if (appName === 'explorer') { // [KEPT] Dari file lokal
+    } else if (appName === "video") {
+        // BARU: Video Player
+        appFrame = videoPlayerFrame;
+        taskbarIcon = taskbarVideoPlayerIcon;
+        if (isVideoPlayerOpen) {
+            bringToFront(appName);
+            return;
+        }
+        isVideoPlayerOpen = true;
+    } else if (appName === "explorer") {
+        // [KEPT] Dari file lokal
         appFrame = fileExplorerFrame;
-        taskbarIcon = taskbarExplorerIcon;
-        if (isExplorerOpen) { bringToFront(appName); return; }
+        taskbarIcon = taskbarExplorerIcon; // Gunakan taskbarExplorerIcon
+        if (isExplorerOpen) {
+            bringToFront(appName);
+            return;
+        }
         isExplorerOpen = true;
     }
 
-    if (taskbarIcon && appName !== 'explorer') taskbarIcon.style.display = 'flex';
+    // --- LOGIKA LAMA ICON VISIBILITY DIHAPUS/DIREFRAKTOR ---
+    // if (taskbarIcon && appName !== "explorer" && appName !== "video")
+    //     taskbarIcon.style.display = "flex";
+    // // Khusus Video Player, ikon taskbar hanya ditampilkan jika BUKAN mode island
+    // if (appName === "video" && currentTaskbarStyle === "default") {
+    //     taskbarIcon.style.display = "flex";
+    // }
+    // --------------------------------------------------------
+
     // Jika Start Menu digunakan (div biasa), Start Menu tidak perlu class app-iframe
-    if (appName === 'startMenu') {
-        appFrame.style.display = 'flex';
+    if (appName === "startMenu") {
+        appFrame.style.display = "flex";
     } else {
-        appFrame.style.display = 'block';
+        appFrame.style.display = "block";
     }
 
-    appFrame.style.transition = 'none';
-    appFrame.style.transform = 'scale(1)';
-    appFrame.style.opacity = '1';
+    appFrame.style.transition = "none";
+    appFrame.style.transform = "scale(1)";
+    appFrame.style.opacity = "1";
 
     bringToFront(appName);
 
-    if (appName === 'music') {
-        visualizerCanvas.style.display = 'block';
+    if (appName === "music") {
+        visualizerCanvas.style.display = "block";
         drawVisualizer();
     }
+    
+    // PERBAIKAN: Panggil fungsi pembaruan ikon di sini.
+    updateTaskbarIconsVisibility();
+
+    // START PERBAIKAN: Panggil positionVisualizer setelah app dibuka, untuk menyesuaikan lebar taskbar (terutama mode island).
+    // Memberi sedikit delay agar browser selesai menghitung ulang taskbar.
+    setTimeout(positionVisualizer, 50);
+    // END PERBAIKAN
 }
 
 function closeApp(appName) {
     let appFrame, taskbarIcon;
-    if (appName === 'music') {
+    if (appName === "music") {
         isMusicPlayerOpen = false;
         appFrame = musicPlayerFrame;
         taskbarIcon = taskbarMusicIcon;
-        visualizerCanvas.style.display = 'none';
+        visualizerCanvas.style.display = "none";
         visualizerData = null;
-        appFrame.contentWindow.postMessage({ action: 'stop' }, '*');
-    } else if (appName === 'cp') {
+        appFrame.contentWindow.postMessage({ action: "stop" }, "*");
+    } else if (appName === "cp") {
         isControlPanelOpen = false;
         appFrame = controlPanelFrame;
         taskbarIcon = taskbarControlPanelIcon;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         isLive2dOpen = false;
         appFrame = live2dWallpaperFrame;
         taskbarIcon = taskbarLive2dIcon;
-    } else if (appName === 'explorer') { // [KEPT] Dari file lokal
+    } else if (appName === "video") {
+        // BARU
+        isVideoPlayerOpen = false;
+        appFrame = videoPlayerFrame;
+        taskbarIcon = taskbarVideoPlayerIcon;
+    } else if (appName === "explorer") {
+        // [KEPT] Dari file lokal
         isExplorerOpen = false;
         appFrame = fileExplorerFrame;
-        taskbarIcon = null; // No separate icon to hide
+        taskbarIcon = taskbarExplorerIcon;
     }
-    appFrame.style.display = 'none';
-    if (taskbarIcon) taskbarIcon.style.display = 'none';
+    appFrame.style.display = "none";
+    // taskbarIcon.style.display = "none"; // LOGIKA INI DIPINDAHKAN KE updateTaskbarIconsVisibility()
+
+    // START PERBAIKAN: Panggil positionVisualizer setelah app ditutup, untuk menyesuaikan lebar taskbar (terutama mode island).
+    // Memberi sedikit delay agar browser selesai menghitung ulang taskbar.
+    setTimeout(positionVisualizer, 50);
+    updateTaskbarIconsVisibility(); // <-- BARU: Panggil fungsi pembaruan ikon
+    // END PERBAIKAN
 }
 
 function minimizeApp(appName) {
     let appFrame, lastRect, taskbarIcon;
-    if (appName === 'music') {
+    if (appName === "music") {
         appFrame = musicPlayerFrame;
         taskbarIcon = taskbarMusicIcon;
         lastMusicPlayerRect = appFrame.getBoundingClientRect();
         lastRect = lastMusicPlayerRect;
-    } else if (appName === 'cp') {
+    } else if (appName === "cp") {
         appFrame = controlPanelFrame;
         taskbarIcon = taskbarControlPanelIcon;
         lastControlPanelRect = appFrame.getBoundingClientRect();
         lastRect = lastControlPanelRect;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         appFrame = live2dWallpaperFrame;
         taskbarIcon = taskbarLive2dIcon;
         lastLive2dRect = appFrame.getBoundingClientRect();
         lastRect = lastLive2dRect;
-    } else if (appName === 'explorer') { // [KEPT] Dari file lokal
+    } else if (appName === "video") {
+        // BARU
+        appFrame = videoPlayerFrame;
+        taskbarIcon = taskbarVideoPlayerIcon;
+        lastVideoPlayerRect = appFrame.getBoundingClientRect();
+        lastRect = lastVideoPlayerRect;
+    } else if (appName === "explorer") {
+        // [KEPT] Dari file lokal
         appFrame = fileExplorerFrame;
         taskbarIcon = taskbarExplorerIcon;
         lastExplorerRect = appFrame.getBoundingClientRect();
         lastRect = lastExplorerRect;
     }
 
-    if (appFrame.style.display === 'none' || appFrame.style.opacity === '0') return;
+    if (appFrame.style.display === "none" || appFrame.style.opacity === "0")
+        return;
 
     const targetRect = taskbarIcon.getBoundingClientRect();
     const translateX = targetRect.left - lastRect.left;
     const translateY = targetRect.top - lastRect.top;
 
-    appFrame.style.transition = 'transform 0.3s ease-in, opacity 0.3s ease-in';
-    appFrame.style.transformOrigin = 'top left';
+    appFrame.style.transition = "transform 0.3s ease-in, opacity 0.3s ease-in";
+    appFrame.style.transformOrigin = "top left";
     appFrame.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1)`;
-    appFrame.style.opacity = '0';
+    appFrame.style.opacity = "0";
 
-    setTimeout(() => { appFrame.style.display = 'none'; }, 300);
+    setTimeout(() => {
+        appFrame.style.display = "none";
+    }, 300);
 }
 
 // Fungsi untuk memaksimalkan jendela aplikasi
@@ -720,23 +851,28 @@ function maximizeApp(appName) {
     const windowHeight = window.innerHeight;
 
     // Nilai Konstanta untuk Border Radius & Gap
-    const MAXIMIZED_RADIUS = '8px';
+    const MAXIMIZED_RADIUS = "8px";
     const WINDOW_GAP = 8; // Jarak tepi layar (8px)
 
     // Tentukan frame dan state yang sesuai
-    if (appName === 'music') {
+    if (appName === "music") {
         appFrame = musicPlayerFrame;
         isMaximizedState = isMusicPlayerMaximized;
         originalRectStorage = originalMusicPlayerRect;
-    } else if (appName === 'cp') {
+    } else if (appName === "cp") {
         appFrame = controlPanelFrame;
         isMaximizedState = isControlPanelMaximized;
         originalRectStorage = originalControlPanelRect;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         appFrame = live2dWallpaperFrame;
         isMaximizedState = isLive2dMaximized;
         originalRectStorage = originalLive2dRect;
-    } else if (appName === 'explorer') {
+    } else if (appName === "video") {
+        // BARU
+        appFrame = videoPlayerFrame;
+        isMaximizedState = isVideoPlayerMaximized;
+        originalRectStorage = originalVideoPlayerRect;
+    } else if (appName === "explorer") {
         appFrame = fileExplorerFrame;
         isMaximizedState = isExplorerMaximized;
         originalRectStorage = originalExplorerRect;
@@ -744,35 +880,39 @@ function maximizeApp(appName) {
         return;
     }
 
-    if (appFrame.style.display === 'none') return; // Jangan maksimalkan jika diminimalkan
+    if (appFrame.style.display === "none") return; // Jangan maksimalkan jika diminimalkan
 
     // 1. Simpan posisi & ukuran saat ini sebelum maksimalkan
     // Jika belum maximized, simpan posisi saat ini sebagai "original"
-    if (!appFrame.dataset.isMaximized || appFrame.dataset.isMaximized === 'false') {
+    if (
+        !appFrame.dataset.isMaximized ||
+        appFrame.dataset.isMaximized === "false"
+    ) {
         const rect = appFrame.getBoundingClientRect();
 
         // Simpan hanya jika belum ada data original atau jika frame terlihat
         if (!originalRectStorage || rect.width > 100) {
             // Gunakan variabel global yang sesuai untuk penyimpanan
-            if (appName === 'music') originalMusicPlayerRect = rect;
-            else if (appName === 'cp') originalControlPanelRect = rect;
-            else if (appName === 'live2d') originalLive2dRect = rect;
-            else if (appName === 'explorer') originalExplorerRect = rect;
+            if (appName === "music") originalMusicPlayerRect = rect;
+            else if (appName === "cp") originalControlPanelRect = rect;
+            else if (appName === "live2d") originalLive2dRect = rect;
+            else if (appName === "video")
+                originalVideoPlayerRect = rect; // BARU
+            else if (appName === "explorer") originalExplorerRect = rect;
         }
 
         // --- Perhitungan Batas Kerja (Work Area) ---
         let top = WINDOW_GAP;
         let left = WINDOW_GAP;
-        let width = windowWidth - (2 * WINDOW_GAP);
-        let height = windowHeight - (2 * WINDOW_GAP);
+        let width = windowWidth - 2 * WINDOW_GAP;
+        let height = windowHeight - 2 * WINDOW_GAP;
         let borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
 
-        const isTaskbarIsland = currentTaskbarStyle.startsWith('island');
+        const isTaskbarIsland = currentTaskbarStyle.startsWith("island");
         // const isVizVisible = visualizerCanvas.style.display === 'block' && visualizerCanvas.style.opacity !== '0'; // TIDAK DIPERLUKAN LAGI
 
         if (isTaskbarIsland) {
-            
-            if (currentTaskbarPosition === 'top') {
+            if (currentTaskbarPosition === "top") {
                 // Taskbar di Atas: Batasan adalah di bawah taskbar + gap
                 const taskbarBottom = taskbar.getBoundingClientRect().bottom;
                 top = taskbarBottom + WINDOW_GAP;
@@ -780,9 +920,9 @@ function maximizeApp(appName) {
                 // Border Radius: Kiri-Atas (TL), Kanan-Atas (TR) adalah 0
                 // Jendela berjarak dari atas layar, tetapi menempel di taskbar top.
                 borderRadius = `0 0 ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
-            } else if (currentTaskbarPosition === 'bottom') {
+            } else if (currentTaskbarPosition === "bottom") {
                 // Taskbar di Bawah (Island):
-                
+
                 // Ambil posisi Taskbar, yang merupakan batas bawah mutlak.
                 const taskbarRect = taskbar.getBoundingClientRect();
 
@@ -792,86 +932,112 @@ function maximizeApp(appName) {
 
                 // Tinggi Jendela = Batas Y Bawah - Posisi Y Atas (WINDOW_GAP)
                 height = bottomLimitY - top;
-                
+
                 // Border Radius: Kiri-Bawah (BL), Kanan-Bawah (BR) adalah 0
                 borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
-                
-            } else if (currentTaskbarPosition === 'left') {
+            } else if (currentTaskbarPosition === "left") {
                 // Taskbar di Kiri: Batasan adalah di sebelah kanan taskbar + gap
                 const taskbarRight = taskbar.getBoundingClientRect().right;
                 left = taskbarRight + WINDOW_GAP;
                 width = windowWidth - left - WINDOW_GAP;
                 // Border Radius: Kiri-Atas (TL), Kiri-Bawah (BL) adalah 0
                 borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} 0`;
-            } else if (currentTaskbarPosition === 'right') {
+            } else if (currentTaskbarPosition === "right") {
                 // Taskbar di Kanan: Batasan adalah di sebelah kiri taskbar + gap
                 const taskbarLeft = taskbar.getBoundingClientRect().left;
-                width = taskbarLeft - left - WINDOW_GAP; 
+                width = taskbarLeft - left - WINDOW_GAP;
                 // Border Radius: Kanan-Atas (TR), Kanan-Bawah (BR) adalah 0
                 borderRadius = `${MAXIMIZED_RADIUS} 0 0 ${MAXIMIZED_RADIUS}`;
             }
-
         } else {
             // Taskbar Default (Full Width/Height) - Maksimalisasi menutupi taskbar
             // Di mode default, radius harus 0 dan tidak ada gap di sisi taskbar
-            left = 0; top = 0; width = windowWidth; height = windowHeight;
-            borderRadius = '0'; // Default: semua sudut tajam
+            left = 0;
+            top = 0;
+            width = windowWidth;
+            height = windowHeight;
+            borderRadius = "0"; // Default: semua sudut tajam
 
-            if (currentTaskbarPosition === 'top') {
+            if (currentTaskbarPosition === "top") {
                 top = taskbarHeight;
                 height = windowHeight - taskbarHeight;
-            } else if (currentTaskbarPosition === 'bottom') {
+            } else if (currentTaskbarPosition === "bottom") {
+                // MODIFIKASI: Tinggi harus windowHeight - taskbarHeight, seperti di bawah.
+                // Jika masih ada masalah clipping, kita bisa tambahkan margin aman 1px di sini.
                 height = windowHeight - taskbarHeight;
-            } else if (currentTaskbarPosition === 'left') {
+            } else if (currentTaskbarPosition === "left") {
                 left = taskbarWidth;
                 width = windowWidth - taskbarWidth;
-            } else if (currentTaskbarPosition === 'right') {
+            } else if (currentTaskbarPosition === "right") {
                 width = windowWidth - taskbarWidth;
             }
         }
 
+        // --- PENGUATAN UNTUK MENGHINDARI CLIPPING (HANYA KASUS DEFAULT/BOTTOM) ---
+        // Jika mode default dan di bawah, tambahkan buffer 1px ke atas untuk mencegah clipping Taskbar
+        if (currentTaskbarStyle === 'default' && currentTaskbarPosition === 'bottom') {
+            height = windowHeight - taskbarHeight; // Tinggi Jendela
+            // Tambahkan buffer 1px ke atas
+            const CLIP_BUFFER = 1; 
+            height -= CLIP_BUFFER; 
+        }
+
         // Terapkan transisi halus
-        appFrame.style.transition = 'all 0.3s ease-in-out';
+        appFrame.style.transition = "all 0.3s ease-in-out";
         appFrame.style.left = `${left}px`;
         appFrame.style.top = `${top}px`;
         appFrame.style.width = `${width}px`;
         appFrame.style.height = `${height}px`;
         // Terapkan border radius
         appFrame.style.borderRadius = borderRadius;
-        
+
         // Hapus properti transform dan z-index jika ada dari draggable
-        appFrame.style.transform = 'none';
-        
+        appFrame.style.transform = "none";
+
         // Tandai sebagai maximized
-        appFrame.dataset.isMaximized = 'true';
+        appFrame.dataset.isMaximized = "true";
         // Kirim borderRadius ke iframe agar ia bisa menyesuaikan border intern
-        appFrame.contentWindow.postMessage({ action: 'set-maximized-state', isMaximized: true, borderRadius: borderRadius }, '*');
+        appFrame.contentWindow.postMessage(
+            {
+                action: "set-maximized-state",
+                isMaximized: true,
+                borderRadius: borderRadius,
+            },
+            "*",
+        );
 
         // Perbarui status global
-        if (appName === 'music') isMusicPlayerMaximized = true;
-        else if (appName === 'cp') isControlPanelMaximized = true;
-        else if (appName === 'live2d') isLive2dMaximized = true;
-        else if (appName === 'explorer') isExplorerMaximized = true;
+        if (appName === "music") isMusicPlayerMaximized = true;
+        else if (appName === "cp") isControlPanelMaximized = true;
+        else if (appName === "live2d") isLive2dMaximized = true;
+        else if (appName === "video")
+            isVideoPlayerMaximized = true; // BARU
+        else if (appName === "explorer") isExplorerMaximized = true;
     } else {
         restoreMaximizedApp(appName);
     }
 }
+// Fungsi maximizeApp yang diperbarui
 
 // Fungsi untuk mengembalikan jendela aplikasi ke ukuran semula
 function restoreMaximizedApp(appName) {
     let appFrame, originalRect;
 
     // Tentukan frame dan originalRect yang sesuai
-    if (appName === 'music') {
+    if (appName === "music") {
         appFrame = musicPlayerFrame;
         originalRect = originalMusicPlayerRect;
-    } else if (appName === 'cp') {
+    } else if (appName === "cp") {
         appFrame = controlPanelFrame;
         originalRect = originalControlPanelRect;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         appFrame = live2dWallpaperFrame;
         originalRect = originalLive2dRect;
-    } else if (appName === 'explorer') {
+    } else if (appName === "video") {
+        // BARU
+        appFrame = videoPlayerFrame;
+        originalRect = originalVideoPlayerRect;
+    } else if (appName === "explorer") {
         appFrame = fileExplorerFrame;
         originalRect = originalExplorerRect;
     } else {
@@ -879,46 +1045,88 @@ function restoreMaximizedApp(appName) {
     }
 
     if (!originalRect) {
-        console.warn(`[${appName}] Original size data not found. Using default restore position.`);
-        appFrame.style.transition = 'all 0.3s ease-in-out';
-        appFrame.style.left = '15%';
-        appFrame.style.top = '15%';
-        appFrame.style.width = appName === 'music' ? '420px' : (appName === 'cp' ? '550px' : '800px');
-        appFrame.style.height = appName === 'music' ? '500px' : (appName === 'cp' ? '550px' : '500px');
+        console.warn(
+            `[${appName}] Original size data not found. Using default restore position.`,
+        );
+        appFrame.style.transition = "all 0.3s ease-in-out";
+        appFrame.style.left = "15%";
+        appFrame.style.top = "15%";
+        let defaultWidth, defaultHeight;
+        if (appName === "music") {
+            defaultWidth = "420px";
+            defaultHeight = "500px";
+        } else if (appName === "cp") {
+            defaultWidth = "550px";
+            defaultHeight = "550px";
+        } else if (appName === "video") {
+            defaultWidth = "640px";
+            defaultHeight = "500px"; // DIKEMBALIKAN KE DEFAULT SEBELUMNYA
+        } // BARU
+        else {
+            defaultWidth = "800px";
+            defaultHeight = "500px";
+        }
+
+        appFrame.style.width = defaultWidth;
+        appFrame.style.height = defaultHeight;
+        
+        // FIX: Hapus transisi setelah animasi selesai untuk memungkinkan drag yang lancar.
+        setTimeout(() => {
+            appFrame.style.transition = 'none';
+            appFrame.offsetHeight; // Memaksa reflow/re-render
+        }, 350); // 50ms setelah transisi 300ms selesai
+        
     } else {
-        appFrame.style.transition = 'all 0.3s ease-in-out';
+        appFrame.style.transition = "all 0.3s ease-in-out";
         appFrame.style.left = `${originalRect.left}px`;
         appFrame.style.top = `${originalRect.top}px`;
         appFrame.style.width = `${originalRect.width}px`;
         appFrame.style.height = `${originalRect.height}px`;
+
+        // FIX: Hapus transisi setelah animasi selesai untuk memungkinkan drag yang lancar.
+        setTimeout(() => {
+            appFrame.style.transition = 'none';
+            appFrame.offsetHeight; // Memaksa reflow/re-render
+        }, 350); // 50ms setelah transisi 300ms selesai
     }
 
     // Tandai sebagai tidak maximized
-    appFrame.dataset.isMaximized = 'false';
-    appFrame.contentWindow.postMessage({ action: 'set-maximized-state', isMaximized: false }, '*');
+    appFrame.dataset.isMaximized = "false";
+    appFrame.contentWindow.postMessage(
+        { action: "set-maximized-state", isMaximized: false },
+        "*",
+    );
 
     // Perbarui status global
-    if (appName === 'music') isMusicPlayerMaximized = false;
-    else if (appName === 'cp') isControlPanelMaximized = false;
-    else if (appName === 'live2d') isLive2dMaximized = false;
-    else if (appName === 'explorer') isExplorerMaximized = false;
+    if (appName === "music") isMusicPlayerMaximized = false;
+    else if (appName === "cp") isControlPanelMaximized = false;
+    else if (appName === "live2d") isLive2dMaximized = false;
+    else if (appName === "video")
+        isVideoPlayerMaximized = false; // BARU
+    else if (appName === "explorer") isExplorerMaximized = false;
 }
 
 function restoreApp(appName) {
     let appFrame, lastRect, taskbarIcon;
-    if (appName === 'music') {
+    if (appName === "music") {
         appFrame = musicPlayerFrame;
         lastRect = lastMusicPlayerRect;
         taskbarIcon = taskbarMusicIcon;
-    } else if (appName === 'cp') {
+    } else if (appName === "cp") {
         appFrame = controlPanelFrame;
         lastRect = lastControlPanelRect;
         taskbarIcon = taskbarControlPanelIcon;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         appFrame = live2dWallpaperFrame;
         lastRect = lastLive2dRect;
         taskbarIcon = taskbarLive2dIcon;
-    } else if (appName === 'explorer') { // [KEPT] Dari file lokal
+    } else if (appName === "video") {
+        // BARU
+        appFrame = videoPlayerFrame;
+        lastRect = lastVideoPlayerRect;
+        taskbarIcon = taskbarVideoPlayerIcon;
+    } else if (appName === "explorer") {
+        // [KEPT] Dari file lokal
         appFrame = fileExplorerFrame;
         lastRect = lastExplorerRect;
         taskbarIcon = taskbarExplorerIcon;
@@ -930,17 +1138,18 @@ function restoreApp(appName) {
     const startX = targetRect.left - lastRect.left;
     const startY = targetRect.top - lastRect.top;
 
-    appFrame.style.transition = 'none';
+    appFrame.style.transition = "none";
     appFrame.style.transform = `translate(${startX}px, ${startY}px) scale(0.1)`;
-    appFrame.style.opacity = '0';
-    appFrame.style.display = 'block';
+    appFrame.style.opacity = "0";
+    appFrame.style.display = "block";
 
     bringToFront(appName);
 
     setTimeout(() => {
-        appFrame.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-        appFrame.style.transform = 'translate(0, 0) scale(1)';
-        appFrame.style.opacity = '1';
+        appFrame.style.transition =
+            "transform 0.3s ease-out, opacity 0.3s ease-out";
+        appFrame.style.transform = "translate(0, 0) scale(1)";
+        appFrame.style.opacity = "1";
     }, 10);
 }
 
@@ -950,43 +1159,70 @@ function bringToFront(appName) {
     musicPlayerFrame.style.zIndex = zIndexOther;
     controlPanelFrame.style.zIndex = zIndexOther;
     live2dWallpaperFrame.style.zIndex = zIndexOther;
+    videoPlayerFrame.style.zIndex = zIndexOther; // BARU
     fileExplorerFrame.style.zIndex = zIndexOther; // [KEPT] Dari file lokal
 
-    if (appName === 'music') {
+    if (appName === "music") {
         musicPlayerFrame.style.zIndex = zIndexApp;
-    } else if (appName === 'cp') {
+    } else if (appName === "cp") {
         controlPanelFrame.style.zIndex = zIndexApp;
-    } else if (appName === 'live2d') {
+    } else if (appName === "live2d") {
         live2dWallpaperFrame.style.zIndex = zIndexApp;
-    } else if (appName === 'explorer') { // [KEPT] Dari file lokal
+    } else if (appName === "video") {
+        // BARU
+        videoPlayerFrame.style.zIndex = zIndexApp;
+    } else if (appName === "explorer") {
+        // [KEPT] Dari file lokal
         fileExplorerFrame.style.zIndex = zIndexApp;
     }
 }
 
 function setupAppInteractions() {
-    thisPcIcon.addEventListener('dblclick', () => openApp('explorer')); // [KEPT] Dari file lokal
-    controlPanelIcon.addEventListener('dblclick', () => openApp('cp'));
-    musicPlayerIcon.addEventListener('dblclick', () => openApp('music'));
-    live2dIcon.addEventListener('dblclick', () => openApp('live2d'));
+    thisPcIcon.addEventListener("dblclick", () => openApp("explorer")); // [KEPT] Dari file lokal
+    controlPanelIcon.addEventListener("dblclick", () => openApp("cp"));
+    musicPlayerIcon.addEventListener("dblclick", () => openApp("music"));
+    live2dIcon.addEventListener("dblclick", () => openApp("live2d"));
+    videoPlayerIcon.addEventListener("dblclick", () => openApp("video")); // BARU
 
-    taskbarExplorerIcon.addEventListener('click', () => { // [KEPT] Dari file lokal
+    taskbarExplorerIcon.addEventListener("click", () => {
+        // [KEPT] Dari file lokal
         if (!isExplorerOpen) {
-            openApp('explorer');
+            openApp("explorer");
         } else {
-            (fileExplorerFrame.style.opacity === '1' && fileExplorerFrame.style.display !== 'none') ? minimizeApp('explorer') : restoreApp('explorer');
+            fileExplorerFrame.style.opacity === "1" &&
+            fileExplorerFrame.style.display !== "none"
+                ? minimizeApp("explorer")
+                : restoreApp("explorer");
         }
     });
-    taskbarControlPanelIcon.addEventListener('click', () => {
+    taskbarControlPanelIcon.addEventListener("click", () => {
         if (!isControlPanelOpen) return;
-        (controlPanelFrame.style.opacity === '1' && controlPanelFrame.style.display !== 'none') ? minimizeApp('cp') : restoreApp('cp');
+        controlPanelFrame.style.opacity === "1" &&
+        controlPanelFrame.style.display !== "none"
+            ? minimizeApp("cp")
+            : restoreApp("cp");
     });
-    taskbarMusicIcon.addEventListener('click', () => {
+    taskbarMusicIcon.addEventListener("click", () => {
         if (!isMusicPlayerOpen) return;
-        (musicPlayerFrame.style.opacity === '1' && musicPlayerFrame.style.display !== 'none') ? minimizeApp('music') : restoreApp('music');
+        musicPlayerFrame.style.opacity === "1" &&
+        musicPlayerFrame.style.display !== "none"
+            ? minimizeApp("music")
+            : restoreApp("music");
     });
-    taskbarLive2dIcon.addEventListener('click', () => {
+    taskbarLive2dIcon.addEventListener("click", () => {
         if (!isLive2dOpen) return;
-        (live2dWallpaperFrame.style.opacity === '1' && live2dWallpaperFrame.style.display !== 'none') ? minimizeApp('live2d') : restoreApp('live2d');
+        live2dWallpaperFrame.style.opacity === "1" &&
+        live2dWallpaperFrame.style.display !== "none"
+            ? minimizeApp("live2d")
+            : restoreApp("live2d");
+    });
+    taskbarVideoPlayerIcon.addEventListener("click", () => {
+        // BARU
+        if (!isVideoPlayerOpen) return;
+        videoPlayerFrame.style.opacity === "1" &&
+        videoPlayerFrame.style.display !== "none"
+            ? minimizeApp("video")
+            : restoreApp("video");
     });
 }
 
@@ -994,53 +1230,113 @@ function setupAppInteractions() {
 
 function drawVisualizer() {
     requestAnimationFrame(drawVisualizer);
-    visualizerCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+    visualizerCtx.clearRect(
+        0,
+        0,
+        visualizerCanvas.width,
+        visualizerCanvas.height,
+    );
 
     if (!visualizerData || visualizerData.isPaused) {
-        if (previousBarHeights.some(h => h > 0.1)) {
-            for (let i = 0; i < previousBarHeights.length; i++) { previousBarHeights[i] *= 0.9; }
-        } else { return; }
+        if (previousBarHeights.some((h) => h > 0.1)) {
+            for (let i = 0; i < previousBarHeights.length; i++) {
+                previousBarHeights[i] *= 0.9;
+            }
+        } else {
+            return;
+        }
     }
 
-    const bufferLength = visualizerData ? visualizerData.bufferLength : previousBarHeights.length;
+    const bufferLength = visualizerData
+        ? visualizerData.bufferLength
+        : previousBarHeights.length;
     if (bufferLength === 0) return;
     while (previousBarHeights.length < bufferLength) previousBarHeights.push(0);
 
     const computedStyle = getComputedStyle(document.body);
-    visualizerCtx.fillStyle = computedStyle.getPropertyValue('--visualizer-fill').trim();
+    visualizerCtx.fillStyle = computedStyle
+        .getPropertyValue("--visualizer-fill")
+        .trim();
     visualizerCtx.shadowBlur = visualizerSettings.shadowBlur;
-    visualizerCtx.shadowColor = computedStyle.getPropertyValue('--visualizer-shadow').trim();
+    visualizerCtx.shadowColor = computedStyle
+        .getPropertyValue("--visualizer-shadow")
+        .trim();
 
-    const bassEndIndex = Math.floor(bufferLength * visualizerSettings.bassEndPercentage);
-    const trebleStartIndex = Math.floor(bufferLength * visualizerSettings.trebleStartPercentage);
+    const bassEndIndex = Math.floor(
+        bufferLength * visualizerSettings.bassEndPercentage,
+    );
+    const trebleStartIndex = Math.floor(
+        bufferLength * visualizerSettings.trebleStartPercentage,
+    );
 
-    if (currentTaskbarPosition === 'top' || currentTaskbarPosition === 'bottom') {
+    if (
+        currentTaskbarPosition === "top" ||
+        currentTaskbarPosition === "bottom"
+    ) {
         const barWidth = visualizerCanvas.width / bufferLength;
         for (let i = 0; i < bufferLength; i++) {
-            let targetHeight = (visualizerData && !visualizerData.isPaused) ? (visualizerData.data[i] / 255) * visualizerCanvas.height : previousBarHeights[i];
+            let targetHeight =
+                visualizerData && !visualizerData.isPaused
+                    ? (visualizerData.data[i] / 255) * visualizerCanvas.height
+                    : previousBarHeights[i];
             if (visualizerData && !visualizerData.isPaused) {
-                if (i <= bassEndIndex) targetHeight *= visualizerSettings.bassMultiplier;
-                else if (i >= trebleStartIndex) targetHeight *= (1.0 + visualizerSettings.trebleBoostAmount * ((i - trebleStartIndex) / (bufferLength - trebleStartIndex)));
+                if (i <= bassEndIndex)
+                    targetHeight *= visualizerSettings.bassMultiplier;
+                else if (i >= trebleStartIndex)
+                    targetHeight *=
+                        1.0 +
+                        visualizerSettings.trebleBoostAmount *
+                            ((i - trebleStartIndex) /
+                                (bufferLength - trebleStartIndex));
                 else targetHeight *= visualizerSettings.midBoostAmount;
-                targetHeight = Math.pow(targetHeight / visualizerCanvas.height, visualizerSettings.scalingPower) * visualizerCanvas.height;
+                targetHeight =
+                    Math.pow(
+                        targetHeight / visualizerCanvas.height,
+                        visualizerSettings.scalingPower,
+                    ) * visualizerCanvas.height;
             }
-            const smoothedHeight = (previousBarHeights[i] || 0) + (targetHeight - (previousBarHeights[i] || 0)) * visualizerSettings.smoothingFactor;
-            const y = currentTaskbarPosition === 'top' ? 0 : visualizerCanvas.height - smoothedHeight;
+            const smoothedHeight =
+                (previousBarHeights[i] || 0) +
+                (targetHeight - (previousBarHeights[i] || 0)) *
+                    visualizerSettings.smoothingFactor;
+            const y =
+                currentTaskbarPosition === "top"
+                    ? 0
+                    : visualizerCanvas.height - smoothedHeight;
             visualizerCtx.fillRect(i * barWidth, y, barWidth, smoothedHeight);
             previousBarHeights[i] = smoothedHeight;
         }
     } else {
         const barHeight = visualizerCanvas.height / bufferLength;
         for (let i = 0; i < bufferLength; i++) {
-            let targetWidth = (visualizerData && !visualizerData.isPaused) ? (visualizerData.data[i] / 255) * visualizerCanvas.width : previousBarHeights[i];
+            let targetWidth =
+                visualizerData && !visualizerData.isPaused
+                    ? (visualizerData.data[i] / 255) * visualizerCanvas.width
+                    : previousBarHeights[i];
             if (visualizerData && !visualizerData.isPaused) {
-                if (i <= bassEndIndex) targetWidth *= visualizerSettings.bassMultiplier;
-                else if (i >= trebleStartIndex) targetWidth *= (1.0 + visualizerSettings.trebleBoostAmount * ((i - trebleStartIndex) / (bufferLength - trebleStartIndex)));
+                if (i <= bassEndIndex)
+                    targetWidth *= visualizerSettings.bassMultiplier;
+                else if (i >= trebleStartIndex)
+                    targetWidth *=
+                        1.0 +
+                        visualizerSettings.trebleBoostAmount *
+                            ((i - trebleStartIndex) /
+                                (bufferLength - trebleStartIndex));
                 else targetWidth *= visualizerSettings.midBoostAmount;
-                targetWidth = Math.pow(targetWidth / visualizerCanvas.width, visualizerSettings.scalingPower) * visualizerCanvas.width;
+                targetWidth =
+                    Math.pow(
+                        targetWidth / visualizerCanvas.width,
+                        visualizerSettings.scalingPower,
+                    ) * visualizerCanvas.width;
             }
-            const smoothedWidth = (previousBarHeights[i] || 0) + (targetWidth - (previousBarHeights[i] || 0)) * visualizerSettings.smoothingFactor;
-            const x = currentTaskbarPosition === 'left' ? 0 : visualizerCanvas.width - smoothedWidth;
+            const smoothedWidth =
+                (previousBarHeights[i] || 0) +
+                (targetWidth - (previousBarHeights[i] || 0)) *
+                    visualizerSettings.smoothingFactor;
+            const x =
+                currentTaskbarPosition === "left"
+                    ? 0
+                    : visualizerCanvas.width - smoothedWidth;
             visualizerCtx.fillRect(x, i * barHeight, smoothedWidth, barHeight);
             previousBarHeights[i] = smoothedWidth;
         }
@@ -1048,53 +1344,88 @@ function drawVisualizer() {
 }
 
 function positionVisualizer() {
-    const isIsland = currentTaskbarStyle.startsWith('island');
-    const isSpecialCenterCase = (currentTaskbarStyle === 'island-single' && !isTaskbarSpaceBetween);
+    const isIsland = currentTaskbarStyle.startsWith("island");
+    const isSpecialCenterCase =
+        currentTaskbarStyle === "island-single" && !isTaskbarSpaceBetween;
+    
+    // Perbarui rect di sini untuk mendapatkan posisi Taskbar yang paling akurat
+    const rect = taskbar.getBoundingClientRect(); 
 
     if (isIsland) {
-        visualizerCanvas.style.borderRadius = visualizerSettings.islandBorderRadius;
+        visualizerCanvas.style.borderRadius =
+            visualizerSettings.islandBorderRadius;
     } else {
-        visualizerCanvas.style.borderRadius = '0';
+        visualizerCanvas.style.borderRadius = "0";
     }
 
-    ['top', 'bottom', 'left', 'right'].forEach(p => visualizerCanvas.style[p] = 'auto');
+    ["top", "bottom", "left", "right"].forEach(
+        (p) => (visualizerCanvas.style[p] = "auto"),
+    );
 
-    if (isSpecialCenterCase && (currentTaskbarPosition === 'top' || currentTaskbarPosition === 'bottom')) {
-        const rect = taskbar.getBoundingClientRect();
+    if (
+        isSpecialCenterCase &&
+        (currentTaskbarPosition === "top" ||
+            currentTaskbarPosition === "bottom")
+    ) {
+        
         const vizWidth = 500;
         visualizerCanvas.width = vizWidth;
         visualizerCanvas.height = visualizerSettings.height;
-        visualizerCanvas.style.width = vizWidth + 'px';
-        visualizerCanvas.style.height = visualizerSettings.height + 'px';
+        visualizerCanvas.style.width = vizWidth + "px";
+        visualizerCanvas.style.height = visualizerSettings.height + "px";
         visualizerCanvas.style.left = `calc(50% - ${vizWidth / 2}px)`;
-        if (currentTaskbarPosition === 'top') {
-            visualizerCanvas.style.top = (rect.bottom + visualizerSettings.islandGap) + 'px';
+        if (currentTaskbarPosition === "top") {
+            visualizerCanvas.style.top =
+                rect.bottom + visualizerSettings.islandGap + "px";
         } else {
-            visualizerCanvas.style.top = (rect.top - visualizerSettings.height - visualizerSettings.islandGap) + 'px';
+            visualizerCanvas.style.top =
+                rect.top -
+                visualizerSettings.height -
+                visualizerSettings.islandGap +
+                "px";
         }
     } else {
-        const rect = taskbar.getBoundingClientRect();
-        if (currentTaskbarPosition === 'top' || currentTaskbarPosition === 'bottom') {
+        
+        if (
+            currentTaskbarPosition === "top" ||
+            currentTaskbarPosition === "bottom"
+        ) {
             visualizerCanvas.width = rect.width;
             visualizerCanvas.height = visualizerSettings.height;
-            visualizerCanvas.style.width = rect.width + 'px';
-            visualizerCanvas.style.height = visualizerSettings.height + 'px';
-            visualizerCanvas.style.left = rect.left + 'px';
-            if (currentTaskbarPosition === 'top') {
-                visualizerCanvas.style.top = (isIsland ? rect.bottom + visualizerSettings.islandGap : rect.bottom) + 'px';
+            visualizerCanvas.style.width = rect.width + "px";
+            visualizerCanvas.style.height = visualizerSettings.height + "px";
+            visualizerCanvas.style.left = rect.left + "px";
+            if (currentTaskbarPosition === "top") {
+                visualizerCanvas.style.top =
+                    (isIsland
+                        ? rect.bottom + visualizerSettings.islandGap
+                        : rect.bottom) + "px";
             } else {
-                visualizerCanvas.style.top = (isIsland ? (rect.top - visualizerSettings.height - visualizerSettings.islandGap) : (rect.top - visualizerSettings.height)) + 'px';
+                visualizerCanvas.style.top =
+                    (isIsland
+                        ? rect.top -
+                          visualizerSettings.height -
+                          visualizerSettings.islandGap
+                        : rect.top - visualizerSettings.height) + "px";
             }
         } else {
             visualizerCanvas.width = visualizerSettings.width;
             visualizerCanvas.height = rect.height;
-            visualizerCanvas.style.width = visualizerSettings.width + 'px';
-            visualizerCanvas.style.height = rect.height + 'px';
-            visualizerCanvas.style.top = rect.top + 'px';
-            if (currentTaskbarPosition === 'left') {
-                visualizerCanvas.style.left = (isIsland ? rect.right + visualizerSettings.islandGap : rect.right) + 'px';
+            visualizerCanvas.style.width = visualizerSettings.width + "px";
+            visualizerCanvas.style.height = rect.height + "px";
+            visualizerCanvas.style.top = rect.top + "px";
+            if (currentTaskbarPosition === "left") {
+                visualizerCanvas.style.left =
+                    (isIsland
+                        ? rect.right + visualizerSettings.islandGap
+                        : rect.right) + "px";
             } else {
-                visualizerCanvas.style.left = (isIsland ? (rect.left - visualizerSettings.width - visualizerSettings.islandGap) : (rect.left - visualizerSettings.width)) + 'px';
+                visualizerCanvas.style.left =
+                    (isIsland
+                        ? rect.left -
+                          visualizerSettings.width -
+                          visualizerSettings.islandGap
+                        : rect.left - visualizerSettings.width) + "px";
             }
         }
     }
@@ -1103,65 +1434,89 @@ function positionVisualizer() {
 // --- TASKBAR & LAYOUT FUNCTIONS ---
 function applyTaskbarLayout(position) {
     currentTaskbarPosition = position;
-    const isVertical = position === 'left' || position === 'right';
-    taskbarMainGroup.classList.toggle('flex-col', isVertical);
-    appIconsContainer.classList.toggle('flex-col', isVertical);
-    systemTray.classList.toggle('flex-col', isVertical);
-    positionVisualizer();
+    const isVertical = position === "left" || position === "right";
+    taskbarMainGroup.classList.toggle("flex-col", isVertical);
+    appIconsContainer.classList.toggle("flex-col", isVertical);
+    systemTray.classList.toggle("flex-col", isVertical);
+    // Panggil positionVisualizer setelah layout diperbarui
+    setTimeout(positionVisualizer, 50);
 }
 
 function applyTaskbarStyle(style) {
     currentTaskbarStyle = style;
-    taskbar.classList.remove('island', 'single', 'split', 'space-between');
+    taskbar.classList.remove("island", "single", "split", "space-between");
 
     // Hapus semua inline style saat kembali ke default
-    if (style === 'default') {
+    if (style === "default") {
         // Ini cara paling bersih untuk mengembalikan taskbar ke gaya CSS aslinya
-        taskbar.removeAttribute('style');
+        taskbar.removeAttribute("style");
     }
 
-    if (style === 'island-single') taskbar.classList.add('island', 'single');
-    if (style === 'island-split') taskbar.classList.add('island', 'split');
-    if (isTaskbarSpaceBetween && style.startsWith('island')) taskbar.classList.add('space-between');
+    if (style === "island-single") taskbar.classList.add("island", "single");
+    if (style === "island-split") taskbar.classList.add("island", "split");
+    if (isTaskbarSpaceBetween && style.startsWith("island"))
+        taskbar.classList.add("space-between");
+    
+    // BARU: Panggil fungsi pembaruan ikon untuk menyesuaikan visibilitas
+    updateTaskbarIconsVisibility();
+
+    // Panggil positionVisualizer setelah style diperbarui
     setTimeout(positionVisualizer, 50);
 }
 
 // --- CONTEXT MENU FUNCTIONS ---
 function showDesktopContextMenu(e) {
-    startMenu.classList.remove('show');
-    explorerGeneralMenu.style.display = 'none';
-    explorerItemMenu.style.display = 'none';
+    startMenu.classList.remove("show");
+    explorerGeneralMenu.style.display = "none";
+    explorerItemMenu.style.display = "none";
 
-    contextMenu.style.display = 'block';
+    contextMenu.style.display = "block";
     const { clientX: mouseX, clientY: mouseY } = e;
     const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
     const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
-    let x = (mouseX + menuWidth > windowWidth) ? windowWidth - menuWidth - 5 : mouseX;
-    let y = (mouseY + menuHeight > windowHeight) ? windowHeight - menuHeight - 5 : mouseY;
-    contextMenu.style.top = `${y}px`; contextMenu.style.left = `${x}px`;
+    let x =
+        mouseX + menuWidth > windowWidth ? windowWidth - menuWidth - 5 : mouseX;
+    let y =
+        mouseY + menuHeight > windowHeight
+            ? windowHeight - menuHeight - 5
+            : mouseY;
+    contextMenu.style.top = `${y}px`;
+    contextMenu.style.left = `${x}px`;
 }
 
 function showExplorerContextMenu(data, frameRect) {
     // Hide other menus
-    startMenu.classList.remove('show');
-    contextMenu.style.display = 'none';
-    explorerGeneralMenu.style.display = 'none';
-    explorerItemMenu.style.display = 'none';
+    startMenu.classList.remove("show");
+    contextMenu.style.display = "none";
+    explorerGeneralMenu.style.display = "none";
+    explorerItemMenu.style.display = "none";
 
     const { type, states, clickPosition } = data;
 
-    const menuToShow = (type === 'item') ? explorerItemMenu : explorerGeneralMenu;
+    const menuToShow = type === "item" ? explorerItemMenu : explorerGeneralMenu;
 
     // Set disabled states
-    explorerGeneralMenu.querySelector('#explorer-general-paste').classList.toggle('disabled', states.pasteDisabled);
-    explorerGeneralMenu.querySelector('#explorer-general-undo').classList.toggle('disabled', states.undoDisabled);
+    explorerGeneralMenu
+        .querySelector("#explorer-general-paste")
+        .classList.toggle("disabled", states.pasteDisabled);
+    explorerGeneralMenu
+        .querySelector("#explorer-general-undo")
+        .classList.toggle("disabled", states.undoDisabled);
 
-    explorerItemMenu.querySelector('#explorer-item-cut').classList.toggle('disabled', states.itemActionsDisabled);
-    explorerItemMenu.querySelector('#explorer-item-copy').classList.toggle('disabled', states.itemActionsDisabled);
-    explorerItemMenu.querySelector('#explorer-item-delete').classList.toggle('disabled', states.itemActionsDisabled);
-    explorerItemMenu.querySelector('#explorer-item-rename').classList.toggle('disabled', states.renameDisabled);
+    explorerItemMenu
+        .querySelector("#explorer-item-cut")
+        .classList.toggle("disabled", states.itemActionsDisabled);
+    explorerItemMenu
+        .querySelector("#explorer-item-copy")
+        .classList.toggle("disabled", states.itemActionsDisabled);
+    explorerItemMenu
+        .querySelector("#explorer-item-delete")
+        .classList.toggle("disabled", states.itemActionsDisabled);
+    explorerItemMenu
+        .querySelector("#explorer-item-rename")
+        .classList.toggle("disabled", states.renameDisabled);
 
-    menuToShow.style.display = 'block';
+    menuToShow.style.display = "block";
 
     const x = frameRect.left + clickPosition.x;
     const y = frameRect.top + clickPosition.y;
@@ -1170,37 +1525,41 @@ function showExplorerContextMenu(data, frameRect) {
     const { offsetWidth: menuWidth, offsetHeight: menuHeight } = menuToShow;
     const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
 
-    let finalX = (x + menuWidth > windowWidth) ? windowWidth - menuWidth - 5 : x;
-    let finalY = (y + menuHeight > windowHeight) ? windowHeight - menuHeight - 5 : y;
+    let finalX = x + menuWidth > windowWidth ? windowWidth - menuWidth - 5 : x;
+    let finalY =
+        y + menuHeight > windowHeight ? windowHeight - menuHeight - 5 : y;
     menuToShow.style.left = `${finalX}px`;
     menuToShow.style.top = `${finalY}px`;
 
     // Submenu positioning logic
-    menuToShow.querySelectorAll('.submenu').forEach(submenu => {
+    menuToShow.querySelectorAll(".submenu").forEach((submenu) => {
         const itemRect = submenu.parentElement.getBoundingClientRect();
         const subRect = submenu.getBoundingClientRect(); // this is just for width/height
         if (itemRect.right + submenu.offsetWidth > windowWidth) {
-            submenu.style.left = 'auto';
-            submenu.style.right = 'calc(100% - 5px)';
+            submenu.style.left = "auto";
+            submenu.style.right = "calc(100% - 5px)";
         } else {
-            submenu.style.left = 'calc(100% - 5px)';
-            submenu.style.right = 'auto';
+            submenu.style.left = "calc(100% - 5px)";
+            submenu.style.right = "auto";
         }
     });
 }
 
 function setupExplorerContextMenuActions() {
     const menus = [explorerGeneralMenu, explorerItemMenu];
-    menus.forEach(menu => {
-        menu.addEventListener('click', (e) => {
-            const item = e.target.closest('[data-command]');
-            if (item && !item.classList.contains('disabled')) {
+    menus.forEach((menu) => {
+        menu.addEventListener("click", (e) => {
+            const item = e.target.closest("[data-command]");
+            if (item && !item.classList.contains("disabled")) {
                 const command = item.dataset.command;
-                fileExplorerFrame.contentWindow.postMessage({ action: 'execute-explorer-command', value: command }, '*');
+                fileExplorerFrame.contentWindow.postMessage(
+                    { action: "execute-explorer-command", value: command },
+                    "*",
+                );
 
-                if (!item.querySelector('.submenu')) {
-                    explorerGeneralMenu.style.display = 'none';
-                    explorerItemMenu.style.display = 'none';
+                if (!item.querySelector(".submenu")) {
+                    explorerGeneralMenu.style.display = "none";
+                    explorerItemMenu.style.display = "none";
                 }
             }
         });
@@ -1208,67 +1567,76 @@ function setupExplorerContextMenuActions() {
 }
 
 function setupMenus() {
-
-    desktop.addEventListener('contextmenu', (e) => {
+    desktop.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         showDesktopContextMenu(e);
     });
 
-    clickInterceptor.addEventListener('contextmenu', (e) => {
+    clickInterceptor.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         showDesktopContextMenu(e);
     });
 
-    document.addEventListener('click', (e) => {
-        if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
-            contextMenu.style.display = 'none';
+    document.addEventListener("click", (e) => {
+        if (
+            contextMenu.style.display === "block" &&
+            !contextMenu.contains(e.target)
+        ) {
+            contextMenu.style.display = "none";
         }
-        if (startMenu.classList.contains('show') && !e.composedPath().includes(startMenu) && !startButton.contains(e.target)) {
-            startMenu.classList.remove('show');
+        if (
+            startMenu.classList.contains("show") &&
+            !e.composedPath().includes(startMenu) &&
+            !startButton.contains(e.target)
+        ) {
+            startMenu.classList.remove("show");
         }
-        if (!e.target.closest('.explorer-context-menu')) {
-            explorerGeneralMenu.style.display = 'none';
-            explorerItemMenu.style.display = 'none';
+        if (!e.target.closest(".explorer-context-menu")) {
+            explorerGeneralMenu.style.display = "none";
+            explorerItemMenu.style.display = "none";
         }
-        if (notificationCenter.classList.contains('show') &&
+        if (
+            notificationCenter.classList.contains("show") &&
             !notificationCenter.contains(e.target) &&
             !notificationCenterTrigger.contains(e.target)
         ) {
-            notificationCenter.classList.remove('show');
+            notificationCenter.classList.remove("show");
         }
     });
 
-    contextMenuSettings.addEventListener('click', () => {
-        openApp('cp');
-        contextMenu.style.display = 'none';
+    contextMenuSettings.addEventListener("click", () => {
+        openApp("cp");
+        contextMenu.style.display = "none";
     });
 
-    contextMenuRefresh.addEventListener('click', () => {
-        contextMenu.style.display = 'none';
+    contextMenuRefresh.addEventListener("click", () => {
+        contextMenu.style.display = "none";
 
-        const icons = Array.from(document.querySelectorAll('#desktop-icons .desktop-icon'));
+        const icons = Array.from(
+            document.querySelectorAll("#desktop-icons .desktop-icon"),
+        );
         const animationDelay = 150;
 
-        icons.forEach(icon => {
-            icon.classList.remove('animate-in');
-            icon.classList.add('hide-for-refresh');
+        icons.forEach((icon) => {
+            icon.classList.remove("animate-in");
+            icon.classList.add("hide-for-refresh");
         });
 
         setTimeout(() => {
             icons.forEach((icon, index) => {
                 setTimeout(() => {
-                    icon.classList.remove('hide-for-refresh');
-                    icon.classList.add('animate-in');
+                    icon.classList.remove("hide-for-refresh");
+                    icon.classList.add("animate-in");
                 }, index * animationDelay);
             });
         }, 50);
     });
 
-    notificationCenterTrigger.addEventListener('click', (event) => {
+    notificationCenterTrigger.addEventListener("click", (event) => {
         event.stopPropagation();
-        startMenu.classList.remove('show');
-        contextMenu.style.display = 'none';
-        notificationCenter.classList.toggle('show');
+        startMenu.classList.remove("show");
+        contextMenu.style.display = "none";
+        notificationCenter.classList.toggle("show");
     });
 }
 
@@ -1279,27 +1647,30 @@ function setupClickForwarding() {
     const startReEnableTimer = () => {
         clearTimeout(reEnableTimerId);
         reEnableTimerId = setTimeout(() => {
-            if (interceptor.style.pointerEvents === 'none') {
-                interceptor.style.pointerEvents = 'auto';
+            if (interceptor.style.pointerEvents === "none") {
+                interceptor.style.pointerEvents = "auto";
             }
         }, 500);
     };
 
-    interceptor.addEventListener('mousedown', (e) => {
+    interceptor.addEventListener("mousedown", (e) => {
         if (e.button === 0) {
             clearTimeout(reEnableTimerId);
-            interceptor.style.pointerEvents = 'none';
+            interceptor.style.pointerEvents = "none";
             const onInteractionEnd = () => {
                 startReEnableTimer();
-                window.removeEventListener('mouseup', onInteractionEnd);
-                window.removeEventListener('mouseleave', onInteractionEnd);
+                window.removeEventListener("mouseup", onInteractionEnd);
+                window.removeEventListener("mouseleave", onInteractionEnd);
             };
-            window.addEventListener('mouseup', onInteractionEnd, { once: true });
-            window.addEventListener('mouseleave', onInteractionEnd, { once: true });
+            window.addEventListener("mouseup", onInteractionEnd, {
+                once: true,
+            });
+            window.addEventListener("mouseleave", onInteractionEnd, {
+                once: true,
+            });
         }
     });
 }
-
 
 // === APPLICATION INITIALIZATION ===
 function initialize() {
@@ -1316,40 +1687,57 @@ function initialize() {
     //     }
     // });
 
-    clearAllBtn.addEventListener('click', () => {
+    clearAllBtn.addEventListener("click", () => {
         // 1. Temukan dan hapus semua elemen .notification-item
-        notificationList.querySelectorAll('.notification-item').forEach(item => item.remove());
+        notificationList
+            .querySelectorAll(".notification-item")
+            .forEach((item) => item.remove());
 
         // 2. Tampilkan kembali placeholder "Tidak ada notifikasi"
         //    (Fungsi addNotificationToCenter Anda sudah menyembunyikannya)
-        notificationPlaceholder.style.display = 'block';
+        notificationPlaceholder.style.display = "block";
     });
 
-    window.addEventListener('message', (event) => {
-        console.log('[Desktop] Message received from iframe. Action:', event.data.action, 'Full data:', event.data);
-        const { action, dx, dy, data, bufferLength, isPaused, value, appName, volume } = event.data;
+    window.addEventListener("message", (event) => {
+        console.log(
+            "[Desktop] Message received from iframe. Action:",
+            event.data.action,
+            "Full data:",
+            event.data,
+        );
+        const {
+            action,
+            dx,
+            dy,
+            data,
+            bufferLength,
+            isPaused,
+            value,
+            appName,
+            volume,
+        } = event.data;
 
         switch (action) {
-            case 'stop-music-frame': {
+            case "stop-music-frame": {
                 isPaused = true;
                 visualizerData = null;
-                visualizerCanvas.style.display = 'none';
+                visualizerCanvas.style.display = "none";
                 break;
             }
-            case 'volume-change-start':
-                console.log('[Desktop] Volume change started.');
+            case "volume-change-start":
+                console.log("[Desktop] Volume change started.");
                 isVolumeChanging = true;
-                if (isPillActive && activePillType === 'volume') {
+                if (isPillActive && activePillType === "volume") {
                     clearTimeout(pillTimer);
                     pillTimer = setTimeout(() => {
                         if (!isVolumeChanging) hidePill();
                     }, 2000);
                 }
                 break;
-            case 'volume-change-end':
-                console.log('[Desktop] Volume change ended.');
+            case "volume-change-end":
+                console.log("[Desktop] Volume change ended.");
                 isVolumeChanging = false;
-                if (isPillActive && activePillType === 'volume') {
+                if (isPillActive && activePillType === "volume") {
                     clearTimeout(pillTimer);
                     pillTimer = setTimeout(() => {
                         if (!isVolumeChanging) {
@@ -1358,163 +1746,275 @@ function initialize() {
                     }, 500);
                 }
                 break;
-            case 'show-media-notification': {
-                console.log('[Desktop] Handling "show-media-notification". Title:', event.data.title, 'Album Art URL:', event.data.albumArt);
-                showNotification(event.data.title, event.data.artist, event.data.albumArt);
+            case "show-media-notification": {
+                console.log(
+                    '[Desktop] Handling "show-media-notification". Title:',
+                    event.data.title,
+                    "Album Art URL:",
+                    event.data.albumArt,
+                );
+                showNotification(
+                    event.data.title,
+                    event.data.artist,
+                    event.data.albumArt,
+                );
                 break;
             }
-            case 'show-explorer-context-menu': {
-                const explorerFrameRect = fileExplorerFrame.getBoundingClientRect();
+            case "show-explorer-context-menu": {
+                const explorerFrameRect =
+                    fileExplorerFrame.getBoundingClientRect();
                 showExplorerContextMenu(data, explorerFrameRect);
                 break;
             }
-            case 'test-toast-notification': {
+            case "test-toast-notification": {
                 const testIcon = `<svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                 showNotification(
                     "Test Notification",
                     "This is a test notification from the Control Panel.",
-                    testIcon
+                    testIcon,
                 );
                 break;
             }
+            // --- VIDEO PLAYER ACTIONS (BARU) ---
+            case "drag-vp-frame": {
+                if (videoPlayerFrame.dataset.isMaximized === "true") return;
+                const rect = videoPlayerFrame.getBoundingClientRect();
+                videoPlayerFrame.style.left = `${rect.left + dx}px`;
+                videoPlayerFrame.style.top = `${rect.top + dy}px`;
+                break;
+            }
+            case "close-vp-frame":
+                closeApp("video");
+                break;
+            case "minimize-vp-frame":
+                minimizeApp("video");
+                break;
+            case "bring-vp-to-front":
+                bringToFront("video");
+                break;
+            case "maximize-vp-frame":
+                maximizeApp("video");
+                break;
+
             // --- MUSIC PLAYER ACTIONS ---
-            case 'drag-music-frame': {
+            case "drag-music-frame": {
                 // Jika sedang maximized, abaikan drag
-                if (musicPlayerFrame.dataset.isMaximized === 'true') return;
+                if (musicPlayerFrame.dataset.isMaximized === "true") return;
                 const rect = musicPlayerFrame.getBoundingClientRect();
                 musicPlayerFrame.style.left = `${rect.left + dx}px`;
                 musicPlayerFrame.style.top = `${rect.top + dy}px`;
                 break;
             }
-            case 'close-music-frame': closeApp('music'); break;
-            case 'minimize-music-frame': minimizeApp('music'); break;
-            case 'bring-music-to-front': bringToFront('music'); break;
-            case 'maximize-music-frame': maximizeApp('music'); break; // <-- BARU: Maximize Music Player
-            case 'visualizer-data': visualizerData = { data: data, bufferLength: bufferLength, isPaused: isPaused }; break;
-            case 'show-volume-flyout': { showVolumeNotification(event.data.volume); break; }
+            case "close-music-frame":
+                closeApp("music");
+                break;
+            case "minimize-music-frame":
+                minimizeApp("music");
+                break;
+            case "bring-music-to-front":
+                bringToFront("music");
+                break;
+            case "maximize-music-frame":
+                maximizeApp("music");
+                break; // <-- BARU: Maximize Music Player
+            case "visualizer-data":
+                visualizerData = {
+                    data: data,
+                    bufferLength: bufferLength,
+                    isPaused: isPaused,
+                };
+                break;
+            case "show-volume-flyout": {
+                showVolumeNotification(event.data.volume);
+                break;
+            }
 
             // --- CONTROL PANEL ACTIONS ---
-            case 'drag-cp-frame': {
+            case "drag-cp-frame": {
                 // Jika sedang maximized, abaikan drag
-                if (controlPanelFrame.dataset.isMaximized === 'true') return;
+                if (controlPanelFrame.dataset.isMaximized === "true") return;
                 const rect = controlPanelFrame.getBoundingClientRect();
                 controlPanelFrame.style.left = `${rect.left + dx}px`;
                 controlPanelFrame.style.top = `${rect.top + dy}px`;
                 break;
             }
-            case 'close-cp-frame': closeApp('cp'); break;
-            case 'minimize-cp-frame': minimizeApp('cp'); break;
-            case 'bring-cp-to-front': bringToFront('cp'); break;
-            case 'maximize-cp-frame': maximizeApp('cp'); break;
+            case "close-cp-frame":
+                closeApp("cp");
+                break;
+            case "minimize-cp-frame":
+                minimizeApp("cp");
+                break;
+            case "bring-cp-to-front":
+                bringToFront("cp");
+                break;
+            case "maximize-cp-frame":
+                maximizeApp("cp");
+                break;
 
             // --- FILE EXPLORER ACTIONS ---
-            case 'drag-explorer-frame': {
+            case "drag-explorer-frame": {
                 // Jika sedang maximized, abaikan drag
-                if (fileExplorerFrame.dataset.isMaximized === 'true') return;
+                if (fileExplorerFrame.dataset.isMaximized === "true") return;
                 const rect = fileExplorerFrame.getBoundingClientRect();
                 fileExplorerFrame.style.left = `${rect.left + dx}px`;
                 fileExplorerFrame.style.top = `${rect.top + dy}px`;
                 break;
             }
-            case 'close-explorer-frame': closeApp('explorer'); break;
-            case 'minimize-explorer-frame': minimizeApp('explorer'); break;
-            case 'bring-explorer-to-front': bringToFront('explorer'); break;
-            case 'maximize-explorer-frame': maximizeApp('explorer'); break;
+            case "close-explorer-frame":
+                closeApp("explorer");
+                break;
+            case "minimize-explorer-frame":
+                minimizeApp("explorer");
+                break;
+            case "bring-explorer-to-front":
+                bringToFront("explorer");
+                break;
+            case "maximize-explorer-frame":
+                maximizeApp("explorer");
+                break;
 
             // --- LIVE2D WALLPAPER ACTIONS ---
-            case 'drag-live2d-frame': {
+            case "drag-live2d-frame": {
                 // Jika sedang maximized, abaikan drag
-                if (live2dWallpaperFrame.dataset.isMaximized === 'true') return;
+                if (live2dWallpaperFrame.dataset.isMaximized === "true") return;
                 const rect = live2dWallpaperFrame.getBoundingClientRect();
                 live2dWallpaperFrame.style.left = `${rect.left + dx}px`;
                 live2dWallpaperFrame.style.top = `${rect.top + dy}px`;
                 break;
             }
-            case 'close-live2d-frame': closeApp('live2d'); break;
-            case 'minimize-live2d-frame': minimizeApp('live2d'); break;
-            case 'bring-live2d-to-front': bringToFront('live2d'); break;
-            case 'maximize-live2d-frame': maximizeApp('live2d'); break; // <-- BARU: Maximize Live2D App
+            case "close-live2d-frame":
+                closeApp("live2d");
+                break;
+            case "minimize-live2d-frame":
+                minimizeApp("live2d");
+                break;
+            case "bring-live2d-to-front":
+                bringToFront("live2d");
+                break;
+            case "maximize-live2d-frame":
+                maximizeApp("live2d");
+                break; // <-- BARU: Maximize Live2D App
 
-            case 'set-live-wallpaper':
+            case "set-live-wallpaper":
                 wallpaperIframe.src = value;
-                wallpaperIframe.style.display = 'block';
-                clickInterceptor.style.display = 'block';
-                desktop.style.backgroundImage = 'none';
-                document.querySelector('.desktop-image').style.display = 'none';
+                wallpaperIframe.style.display = "block";
+                clickInterceptor.style.display = "block";
+                desktop.style.backgroundImage = "none";
+                document.querySelector(".desktop-image").style.display = "none";
                 break;
-            case 'clear-live-wallpaper':
-                wallpaperIframe.src = 'about:blank';
-                wallpaperIframe.style.display = 'none';
-                clickInterceptor.style.display = 'none';
-                document.querySelector('.desktop-image').style.display = 'block';
+            case "clear-live-wallpaper":
+                wallpaperIframe.src = "about:blank";
+                wallpaperIframe.style.display = "none";
+                clickInterceptor.style.display = "none";
+                document.querySelector(".desktop-image").style.display =
+                    "block";
                 break;
-            case 'open-app-from-start-menu':
+            case "open-app-from-start-menu":
                 openApp(appName);
-                startMenu.classList.remove('show');
+                startMenu.classList.remove("show");
                 break;
-            case 'toggle-fancy-mode':
-                document.body.classList.toggle('fancy-mode', value);
-                musicPlayerFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
-                controlPanelFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
-                if (typeof toggleFancyMode === 'function') {
+            case "toggle-fancy-mode":
+                document.body.classList.toggle("fancy-mode", value);
+                musicPlayerFrame.contentWindow.postMessage(
+                    { action: "toggle-fancy-mode", value: value },
+                    "*",
+                );
+                controlPanelFrame.contentWindow.postMessage(
+                    { action: "toggle-fancy-mode", value: value },
+                    "*",
+                );
+                videoPlayerFrame.contentWindow.postMessage(
+                    { action: "toggle-fancy-mode", value: value },
+                    "*",
+                ); // BARU
+                if (typeof toggleFancyMode === "function") {
                     toggleFancyMode(value);
                 }
-                window.dispatchEvent(new CustomEvent('fancy-mode-toggled', { detail: { value } }));
-                live2dWallpaperFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
-                fileExplorerFrame.contentWindow.postMessage({ action: 'toggle-fancy-mode', value: value }, '*');
+                window.dispatchEvent(
+                    new CustomEvent("fancy-mode-toggled", {
+                        detail: { value },
+                    }),
+                );
+                live2dWallpaperFrame.contentWindow.postMessage(
+                    { action: "toggle-fancy-mode", value: value },
+                    "*",
+                );
+                fileExplorerFrame.contentWindow.postMessage(
+                    { action: "toggle-fancy-mode", value: value },
+                    "*",
+                );
                 break;
-            case 'request-settings':
-                controlPanelFrame.contentWindow.postMessage({ action: 'request-settings' }, '*');
+            case "request-settings":
+                controlPanelFrame.contentWindow.postMessage(
+                    { action: "request-settings" },
+                    "*",
+                );
                 break;
-            case 'change-theme': {
-                const isDark = value === 'dark';
-                document.body.classList.toggle('dark', isDark);
-                musicPlayerFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
-                controlPanelFrame.contentWindow.postMessage({ action: 'theme-change', isDark }, '*');
-                if (typeof applyTheme === 'function') {
+            case "change-theme": {
+                const isDark = value === "dark";
+                document.body.classList.toggle("dark", isDark);
+                musicPlayerFrame.contentWindow.postMessage(
+                    { action: "theme-change", isDark },
+                    "*",
+                );
+                controlPanelFrame.contentWindow.postMessage(
+                    { action: "theme-change", isDark },
+                    "*",
+                );
+                videoPlayerFrame.contentWindow.postMessage(
+                    { action: "theme-change", isDark },
+                    "*",
+                ); // BARU
+                if (typeof applyTheme === "function") {
                     applyTheme(isDark);
                 }
-                window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark } }));
+                window.dispatchEvent(
+                    new CustomEvent("theme-changed", { detail: { isDark } }),
+                );
                 break;
             }
-            case 'change-bg-size':
-                desktopImage.style.objectFit = value === 'auto' ? 'none' : value;
+            case "change-bg-size":
+                desktopImage.style.objectFit =
+                    value === "auto" ? "none" : value;
                 desktop.style.backgroundSize = value;
                 break;
-            case 'change-bg-repeat':
-                if (value === 'no-repeat') {
-                    desktopImage.style.display = 'block';
-                    desktop.style.backgroundImage = 'none';
+            case "change-bg-repeat":
+                if (value === "no-repeat") {
+                    desktopImage.style.display = "block";
+                    desktop.style.backgroundImage = "none";
                 } else {
-                    desktopImage.style.display = 'none';
+                    desktopImage.style.display = "none";
                     desktop.style.backgroundImage = `url('${desktopImage.src}')`;
                 }
                 desktop.style.backgroundRepeat = value;
                 break;
-            case 'change-bg-position':
+            case "change-bg-position":
                 desktopImage.style.objectPosition = value;
                 desktop.style.backgroundPosition = value;
                 break;
-            case 'change-taskbar-position':
-                taskbar.className = taskbar.className.replace(/taskbar-(bottom|top|left|right)/, `taskbar-${value}`);
+            case "change-taskbar-position":
+                taskbar.className = taskbar.className.replace(
+                    /taskbar-(bottom|top|left|right)/,
+                    `taskbar-${value}`,
+                );
                 applyTaskbarLayout(value);
-                if (startMenu.classList.contains('show')) {
+                if (startMenu.classList.contains("show")) {
                     // Logic moved to startmenu.js
                 }
                 break;
-            case 'change-taskbar-style':
+            case "change-taskbar-style":
                 applyTaskbarStyle(value);
-                if (startMenu.classList.contains('show')) {
+                if (startMenu.classList.contains("show")) {
                     // Logic moved to startmenu.js
                 }
                 break;
-            case 'toggle-taskbar-space-between':
+            case "toggle-taskbar-space-between":
                 isTaskbarSpaceBetween = value;
-                taskbar.classList.toggle('space-between', value);
+                taskbar.classList.toggle("space-between", value);
                 setTimeout(positionVisualizer, 50);
                 break;
-            case 'toggle-clock':
-                datetimeContainer.style.display = value ? 'block' : 'none';
+            case "toggle-clock":
+                datetimeContainer.style.display = value ? "block" : "none";
                 break;
         }
     });
@@ -1522,28 +2022,36 @@ function initialize() {
     setInterval(updateClock, 1000);
     updateClock();
 
-    window.addEventListener('load', () => {
+    window.addEventListener("load", () => {
         applyTaskbarLayout(currentTaskbarPosition);
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             setTimeout(positionVisualizer, 50);
         });
-        window.addEventListener('scroll', () => {
-            if (startMenu.classList.contains('show')) {
-                // This is handled by startmenu.js now
-            }
-        }, true);
+        window.addEventListener(
+            "scroll",
+            () => {
+                if (startMenu.classList.contains("show")) {
+                    // This is handled by startmenu.js now
+                }
+            },
+            true,
+        );
 
-        setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 350);
+        setTimeout(() => {
+            window.dispatchEvent(new Event("resize"));
+        }, 350);
     });
 
-    document.querySelectorAll('.quick-setting-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('active');
+    document.querySelectorAll(".quick-setting-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+            button.classList.toggle("active");
         });
     });
 
     setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
+        window.dispatchEvent(new Event("resize"));
+        // Panggil updateTaskbarIconsVisibility di sini untuk memastikan ikon aplikasi yang sudah terbuka (misalnya dari sesi sebelumnya) ditampilkan saat load
+        updateTaskbarIconsVisibility(); 
     }, 100);
 }
 
