@@ -1,13 +1,16 @@
 <!doctype html>
 <html lang="id">
 
+<!-- Harusnya file saya lengkap seperti ini -->
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Video Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        /* Variabel CSS disinkronkan dengan tema desktop (index.html) */
+        /* ... (Gaya CSS tetap sama) ... */
         :root {
             --window-bg: #f0f0f0;
             --window-text: #000;
@@ -180,7 +183,7 @@
             transition: color 0.15s, background-color 0.15s, filter 0.15s;
             opacity: 0.9;
         }
-        
+
         /* Tombol non-utama saat di-hover */
         .player-controls button:not(#play-pause-btn):hover {
             color: var(--control-highlight);
@@ -204,28 +207,28 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         #play-pause-btn svg {
             width: 24px;
             /* w-6 */
             height: 24px;
             /* h-6 */
         }
-        
+
         #play-pause-btn:hover {
             filter: brightness(1.1);
             /* Sedikit lebih terang saat di-hover */
             color: white;
             /* Pastikan tetap putih */
         }
-        
+
         /* Tombol non-aktif (disabled) */
         .player-controls button:disabled {
             opacity: 0.4;
             color: var(--control-text);
             cursor: not-allowed;
         }
-        
+
         #play-pause-btn:disabled {
             background-color: var(--control-highlight);
             opacity: 0.5;
@@ -343,18 +346,18 @@
         .app-window.maximized {
             border: none;
         }
-        
+
         .app-window.maximized .player-controls {
             border-radius: 0 !important;
             /* NEW: Ratakan sudut bawah saat maximize */
         }
-        
+
         /* NEW: Info Video di Kiri Bawah */
         #video-info-display {
             min-width: 0;
             /* Biarkan flexbox yang mengatur */
         }
-        
+
         #video-title-display {
             white-space: nowrap;
             overflow: hidden;
@@ -363,25 +366,14 @@
             max-width: 200px;
             /* Batasi lebar agar tidak mendominasi */
         }
-        
-        /* Style untuk menampilkan subtitle tepat di atas video */
-        #subtitle-display {
-            position: absolute;
-            bottom: 6%; /* Jarak dari bawah video */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            text-align: center;
-            z-index: 10;
-            pointer-events: none; /* Penting agar tidak menghalangi video click */
-            color: white; /* Warna default subtitle */
-            text-shadow: 
-                1px 1px 2px black, 
-                -1px -1px 2px black, 
-                1px -1px 2px black, 
-                -1px 1px 2px black;
-            font-size: 1.5rem;
-            line-height: 1.3;
+
+        /* Styling native subtitle rendering (target video::cue pseudo-element) */
+        /* Nonaktifkan CSS cue native karena kita akan menggunakan Octopus untuk ASS/SSA */
+        #video-player::cue {
+            background-color: rgba(0, 0, 0, 0.0);
+            color: transparent;
+            text-shadow: none;
+            /* Pastikan subtitle native tidak terlihat, atau hapus elemen <track> */
         }
 
 
@@ -390,7 +382,7 @@
             border: 1px solid var(--window-border);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         #subtitle-menu button {
             color: var(--control-text);
             background-color: var(--control-bg);
@@ -402,6 +394,25 @@
             background-color: var(--control-bg);
         }
 
+        /* NEW: Highlight selected subtitle track */
+        #subtitle-menu button.selected-track {
+            font-weight: bold;
+            color: var(--control-highlight);
+            /* Or another highlight color */
+        }
+
+        /* 2. Gaya untuk Canvas Subtitle Octopus (HARUS menutupi video) */
+        #subtitle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            /* Di atas video, di bawah overlay pesan/drop-zone */
+            pointer-events: none;
+            /* Penting agar video dan drop zone tetap dapat diakses */
+        }
     </style>
 </head>
 
@@ -449,8 +460,13 @@
             style="background-color: var(--player-bg); overflow: hidden;" title="Drop video file here">
 
             <!-- Elemen VIDEO -->
-            <!-- Tambahkan attribute 'crossorigin' agar WebVTT bisa bekerja dari Blob URL (Chrome/Firefox) -->
-            <video id="video-player" poster="https://placehold.co/600x400/1c1c1c/ffffff?text=Drop+Video" crossorigin="anonymous"></video>
+            <video id="video-player" poster="https://placehold.co/600x400/1c1c1c/ffffff?text=Drop+Video"
+                crossorigin="anonymous">
+                <!-- Track elements will be added here dynamically for VTT/SRT -->
+            </video>
+
+            <!-- 5. Tambahkan Canvas untuk Subtitle Octopus -->
+            <canvas id="subtitle-canvas"></canvas>
 
             <!-- Overlay untuk tampilan Drag and Drop dan Pesan -->
             <div id="video-overlay" class="transition-opacity duration-300" style="opacity: 1;">
@@ -461,12 +477,14 @@
                 </svg>
                 <p class="text-xl font-bold">Video Player</p>
                 <p class="text-sm text-gray-300">
-                    Drop a video file here (.mp4, .webm, **.mkv**)
+                    Drop a video file here (.mp4, .webm, .mkv)
                 </p>
             </div>
-            
+
             <!-- Elemen untuk menampilkan pesan error subtitle/status -->
-            <div id="subtitle-status-message" class="absolute top-2 left-2 text-sm p-1 rounded-md text-red-400 bg-gray-800 hidden"></div>
+            <div id="subtitle-status-message"
+                class="absolute top-2 left-2 text-sm p-1 rounded-md text-yellow-400 bg-gray-800 bg-opacity-70 backdrop-blur-sm hidden z-20">
+            </div>
         </div>
 
         <!-- (UPDATED) Kontrol wrapper sekarang menjadi anak langsung dari .app-window -->
@@ -485,20 +503,22 @@
 
 
             <!-- NEW: Baris 2: Tombol Kontrol Utama -->
-            <div class="flex items-center justify-between w-full mt-1">
+            <div class="flex items-center justify-center w-full mt-1">
 
                 <!-- Kiri: Info Video (Seperti di referensi) -->
-                <div id="video-info-display" class="flex items-center gap-2 w-1/3 hidden">
-                    <svg class="w-8 h-8 opacity-70" viewBox="0 0 24 24" fill="currentColor"
+                <div id="video-info-display" class="flex items-center gap-2 w-1/3 min-w-0 hidden">
+                    <!-- Tambah min-w-0 -->
+                    <svg class="w-8 h-8 opacity-70 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 10h-2v2h-2v-2H8v-2h2V8h2v2h2v2z" />
                     </svg>
-                    <span id="video-title-display" class="text-sm">Nama Video</span>
+                    <span id="video-title-display" class="text-sm truncate">Nama Video</span> <!-- Tambah truncate -->
                 </div>
 
                 <!-- Tengah: Kontrol Utama -->
-                <div class="flex items-center justify-center gap-3 w-1/3">
+                <div class="flex items-center justify-center gap-3 w-auto flex-shrink-0">
+                    <!-- Ganti w-1/3 jadi w-auto -->
                     <button id="shuffle-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
                         title="Shuffle" disabled>
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
@@ -567,9 +587,10 @@
                         </svg>
                     </button>
 
-                    <!-- NEW: Tombol Subtitle -->
-                    <button id="subtitle-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
-                        title="Subtitles">
+                    <!-- NEW: Tombol Subtitle (Tambahkan class transition dan highlight) -->
+                    <button id="subtitle-btn"
+                        class="w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200"
+                        title="Subtitles" disabled>
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -578,7 +599,6 @@
                     </button>
 
                     <!-- NEW: Menu Subtitle Dropdown -->
-                    <!-- Gunakan bg-opacity-90 untuk glass effect yang lebih baik -->
                     <div id="subtitle-menu"
                         class="absolute bottom-full right-0 mb-2 w-48 rounded-lg shadow-xl py-1 z-30 hidden"
                         style="background-color: var(--control-bg);">
@@ -591,7 +611,7 @@
                     </div>
 
                     <button id="fullscreen-btn" class="w-8 h-8 rounded-full flex items-center justify-center"
-                        title="Fullscreen">
+                        title="Fullscreen" disabled>
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
@@ -611,11 +631,49 @@
             </div>
         </div>
     </div>
-    
-    <!-- file matroska-subtitle.min.js yang ada di dir js/ -->
-    <script src="js/matroska-subtitles.min.js"></script>
+
+    <!-- HAPUS Pustaka MatroskaSubtitles: Kita akan menggunakan FFmpeg/FFprobe Worker -->
+    <!-- <script src="js/matroska-subtitles.min.js"></script> -->
+
+    <!-- REINSTATE: Static load of Subtitles Octopus. This must execute before the main script. -->
+    <script src="js/subtitles-octopus.js"></script> 
 
     <script>
+        // --- PROMISE GLOBAL untuk memastikan Octopus siap ---
+        // Variabel ini tidak diperlukan lagi karena kita menggunakan pemuatan statis.
+        // let octopusReadyPromise;
+
+        // --- FFmpeg/FFprobe Worker Paths ---
+        // Sudah benar didalam subdir js/
+        const FFPROBE_WORKER_PATH = 'js/ffprobe-worker-mkve.js'; 
+        const FFMPEG_WORKER_PATH = 'js/ffmpeg-worker-mkve.js'; 
+        
+        const OCTOPUS_WORKER_PATH = 'js/subtitles-octopus-worker.js'; 
+
+
+        // Helper untuk Mutex (untuk memastikan hanya satu worker yang berjalan)
+        const Mutex = class {
+            constructor() { this.locked = false; this.queue = []; }
+            acquire() {
+                return new Promise(resolve => {
+                    if (!this.locked) {
+                        this.locked = true;
+                        resolve(() => { this.locked = false; this.dequeue(); });
+                    } else {
+                        this.queue.push(resolve);
+                    }
+                });
+            }
+            dequeue() {
+                if (this.queue.length > 0) {
+                    const resolve = this.queue.shift();
+                    this.locked = true;
+                    resolve(() => { this.locked = false; this.dequeue(); });
+                }
+            }
+        };
+        const mutex = new Mutex();
+
         // Elemen DOM
         const header = document.getElementById("vp-window-header");
         const closeBtn = document.getElementById("close-btn");
@@ -624,53 +682,331 @@
         const appWindow = document.querySelector(".app-window");
         const videoDisplayArea = document.getElementById("video-display-area");
         const videoPlayer = document.getElementById("video-player");
+        const subtitleCanvas = document.getElementById("subtitle-canvas"); // NEW: Canvas for Octopus
         const videoOverlay = document.getElementById("video-overlay");
-
-        // --- Kontrol Wrapper (Sekarang Statis) ---
         const controlsWrapper = document.getElementById("controls-wrapper");
-
-        // Tombol Kontrol
         const shuffleBtn = document.getElementById("shuffle-btn");
         const prevBtn = document.getElementById("prev-btn");
         const playPauseBtn = document.getElementById("play-pause-btn");
         const nextBtn = document.getElementById("next-btn");
         const repeatBtn = document.getElementById("repeat-btn");
-
-        // Ikon Play/Pause
         const playIcon = document.getElementById("play-icon");
         const pauseIcon = document.getElementById("pause-icon");
-
-        // Kontrol Timeline & Info
         const timeDisplayCurrent = document.getElementById("time-display-current");
         const timeDisplayDuration = document.getElementById("time-display-duration");
         const timelineContainer = document.getElementById("timeline-container");
         const timelineFill = document.getElementById("timeline-fill");
         const timelineThumb = document.getElementById("timeline-thumb");
-
-        // Info Video
         const videoInfoDisplay = document.getElementById("video-info-display");
         const videoTitleDisplay = document.getElementById("video-title-display");
-
-        // Kontrol Window
         const volumeBtn = document.getElementById("volume-btn");
         const castBtn = document.getElementById("cast-btn");
         const fullscreenBtn = document.getElementById("fullscreen-btn");
         const moreBtn = document.getElementById("more-btn");
-
-        // NEW: Elemen Subtitle
         const subtitleBtn = document.getElementById("subtitle-btn");
         const subtitleMenu = document.getElementById("subtitle-menu");
         const subtitleTrackList = document.getElementById("subtitle-track-list");
         const subtitleStatusMsg = document.getElementById("subtitle-status-message");
 
-
+        // Variabel state
         let isDragging = false;
         let isMaximized = false;
         let isTimelineDragging = false;
         let currentFileURL = null;
-        let subtitleTracks = []; // Menyimpan data subtitle yang diekstrak (metadata & content)
+        // Struktur subtitleTracks diubah agar lebih sederhana untuk FFmpeg
+        let subtitleTracks = []; // Menyimpan data subtitle yang diekstrak { index, label, language, codec_name, content: ass/vtt String }
         let currentTrackURL = null; // Menyimpan URL blob VTT yang aktif
-        let videoFileReference = null; // Menyimpan referensi File object untuk dibaca oleh FileReader
+        let videoFileReference = null;
+        let currentSubtitleTrackElement = null; // Menyimpan referensi ke elemen <track> yang sedang aktif
+        let decoder = new TextDecoder('utf-8'); // Decoder untuk output teks worker
+        let octopusRenderer = null; // NEW: Instance SubtitleOctopus
+        
+        // NEW: Interval untuk sinkronisasi waktu subtitle
+        let subtitleSyncInterval = null;
+
+
+        // --- FFMPEG/FFPROBE WORKER UTILITY FUNCTIONS ---
+        // (runFFprobe dan runFFmpeg tetap sama)
+
+        function runFFprobe(file) {
+            console.log(`[FFprobe] Memproses file: ${file.name}`);
+            return new Promise(async (resolve, reject) => {
+                const release = await mutex.acquire(); // Gunakan Mutex
+                try {
+                    const worker = new Worker(FFPROBE_WORKER_PATH);
+                    let stdout = '';
+                    let stderr = '';
+
+                    worker.addEventListener('error', error => {
+                        console.error(`[FFprobe Worker Error] File: ${file.name}`, error.message);
+                        resolve({ error: error.message, stdout, stderr });
+                        worker.terminate();
+                    });
+
+                    worker.addEventListener('message', e => {
+                        const msg = e.data;
+                        switch (msg.type) {
+                            case 'ready':
+                                worker.postMessage({
+                                    type: 'run',
+                                    arguments: [
+                                        '-i', '/data/' + file.name,
+                                        '-print_format', 'json',
+                                        '-show_streams',
+                                        '-show_format',
+                                    ],
+                                    mounts: [{
+                                        type: 'WORKERFS',
+                                        opts: { files: [file] },
+                                        mountpoint: '/data'
+                                    }]
+                                });
+                                break;
+                            case 'stdout':
+                                stdout += msg.data;
+                                break;
+                            case 'stderr':
+                                stderr += msg.data;
+                                break;
+                            case 'done':
+                                let parsed, error;
+                                try {
+                                    parsed = JSON.parse(stdout);
+                                } catch (err) {
+                                    error = err;
+                                    console.error(`[FFprobe Parse Error] File: ${file.name}`, err, 'Stderr:', stderr);
+                                } finally {
+                                    resolve({ parsed, error, stdout, stderr });
+                                    worker.terminate();
+                                }
+                                break;
+                        }
+                    });
+                } catch (e) {
+                    console.error(`[FFprobe Initialization Error] Gagal membuat worker untuk: ${file.name}`, e);
+                    reject(e);
+                } finally {
+                    release(); // Lepaskan Mutex
+                }
+            });
+        }
+
+        function runFFmpeg(file, argv) {
+            console.log(`[FFmpeg] Menjalankan perintah: ${argv.join(' ')}`);
+            return new Promise(async (resolve, reject) => {
+                const release = await mutex.acquire(); // Gunakan Mutex
+                try {
+                    const worker = new Worker(FFMPEG_WORKER_PATH);
+                    let stderr = '';
+
+                    function messageHandler(e) {
+                        const msg = e.data;
+                        switch (msg.type) {
+                            case 'ready':
+                                worker.postMessage({
+                                    type: 'run',
+                                    arguments: argv,
+                                    mounts: [{
+                                        type: 'WORKERFS',
+                                        opts: { files: [file] },
+                                        mountpoint: '/data'
+                                    }]
+                                });
+                                break;
+                            case 'stderr':
+                                stderr += msg.data + '\n';
+                                break;
+                            case 'done':
+                                const files = msg.data.MEMFS;
+                                console.log(`[FFmpeg] Perintah selesai. Jumlah file yang diekstrak: ${files.length}.`);
+                                resolve({ files, stderr });
+                                worker.removeEventListener('message', messageHandler);
+                                worker.terminate();
+                                break;
+                        }
+                    }
+                    worker.addEventListener('message', messageHandler);
+                    worker.addEventListener('error', (e) => {
+                        console.error(`[FFmpeg Worker Error] Fatal error in worker for ${file.name}:`, e);
+                        reject(e);
+                    });
+                } catch (e) {
+                    console.error(`[FFmpeg Initialization Error] Gagal membuat worker untuk: ${file.name}`, e);
+                    reject(e);
+                } finally {
+                    release(); // Lepaskan Mutex
+                }
+            });
+        }
+
+        /**
+         * Mengonversi konten SRT (SubRip Text) ke format WebVTT.
+         */
+        function srtToVtt(srtText) {
+            let vtt = "WEBVTT\n\n";
+
+            // Fungsi untuk membersihkan dan memformat waktu dari SRT (HH:MM:SS,ms) ke VTT (HH:MM:SS.ms)
+            const convertTime = (timeStr) => timeStr.replace(',', '.'); // Mengganti koma desimal (SRT) dengan titik (VTT)
+
+            // Memisahkan blok subtitle
+            const srtBlocks = srtText.split(/\r?\n\r?\n/);
+
+            for (const block of srtBlocks) {
+                const lines = block.split(/\r?\n/).filter(line => line.trim() !== '');
+
+                // SRT cue biasanya dimulai dengan nomor urut, diikuti baris waktu, lalu teks.
+                if (lines.length >= 2) {
+                    let timeLine = null;
+                    let textLines = [];
+
+                    // Cari baris waktu, biasanya yang kedua setelah nomor cue.
+                    for (let i = 0; i < lines.length; i++) {
+                        if (lines[i].includes('-->')) {
+                            timeLine = lines[i];
+                            textLines = lines.slice(i + 1);
+                            break;
+                        }
+                        // Jika baris pertama bukan waktu, abaikan nomor urut
+                    }
+
+                    if (!timeLine) continue;
+
+                    const [startTimeStr, endTimeStr] = timeLine.split('-->').map(s => s.trim());
+                    const vttTimeLine = `${convertTime(startTimeStr)} --> ${convertTime(endTimeStr)}`;
+
+                    let text = textLines.join('\n').trim();
+
+                    // Bersihkan tag font/style dasar (hanya yang paling umum)
+                    text = text.replace(/<[^>]*>/g, '').trim();
+                    text = text.replace(/\n\s*\n/g, '\n'); // Hapus baris kosong ekstra
+
+                    if (text) {
+                        vtt += `${vttTimeLine}\n`;
+                        vtt += `${text}\n\n`;
+                    }
+                }
+            }
+            return vtt;
+        }
+
+
+        /**
+         * Menggunakan FFprobe untuk mendapatkan daftar stream subtitle, dan FFmpeg
+         * untuk mengekstraknya, lalu mengonversi ke VTT (jika SRT) atau menyimpannya
+         * mentah (jika ASS/SSA).
+         */
+        async function extractAndProcessMkvSubtitles(file) {
+            if (!file || !file.name.toLowerCase().endsWith('.mkv')) {
+                return [];
+            }
+
+            showSubtitleStatus(`Menganalisis file MKV dengan FFprobe: ${file.name}...`, 'info');
+
+            // 1. Jalankan FFprobe
+            const probeResult = await runFFprobe(file);
+            const streams = probeResult.parsed?.streams;
+
+            if (probeResult.error || !streams) {
+                const errorMsg = `FFprobe gagal atau tidak menemukan stream. Cek console log.`;
+                showSubtitleStatus(errorMsg, 'error');
+                return [];
+            }
+
+            // 2. Filter stream subtitle berbasis teks
+            // Termasuk ASS/SSA yang akan kita render dengan Octopus
+            const subtitleStreams = streams.filter(s =>
+                s.codec_type === 'subtitle' && (s.codec_name === 'subrip' || s.codec_name === 'ass' || s.codec_name === 'ssa' || s.codec_name === 'mov_text')
+            );
+
+            if (subtitleStreams.length === 0) {
+                showSubtitleStatus("Tidak ada track subtitle berbasis teks yang ditemukan.", 'warning');
+                return [];
+            }
+
+            showSubtitleStatus(`Ditemukan ${subtitleStreams.length} track subtitle. Mengekstrak...`, 'info');
+
+            const tracks = [];
+            let conversionErrors = [];
+
+            // 3. Ekstrak dan Konversi setiap stream
+            for (const stream of subtitleStreams) {
+                const streamIndex = stream.index;
+                const codecName = stream.codec_name.toLowerCase();
+                const language = stream.tags?.language || 'und';
+                const title = stream.tags?.title || '';
+                const isAssSsa = codecName === 'ass' || codecName === 'ssa';
+                const label = `${title ? title + ' ' : ''} (${codecName.toUpperCase()}, ${language}) #${streamIndex}`;
+
+                // Tentukan ekstensi output berdasarkan codec agar FFmpeg bisa menyalin tanpa encoder
+                const outputExt = (codecName === 'subrip' || codecName === 'mov_text') ? 'srt' :
+                    isAssSsa ? 'ass' : 'txt'; // ASS/SSA diekstrak sebagai ASS
+
+                const tempFileName = `stream_${streamIndex}.${outputExt}`;
+
+                try {
+                    // Perintah FFmpeg: COPY stream apa adanya (untuk menghindari masalah 'Unknown encoder')
+                    const ffmpegResult = await runFFmpeg(file, [
+                        '-i', '/data/' + file.name,
+                        '-map', `0:${streamIndex}`, // Gunakan indeks stream yang benar
+                        '-c:s', 'copy', // Salin stream mentah
+                        '-f', outputExt, // Format output harus sesuai ekstensi (srt/ass/txt)
+                        '-y',
+                        tempFileName
+                    ]);
+
+                    const extractedFile = ffmpegResult.files.find(f => f.name === tempFileName);
+                    let finalContent = "";
+
+                    if (extractedFile && extractedFile.data.byteLength > 0) {
+                        const rawText = decoder.decode(extractedFile.data);
+
+                        // 4. Konversi ke VTT (jika SRT) atau simpan mentah (jika ASS/SSA)
+                        if (codecName === 'subrip' || codecName === 'mov_text') {
+                            // Coba konversi dari SRT/SubRip (yang dikeluarkan FFmpeg) ke VTT
+                            finalContent = srtToVtt(rawText);
+                            showSubtitleStatus("Track SRT/MOV_TEXT dikonversi ke VTT.", 'info');
+                        } else if (isAssSsa) {
+                            finalContent = rawText; // Simpan ASS/SSA mentah untuk Octopus
+                            showSubtitleStatus("Track ASS/SSA diekstrak mentah.", 'info');
+                        }
+
+                        if (finalContent && finalContent.trim().length > 10) {
+                            tracks.push({
+                                index: streamIndex,
+                                label: label,
+                                language: language,
+                                codec_name: codecName,
+                                content: finalContent, // Ini bisa berupa VTT atau ASS mentah
+                            });
+                            console.log(`[FFmpeg] Track ${streamIndex} berhasil disalin dan diproses.`);
+                        } else {
+                            conversionErrors.push(`Track ${streamIndex} (${codecName}) disalin tetapi konten kosong.`);
+                            console.warn(`[FFmpeg] Gagal memproses, output mentah terlalu pendek/kosong untuk stream ${streamIndex}.`);
+                            console.error(`[FFmpeg Raw Stderr]: ${ffmpegResult.stderr.slice(-500)}`);
+                        }
+                    } else {
+                        // Jika files.length == 0 atau byteLength == 0
+                        conversionErrors.push(`Gagal menyalin track ${streamIndex} (${codecName}). Stderr: ${ffmpegResult.stderr.slice(-500)}`);
+                        console.error(`[FFmpeg] Gagal menyalin/output file kosong untuk stream ${streamIndex}. Stderr: ${ffmpegResult.stderr.slice(-500)}`);
+                    }
+
+                } catch (e) {
+                    const errMsg = `Error fatal saat memproses track ${streamIndex}: ${e.message}`;
+                    conversionErrors.push(errMsg);
+                    console.error(errMsg, e);
+                }
+            }
+
+            if (conversionErrors.length > 0) {
+                showSubtitleStatus(`Selesai, tetapi ${conversionErrors.length} track gagal diproses.`, 'warning');
+            } else if (tracks.length > 0) {
+                showSubtitleStatus(`Berhasil memproses ${tracks.length} track subtitle!`, 'success');
+            } else {
+                showSubtitleStatus("Tidak ada track subtitle yang berhasil diekstrak.", 'warning');
+            }
+
+            return tracks;
+        }
 
         // --- Fungsi Helper ---
         function formatTime(seconds) {
@@ -681,31 +1017,29 @@
         }
 
         function toggleControlsActive(active) {
-            // Perbarui semua elemen kontrol
-            const elements = [shuffleBtn, prevBtn, playPauseBtn, nextBtn, repeatBtn, fullscreenBtn, volumeBtn, subtitleBtn]; 
-            
-            // --- PERBAIKAN 1: Aktifkan semua kontrol jika media dimuat (active = true) ---
+            const elements = [shuffleBtn, prevBtn, playPauseBtn, nextBtn, repeatBtn, fullscreenBtn, volumeBtn, subtitleBtn];
             elements.forEach(el => {
                 // Shuffle, Repeat, Cast, More tetap dinonaktifkan sementara
-                if (el.id === 'shuffle-btn' || el.id === 'repeat-btn' || el.id === 'cast-btn' || el.id === 'more-btn') {
-                    el.disabled = !active || true; 
+                if (['shuffle-btn', 'repeat-btn', 'cast-btn', 'more-btn'].includes(el.id)) {
+                    el.disabled = true; // Selalu nonaktif sementara
+                } else if (el.id === 'subtitle-btn') {
+                    // Tombol subtitle diaktifkan hanya jika ada track DAN video aktif
+                    el.disabled = !active || subtitleTracks.length === 0;
                 } else {
                     el.disabled = !active;
                 }
             });
 
             // Tampilkan/sembunyikan info video
-            if (active) {
+            if (active && videoTitleDisplay.textContent !== "Nama Video") {
                 videoInfoDisplay.classList.remove('hidden');
             } else {
                 videoInfoDisplay.classList.add('hidden');
             }
 
-
-            // Sembunyikan/tampilkan overlay utama (drag and drop / paused state)
+            // Sembunyikan/tampilkan overlay utama
             if (active) {
-                // Jika media aktif, perbarui overlay berdasarkan status pause
-                if (videoPlayer.paused) {
+                if (videoPlayer.paused && !videoPlayer.ended) { // Tampilkan hanya jika paused, bukan ended
                     videoOverlay.style.opacity = '1';
                     videoOverlay.classList.remove('hidden-overlay');
                     videoOverlay.querySelector('.text-xl').textContent = 'Video Paused';
@@ -719,341 +1053,357 @@
                 // Mode tidak aktif/Belum ada media
                 videoOverlay.style.opacity = '1';
                 videoOverlay.classList.remove('hidden-overlay');
-                videoOverlay.querySelector('p').textContent = 'Drop a video file here (.mp4, .webm, **.mkv**)';
+                videoOverlay.querySelector('p').textContent = 'Drop a video file here (.mp4, .webm, .mkv)';
                 videoOverlay.querySelector('.text-xl').textContent = 'Video Player';
                 videoOverlay.querySelector('svg').classList.remove('hidden');
-                // Reset waktu saat tidak aktif
                 timeDisplayCurrent.textContent = '00:00';
                 timeDisplayDuration.textContent = '00:00';
+                videoTitleDisplay.textContent = "Nama Video"; // Reset judul
+                subtitleBtn.disabled = true; // Pastikan tombol subtitle nonaktif saat tidak ada video
             }
         }
 
-        // --- FUNGSI SUBTITLE BARU (Diperbarui untuk matroska-subtitles.min.js) ---
+        // --- FUNGSI SUBTITLE UI & LOGIC (UPDATED) ---
 
-        function showSubtitleStatus(message, isError = false) {
-            subtitleStatusMsg.textContent = message;
-            subtitleStatusMsg.classList.remove('hidden');
-            if (isError) {
-                subtitleStatusMsg.classList.remove('text-red-400', 'text-yellow-400');
-                subtitleStatusMsg.classList.add('text-red-400');
-            } else {
-                subtitleStatusMsg.classList.remove('text-red-400', 'text-yellow-400');
-                subtitleStatusMsg.classList.add('text-yellow-400');
-            }
-            setTimeout(() => {
-                subtitleStatusMsg.classList.add('hidden');
-            }, 5000);
-        }
-
-        // Fungsi untuk menghapus track subtitle yang ada
-        function removeExistingSubtitleTracks() {
-            const existingTracks = videoPlayer.querySelectorAll('track');
-            existingTracks.forEach(track => {
-                // Cabut URL blob sebelum menghapus track
-                if (currentTrackURL) {
-                    URL.revokeObjectURL(currentTrackURL);
-                    currentTrackURL = null;
-                }
-                track.remove();
-            });
-            // Nonaktifkan semua text track yang mungkin tersisa
-            for (let i = 0; i < videoPlayer.textTracks.length; i++) {
-                videoPlayer.textTracks[i].mode = 'disabled';
-            }
-        }
-
-        // Fungsi untuk menambahkan track VTT ke video player
-        function addVTTTrackToVideo(vttContent, label) {
-            removeExistingSubtitleTracks(); // Hapus track lama
-
-            // Format waktu untuk WebVTT: hh:mm:ss.ms
-            // Konversi dari format milidetik/detik jika diperlukan. 
-            // Karena matroska-subtitles.js seharusnya sudah memberikan text VTT/SRT/ASS yang di-unpack.
+        /**
+         * 4. Inisialisasi atau Hapus Renderer Octopus
+         */
+        function initializeOctopus(assContent) {
+            console.log("[Octopus Init] Memulai inisialisasi SubtitlesOctopus.");
             
-            // Konversi format subtitle umum ke WebVTT (sangat disederhanakan)
-            let vttFormattedContent = "WEBVTT\n\n";
-            // Jika konten sudah berupa VTT, gunakan apa adanya. Jika tidak (ASS/SRT), perlu konversi kompleks.
-            // Karena konversi kompleks tidak praktis di sini, kita mengasumsikan parser MKV sudah 
-            // memberikan teks yang cukup "bersih" atau VTT.
-            if (vttContent.toUpperCase().includes("WEBVTT")) {
-                vttFormattedContent = vttContent;
-            } else if (vttContent.includes("Dialogue: ")) {
-                // S_ASS (Sangat Sederhana: hapus baris header ASS dan konversi ke WebVTT format)
-                showSubtitleStatus("Peringatan: Track S_ASS memerlukan konversi kompleks. Format mungkin tidak sempurna.", true);
-                const lines = vttContent.split('\n');
-                let cueCounter = 1;
-                for (const line of lines) {
-                    if (line.startsWith('Dialogue:')) {
-                        // Contoh format Dialogue: 0,0:00:05.00,0:00:09.00,Default,,0,0,0,,Teks Subtitle
-                        const parts = line.split(',');
-                        if (parts.length > 9) {
-                            const startTime = parts[1].replace('.', ','); // ganti . jadi , untuk ASS/SRT time
-                            const endTime = parts[2].replace('.', ',');
-                            let text = parts.slice(9).join(',').replace(/\{.*?\}|\\N/g, ' ').trim(); // Hapus tag styling ASS
-                            
-                            // Konversi waktu ASS/SRT (H:MM:SS.CS) ke WebVTT (HH:MM:SS.mmm)
-                            const formatTimeForVTT = (timeStr) => {
-                                // H:MM:SS.CS -> HH:MM:SS.mmm
-                                const [h, mm, ss_cs] = timeStr.split(':');
-                                const [ss, cs] = ss_cs.split('.');
-                                const ms = String(parseInt(cs) * 10).padStart(3, '0'); // CS (centisecond) ke milidetik
-                                return `${String(parseInt(h)).padStart(2, '0')}:${mm}:${ss}.${ms}`;
-                            };
+            // Hapus instance lama
+            if (octopusRenderer) {
+                octopusRenderer.dispose();
+                octopusRenderer = null;
+                console.log("[Octopus Init] Renderer lama dihapus.");
+            }
 
-                            vttFormattedContent += `${cueCounter++}\n`;
-                            vttFormattedContent += `${formatTimeForVTT(parts[1])} --> ${formatTimeForVTT(parts[2])}\n`;
-                            vttFormattedContent += `${text}\n\n`;
-                        }
+            // Hapus interval sync lama
+            if (subtitleSyncInterval) {
+                clearInterval(subtitleSyncInterval);
+                subtitleSyncInterval = null;
+            }
+
+            // === FIX 3: Pemeriksaan Eksplisit untuk Elemen DOM (Sesuai saran forum) ===
+            const videoElement = document.getElementById('video-player');
+            const canvasElement = document.getElementById('subtitle-canvas');
+            
+            console.log(`[Octopus Init] Status DOM: Video tersedia: ${!!videoElement}, Canvas tersedia: ${!!canvasElement}`);
+
+            if (!videoElement || !canvasElement) {
+                const errorMsg = `Elemen DOM tidak ditemukan. Video: ${!!videoElement}, Canvas: ${!!canvasElement}. Tidak dapat menginisialisasi SubtitlesOctopus.`;
+                console.error(`[Octopus Init] ERROR: ${errorMsg}`);
+                showSubtitleStatus(`Error: ${errorMsg}`, 'error');
+                return; // Hentikan eksekusi jika elemen tidak ditemukan
+            }
+            // ====================================================================
+            
+            // Logik konten ASS
+            if (!assContent) {
+                console.log("[Octopus Init] Konten ASS kosong. Octopus dimatikan.");
+                canvasElement.style.display = 'none'; // Gunakan canvasElement
+                return;
+            }
+            console.log("[Octopus Init] Konten ASS/SSA ditemukan. Melanjutkan...");
+            canvasElement.style.display = 'block'; // Gunakan canvasElement
+
+            try {
+                // Pemeriksaan eksplisit untuk SubtitleOctopus
+                if (typeof SubtitlesOctopus === 'undefined') {
+                    throw new Error("Pustaka SubtitleOctopus tidak terdefinisi. Pastikan 'js/subtitles-octopus.js' berhasil dimuat.");
+                }
+                console.log("[Octopus Init] Pustaka SubtitlesOctopus terdefinisi. Membuat instance...");
+
+                // Perhatian: Kami MENGHINDARI mengirim elemen 'video' di opsi.
+                // Ini mencegah SubtitlesOctopus secara internal memanggil resize()
+                // dan menginisialisasi event listener-nya sendiri, yang memicu
+                // error getBoundingClientRect. Kami akan mengelola resize dan waktu sendiri.
+                octopusRenderer = new SubtitlesOctopus({
+                    canvas: canvasElement, // Gunakan canvasElement yang telah diperiksa
+                    subContent: assContent,
+                    fonts: [],
+                    workerUrl: OCTOPUS_WORKER_PATH,
+                    // FIX 1: Set fallbackFont ke null untuk mencegah error worker
+                    // Error terjadi karena worker mencoba memuat 'default.woff2' yang tidak ada di path /js/
+                    fallbackFont: null
+                });
+                console.log("[Octopus Init] Renderer ASS/SSA berhasil diinisialisasi.");
+
+                // Panggil resize secara manual setelah inisialisasi berhasil.
+                // Ini akan memastikan canvas di resize sebelum frame pertama dirender.
+                resizeSubtitleCanvas(); 
+
+                // === FIX 5: Mulai interval sinkronisasi waktu ===
+                // Kami harus secara manual memberi tahu Octopus waktu saat ini karena kami tidak memberikan elemen <video> padanya.
+                subtitleSyncInterval = setInterval(() => {
+                    // FIX 2: Periksa apakah renderer masih ada dan memiliki worker sebelum memanggil postMessage
+                    if (videoPlayer && !videoPlayer.paused && octopusRenderer && octopusRenderer.worker) {
+                        octopusRenderer.setCurrentTime(videoPlayer.currentTime);
                     }
-                }
+                }, 100); // 100ms (10 kali per detik) cukup untuk sinkronisasi subtitle
+
+                // Dengarkan event seeking/seeked pada video untuk segera menyinkronkan waktu
+                videoPlayer.addEventListener('seeking', manualSeekSync, false);
+                videoPlayer.addEventListener('seeked', manualSeekSync, false);
+
+
+            } catch (e) {
+                console.error("[Octopus Init] ERROR FATAL saat inisialisasi SubtitleOctopus:", e);
+                // Pesan status diperbarui agar lebih jelas mengenai masalahnya
+                showSubtitleStatus(`Gagal merender subtitle ASS/SSA. Error: ${e.message}. Periksa apakah file worker (${OCTOPUS_WORKER_PATH}) ada.`, 'error');
+                canvasElement.style.display = 'none';
+            }
+        }
+
+        // Handler untuk manual seek sync
+        function manualSeekSync() {
+            // FIX 3: Periksa apakah renderer masih ada dan memiliki worker
+            if (octopusRenderer && octopusRenderer.worker) {
+                octopusRenderer.setCurrentTime(videoPlayer.currentTime);
+            }
+        }
+
+
+        function showSubtitleStatus(message, type = 'info') { // type: 'info', 'warning', 'error', 'success'
+            subtitleStatusMsg.textContent = message;
+            subtitleStatusMsg.classList.remove('hidden', 'text-yellow-400', 'text-red-400', 'text-green-400', 'text-blue-400'); // Tambah blue
+            if (type === 'error') {
+                subtitleStatusMsg.classList.add('text-red-400');
+            } else if (type === 'warning') {
+                subtitleStatusMsg.classList.add('text-yellow-400');
+            } else if (type === 'success') {
+                subtitleStatusMsg.classList.add('text-green-400');
             } else {
-                 // Format VTT umum (Sangat Sederhana, mengasumsikan sudah dekat dengan VTT)
-                 showSubtitleStatus("Peringatan: Format subtitle tidak terdeteksi (S_TEXT?). Mengasumsikan format VTT dasar.", true);
-                 vttFormattedContent += vttContent;
+                subtitleStatusMsg.classList.add('text-blue-400'); // Default info
             }
 
+            subtitleStatusMsg.classList.remove('hidden');
 
-            const vttBlob = new Blob([vttFormattedContent], {
-                type: 'text/vtt'
-            });
-            currentTrackURL = URL.createObjectURL(vttBlob);
-
-            const track = document.createElement('track');
-            track.kind = 'subtitles';
-            track.label = label;
-            track.srclang = track.language || 'und'; // Gunakan bahasa yang terdeteksi
-            track.src = currentTrackURL;
-            track.default = true;
-
-            // Tambahkan track ke video player
-            videoPlayer.appendChild(track);
-
-            // Pastikan track terlihat
-            track.addEventListener('load', function () {
-                this.track.mode = 'showing';
-                showSubtitleStatus(`Track Subtitle dimuat: ${label}`, false);
-                // Tambahkan class untuk styling subtitle bawaan browser agar terlihat lebih baik di atas video
-                videoPlayer.classList.add('has-subtitle'); 
-            });
-
-            // Handler error
-            track.addEventListener('error', function(e) {
-                console.error("[Subtitle] Error memuat track VTT:", e, this.src);
-                showSubtitleStatus(`Gagal memuat track VTT untuk: ${label}. Lihat konsol untuk detail.`, true);
-            });
-            
-            // Nonaktifkan semua track lain yang mungkin ada (misalnya dari file VTT eksternal)
-            for (let i = 0; i < videoPlayer.textTracks.length; i++) {
-                if (videoPlayer.textTracks[i].label !== label) {
-                    videoPlayer.textTracks[i].mode = 'disabled';
-                }
-            }
-            console.log(`[Subtitle] Subtitle track added: ${label}`);
+            // Hapus pesan setelah beberapa detik
+            const currentTimeout = subtitleStatusMsg.dataset.timeoutId;
+            if (currentTimeout) clearTimeout(parseInt(currentTimeout));
+            const timeoutId = setTimeout(() => {
+                subtitleStatusMsg.classList.add('hidden');
+                delete subtitleStatusMsg.dataset.timeoutId;
+            }, 5000);
+            subtitleStatusMsg.dataset.timeoutId = timeoutId.toString();
         }
 
         /**
-         * FUNGSI PENTING: Ekstraksi Subtitle MKV menggunakan MatroskaSubtitles.
-         * Ini adalah implementasi non-blocking untuk mem-parse seluruh file.
+         * Hapus track <track> native dan renderer Octopus.
          */
-        async function attemptLoadEmbeddedSubtitles(file) {
-            if (!file.name.toLowerCase().endsWith('.mkv')) {
-                return [];
+        function removeExistingSubtitleTracks() {
+            // Hapus semua elemen <track> native
+            const existingTrackElements = videoPlayer.querySelectorAll('track');
+            existingTrackElements.forEach(trackEl => {
+                if (trackEl.src && trackEl.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(trackEl.src);
+                }
+                trackEl.remove();
+            });
+            currentSubtitleTrackElement = null;
+            if (currentTrackURL) {
+                URL.revokeObjectURL(currentTrackURL); // Pastikan URL lama dicabut
+                currentTrackURL = null;
+            }
+
+            // Nonaktifkan semua track teks yang mungkin tersisa
+            if (videoPlayer.textTracks) {
+                for (let i = 0; i < videoPlayer.textTracks.length; i++) {
+                    videoPlayer.textTracks[i].mode = 'disabled';
+                }
             }
             
-            if (typeof MatroskaSubtitles === 'undefined' || !MatroskaSubtitles.SubtitleParser) {
-                console.error("[MatroskaSubtitles] Pustaka MatroskaSubtitles tidak ditemukan! Pastikan file dimuat.");
-                showSubtitleStatus("Pustaka MatroskaSubtitles (matroska-subtitles.min.js) tidak ditemukan.", true);
-                return [];
+            // Hapus listener manual sync
+            videoPlayer.removeEventListener('seeking', manualSeekSync, false);
+            videoPlayer.removeEventListener('seeked', manualSeekSync, false);
+
+
+            // Hapus renderer Octopus
+            initializeOctopus(null);
+            console.log("[Subtitle] Semua track native dan Octopus renderer dihapus.");
+        }
+
+        /**
+         * Menambahkan track VTT ke video (untuk SRT/MOV_TEXT).
+         */
+        function addVTTTrackToVideo(vttContent, trackMetadata) {
+            // removeExistingSubtitleTracks(); // TIDAK di sini, tapi di selectSubtitleTrack
+
+            if (!vttContent || vttContent.trim() === '') {
+                showSubtitleStatus(`Track "${trackMetadata.label}" kosong.`, 'warning');
+                return; // Jangan tambahkan track kosong
             }
+            console.log(`[Subtitle] Adding VTT track: ${trackMetadata.label}`);
 
-            // Gunakan FileReader untuk membaca seluruh file
-            const reader = new FileReader();
-            
-            // Simpan track yang ditemukan
-            let tracksMetadata = [];
-            let subtitleData = new Map(); // Map untuk menyimpan data subtitle berdasarkan TrackNumber
+            const vttBlob = new Blob([vttContent], { type: 'text/vtt;charset=utf-8' });
+            const trackURL = URL.createObjectURL(vttBlob);
 
-            const parser = new MatroskaSubtitles.SubtitleParser();
+            const trackElement = document.createElement('track');
+            trackElement.kind = 'subtitles';
+            trackElement.label = trackMetadata.label;
+            trackElement.srclang = trackMetadata.language || 'und';
+            trackElement.src = trackURL;
+            trackElement.default = true; // Set as default to force showing
 
-            parser.on('tracks', (tracks) => {
-                // Filter hanya track subtitle (TrackType 17)
-                tracksMetadata = tracks
-                    .filter(t => t.type === 'text')
-                    .map(t => ({
-                        number: t.number,
-                        label: t.name || `${t.type.toUpperCase()} Track (${t.language || 'und'})`,
-                        language: t.language || 'und',
-                        codec: t.codec,
-                        // Gunakan header dari CodecPrivate jika tersedia (penting untuk ASS)
-                        header: t.header || '' 
-                    }));
-                
-                if (tracksMetadata.length === 0) {
-                     showSubtitleStatus("Tidak ada track subtitle yang ditemukan di file MKV ini.", false);
-                } else {
-                     showSubtitleStatus(`Ditemukan ${tracksMetadata.length} track subtitle MKV.`, false);
+            currentTrackURL = trackURL; // Simpan URL baru
+            currentSubtitleTrackElement = trackElement; // Simpan elemen
+
+            trackElement.addEventListener('load', function () {
+                if (this.track) {
+                    this.track.mode = 'showing';
+                    console.log(`[Subtitle] Track VTT "${trackMetadata.label}" loaded and set to showing.`);
+                    showSubtitleStatus(`Subtitle track VTT loaded: ${trackMetadata.label}`, 'success');
+                    subtitleBtn.classList.add('text-[color:var(--control-highlight)]');
+                    renderSubtitleMenu(subtitleTracks);
                 }
             });
 
-            parser.on('subtitle', (subtitle, trackNumber) => {
-                const track = tracksMetadata.find(t => t.number === trackNumber);
-                if (!track) return;
+            trackElement.addEventListener('error', function (e) {
+                console.error(`[Subtitle] Error loading track VTT "${trackMetadata.label}":`, e);
+                showSubtitleStatus(`Gagal memuat track VTT untuk "${trackMetadata.label}".`, 'error');
+                removeExistingSubtitleTracks(); // Clean up on error
+                subtitleBtn.classList.remove('text-[color:var(--control-highlight)]');
+                renderSubtitleMenu(subtitleTracks);
+            });
+
+            // Tambahkan elemen track ke video
+            videoPlayer.appendChild(trackElement);
+        }
+
+        /** Mengubah ukuran canvas subtitle agar sesuai dengan video */
+        function resizeSubtitleCanvas() {
+            // === FIX UTAMA: Pemeriksaan ketat sebelum mengakses dimensi video/canvas ===
+            // Pastikan elemen DOM ada
+            if (!videoPlayer || !subtitleCanvas) {
+                return;
+            }
+
+            // Dapatkan bounding box video display area (container video dan canvas)
+            const containerRect = videoDisplayArea.getBoundingClientRect();
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
+
+            // Pastikan video telah memuat metadata dan memiliki dimensi yang valid
+            if (!videoPlayer.videoWidth || !videoPlayer.videoHeight || videoPlayer.videoWidth === 0 || videoPlayer.videoHeight === 0) {
+                console.warn("[Resize] Video metadata belum tersedia. Menggunakan dimensi kontainer penuh.");
+                // Jika video belum dimuat atau dimensinya 0, pastikan canvas menutupi kontainer penuh
+                subtitleCanvas.style.width = '100%';
+                subtitleCanvas.style.height = '100%';
+                subtitleCanvas.style.left = '0px';
+                subtitleCanvas.style.top = '0px';
                 
-                // Ambil atau buat array untuk track ini
-                if (!subtitleData.has(trackNumber)) {
-                    subtitleData.set(trackNumber, []);
+                // Set resolusi internal canvas ke dimensi container
+                subtitleCanvas.width = containerWidth;
+                subtitleCanvas.height = containerHeight;
+
+                if (octopusRenderer) {
+                    // Coba panggil resize Octopus dengan dimensi kontainer (fallback)
+                    octopusRenderer.resize(containerWidth, containerHeight);
                 }
-                
-                // Tambahkan subtitle (sudah di-convert ke string UTF8 oleh parser jika tidak compressed)
-                // Format: {text: string, time: number (detik), duration: number (detik)}
-                subtitleData.get(trackNumber).push(subtitle);
-            });
-            
-            parser.on('end', () => {
-                // Proses data yang dikumpulkan
-                const finalTracks = tracksMetadata.map(t => {
-                    const data = subtitleData.get(t.number) || [];
-                    
-                    // Bangun konten WebVTT dari potongan subtitle
-                    // Ini adalah langkah kritis untuk mengonversi data MKV Block menjadi WebVTT.
-                    const vttContent = buildVttFromBlocks(t, data);
-                    
-                    return {
-                        ...t,
-                        content: vttContent,
-                    };
-                });
-                
-                // Resolve promise
-                resolve({ tracks: finalTracks, error: null });
-            });
-            
-            parser.on('error', (err) => {
-                 console.error("[MatroskaSubtitles] Error parsing EBML stream:", err);
-                 showSubtitleStatus(`Error parsing MKV: ${err.message || 'Unknown error'}.`, true);
-                 resolve({ tracks: [], error: err });
-            });
-
-
-            return new Promise((resolve) => {
-                reader.onload = async (event) => {
-                    const buffer = event.target.result;
-                    
-                    // Tulis seluruh buffer ke parser
-                    parser.write(new Uint8Array(buffer));
-                    parser.end();
-
-                    // Hasil akan ditangani di event 'end' parser, lalu di-resolve
-                };
-
-                reader.onerror = () => {
-                    console.error("[FileReader] Error reading file.");
-                    showSubtitleStatus("Gagal membaca file video.", true);
-                    resolve({ tracks: [], error: new Error("File read error") });
-                };
-
-                // Mulai membaca seluruh file sebagai ArrayBuffer
-                reader.readAsArrayBuffer(file); 
-            }).then(result => {
-                // Pastikan untuk mereset track data setelah selesai
-                subtitleData.clear();
-                tracksMetadata = [];
-                return result.tracks;
-            });
-        }
-        
-        // Helper untuk mengonversi Subtitle Block/Frame menjadi format WebVTT
-        // Catatan: Ini SANGAT Sederhana. Untuk ASS/SSA, ini akan gagal untuk styling kompleks.
-        function buildVttFromBlocks(trackInfo, blocks) {
-            let vtt = "WEBVTT\n\n";
-
-            // Tambahkan header ASS/SSA ke VTT jika ada (ini tidak standar, tapi untuk debugging)
-            if (trackInfo.header && (trackInfo.codec.includes('ASS') || trackInfo.codec.includes('SSA'))) {
-                // Untuk ASS/SSA, format header *harus* di-parse dan diterapkan sebagai gaya WebVTT
-                // Tapi kita hanya akan melewatkannya sebagai komentar karena konversi penuh terlalu kompleks.
-                // Anda bisa mencoba menggunakan tools eksternal seperti ass-to-vtt-js untuk konversi penuh.
-                // Di sini, kita hanya mengandalkan WebVTT native.
+                return;
             }
             
-            // Fungsi konversi waktu: detik ke HH:MM:SS.mmm
-            const formatTimeVTT = (seconds) => {
-                const totalMilliseconds = Math.round(seconds * 1000);
-                const ms = totalMilliseconds % 1000;
-                const totalSeconds = Math.floor(totalMilliseconds / 1000);
-                const s = totalSeconds % 60;
-                const totalMinutes = Math.floor(totalSeconds / 60);
-                const m = totalMinutes % 60;
-                const h = Math.floor(totalMinutes / 60);
-                
-                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
-            };
+            // --- Logika Penyesuaian Aspek Rasio (object-fit: contain) ---
+            const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
+            let newWidth, newHeight;
+            let videoLeft, videoTop;
 
-            let cueCounter = 1;
-            for (const block of blocks) {
-                // Gunakan duration jika tersedia, atau hitung end time dari block.time
-                const startTime = block.time;
-                const endTime = block.time + (block.duration || 0);
-                const text = block.text;
-
-                if (!text || text.trim() === '') continue;
-
-                // Strip tag ASS/SSA: { ... } atau \N (newline)
-                let cleanedText = text.replace(/\{[^}]*\}|\\N/g, ' ').trim();
-                
-                // Ganti tag styling ASS menjadi tag WebVTT sederhana
-                // Ini SANGAT TIDAK LENGKAP. Hanya untuk demonstrasi fungsionalitas.
-                cleanedText = cleanedText.replace(/\\i1/g, '<i>').replace(/\\i0/g, '</i>');
-                cleanedText = cleanedText.replace(/\\b1/g, '<b>').replace(/\\b0/g, '</b>');
-                
-                // Pisahkan baris dengan enter
-                cleanedText = cleanedText.replace(/\\n/g, '\n');
-
-                vtt += `${cueCounter++}\n`;
-                vtt += `${formatTimeVTT(startTime)} --> ${formatTimeVTT(endTime)}\n`;
-                vtt += `${cleanedText}\n\n`;
+            // Hitung ukuran baru berdasarkan `object-fit: contain`
+            if (containerWidth / containerHeight > aspectRatio) {
+                newHeight = containerHeight;
+                newWidth = containerHeight * aspectRatio;
+            } else {
+                newWidth = containerWidth;
+                newHeight = containerWidth / aspectRatio;
             }
             
-            return vtt;
+            // Hitung posisi tengah
+            videoLeft = (containerWidth - newWidth) / 2;
+            videoTop = (containerHeight - newHeight) / 2;
+
+
+            // Set ukuran dan posisi elemen canvas di DOM (UKURAN TAMPILAN)
+            // Ini akan memastikan canvas persis menutupi area pemutaran video (object-fit: contain)
+            subtitleCanvas.style.width = `${newWidth}px`;
+            subtitleCanvas.style.height = `${newHeight}px`;
+            subtitleCanvas.style.left = `${videoLeft}px`;
+            subtitleCanvas.style.top = `${videoTop}px`;
+            
+            // Set resolusi internal canvas (UKURAN RESOLUSI RENDER)
+            // Resolusi internal harus diatur ke resolusi video asli untuk rendering yang optimal
+            subtitleCanvas.width = videoPlayer.videoWidth;
+            subtitleCanvas.height = videoPlayer.videoHeight;
+            
+            // Informasikan SubtitlesOctopus tentang ukuran barunya (ukuran DOM, bukan resolusi internal)
+            if (octopusRenderer) {
+                // Octopus membutuhkan ukuran DOM (piksel yang terlihat) untuk rendering yang benar
+                // Kita mengirim ukuran tampilan (newWidth, newHeight)
+                octopusRenderer.resize(newWidth, newHeight);
+            }
+            console.log(`[Resize] Canvas DOM set to: ${newWidth}x${newHeight}, Internal: ${subtitleCanvas.width}x${subtitleCanvas.height}`);
         }
 
 
-        // Fungsi untuk me-render menu subtitle
+        // --- UPDATED: renderSubtitleMenu (Highlight logic) ---
         function renderSubtitleMenu(tracks) {
-            subtitleTrackList.innerHTML = '';
-            
+            subtitleTrackList.innerHTML = ''; // Clear list
+
             // Tombol 'Off'
             const offBtn = document.createElement('button');
-            offBtn.dataset.trackIndex = '-1'; // -1 untuk Off
-            offBtn.className = "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 font-bold";
+            offBtn.dataset.trackIndex = '-1';
+            offBtn.className = "w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700";
             offBtn.textContent = 'Off';
+
+            // Cek apakah ada track yang sedang aktif
+            let activeTrackLabel = null;
+            const activeOctopusTrack = subtitleTracks.find(t => t.isOctopusActive);
+
+            if (activeOctopusTrack) {
+                activeTrackLabel = activeOctopusTrack.label;
+            } else if (currentSubtitleTrackElement && currentSubtitleTrackElement.track && currentSubtitleTrackElement.track.mode === 'showing') {
+                activeTrackLabel = currentSubtitleTrackElement.label; // Jika VTT native aktif
+            }
+
+            // Highlight 'Off' jika tidak ada track yang aktif
+            if (!activeTrackLabel) {
+                offBtn.classList.add('selected-track');
+                subtitleBtn.classList.remove('text-[color:var(--control-highlight)]');
+            }
+
             offBtn.addEventListener('click', () => {
                 removeExistingSubtitleTracks();
+                subtitleTracks.forEach(t => t.isOctopusActive = false); // Reset Octopus active state
                 subtitleMenu.classList.add('hidden');
-                subtitleBtn.classList.remove('text-orange-400'); // Hapus highlight
+                renderSubtitleMenu(subtitleTracks); // Re-render to update selection state
             });
             subtitleTrackList.appendChild(offBtn);
 
 
-            if (tracks.length === 0) {
-                // Tampilkan pesan jika tidak ada track (setelah tombol Off)
+            if (!tracks || tracks.length === 0) {
+                subtitleBtn.disabled = true;
+                subtitleBtn.classList.remove('text-[color:var(--control-highlight)]');
                 const noTrackDiv = document.createElement('div');
                 noTrackDiv.className = "px-4 py-2 text-sm text-gray-500 dark:text-gray-400";
-                noTrackDiv.textContent = "No tracks found.";
+                noTrackDiv.textContent = "No embedded tracks.";
                 subtitleTrackList.appendChild(noTrackDiv);
-                // Non-aktifkan tombol jika tidak ada media atau track tertanam
-                subtitleBtn.disabled = true;
                 return;
             }
 
-            subtitleBtn.disabled = false;
+            subtitleBtn.disabled = false; // Enable if tracks exist
 
-
-            // Daftar track yang diekstrak
             tracks.forEach((track, index) => {
                 const btn = document.createElement('button');
                 btn.dataset.trackIndex = index;
-                btn.className = "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
+                btn.className = "w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700";
                 btn.textContent = track.label;
+
+                // Highlight jika track ini sedang aktif
+                if (activeTrackLabel === track.label) {
+                    btn.classList.add('selected-track');
+                    subtitleBtn.classList.add('text-[color:var(--control-highlight)]');
+                }
+
                 btn.addEventListener('click', () => {
                     selectSubtitleTrack(track);
                     subtitleMenu.classList.add('hidden');
@@ -1062,67 +1412,132 @@
             });
         }
 
-        function selectSubtitleTrack(track) {
-            if (track && track.content) {
-                addVTTTrackToVideo(track.content, track.label);
-                subtitleBtn.classList.add('text-orange-400'); // Tambahkan highlight pada tombol
+        // --- UPDATED: selectSubtitleTrack (Menggunakan Octopus atau Native) ---
+        async function selectSubtitleTrack(trackMetadata) {
+            if (!trackMetadata.content || trackMetadata.content.trim().length <= 10) {
+                console.warn(`[Subtitle] Track "${trackMetadata.label}" has no valid content. Turning subtitles off.`);
+                showSubtitleStatus(`Track "${trackMetadata.label}" tidak memiliki konten subtitle yang valid.`, 'warning');
+                removeExistingSubtitleTracks();
+                subtitleTracks.forEach(t => t.isOctopusActive = false); // Reset Octopus active state
+                renderSubtitleMenu(subtitleTracks);
+                return;
+            }
+
+            const isAssSsa = trackMetadata.codec_name === 'ass' || trackMetadata.codec_name === 'ssa';
+
+            // Reset status active Octopus pada semua track
+            subtitleTracks.forEach(t => t.isOctopusActive = false);
+            
+            // Hapus dulu track dan renderer yang ada SEBELUM memilih yang baru
+            removeExistingSubtitleTracks();
+
+            if (isAssSsa) {
+                // Gunakan Octopus untuk ASS/SSA
+                try {
+                    // Panggil inisialisasi Octopus
+                    initializeOctopus(trackMetadata.content);
+                    
+                    // Jika berhasil, tandai sebagai aktif
+                    if (octopusRenderer) {
+                        trackMetadata.isOctopusActive = true;
+                        showSubtitleStatus(`Subtitle ASS/SSA dimuat dengan Octopus.`, 'success');
+                    }
+                    
+
+                } catch (e) {
+                    // Jika initializeOctopus gagal (karena SubtitleOctopus belum terdefinisi)
+                    console.error("[Octopus Error] Gagal menginisialisasi Octopus. Pustaka mungkin tidak termuat.", e);
+                    // FIX: Perbarui pesan error untuk memperjelas masalah worker
+                    showSubtitleStatus(`Gagal memuat pustaka Subtitle Octopus. Cek file subtitles-octopus.js atau pastikan file worker (${OCTOPUS_WORKER_PATH}) ada.`, 'error');
+                    removeExistingSubtitleTracks();
+                }
+
+            } else {
+                // Gunakan native <track> untuk VTT/SRT
+                addVTTTrackToVideo(trackMetadata.content, trackMetadata);
+                // addVTTTrackToVideo akan memicu renderSubtitleMenu setelah dimuat
+            }
+
+            // Jika menggunakan Octopus, update menu sekarang
+            if (isAssSsa) {
+                renderSubtitleMenu(subtitleTracks);
             }
         }
 
 
-        // --- Logika Pemutar Video ---
+        // --- Logika Pemutar Video (loadVideo updated) ---
         async function loadVideo(file) {
-            videoFileReference = file; // Simpan referensi file untuk dibaca oleh parser
+            videoFileReference = file;
 
             if (currentFileURL) {
                 URL.revokeObjectURL(currentFileURL);
+                currentFileURL = null;
             }
 
-            // Hapus track lama dan atur ulang status
-            removeExistingSubtitleTracks();
+            // Reset before loading new video
+            removeExistingSubtitleTracks(); // Hapus track native dan Octopus
             subtitleTracks = [];
             renderSubtitleMenu([]);
-            subtitleBtn.classList.remove('text-orange-400');
+            subtitleBtn.classList.remove('text-[color:var(--control-highlight)]');
+            subtitleBtn.disabled = true; // Disable until tracks are checked
             subtitleStatusMsg.classList.add('hidden');
-            
+            videoTitleDisplay.textContent = "Loading..."; // Show loading state
+            videoInfoDisplay.classList.remove('hidden'); // Show info area
+
+
             currentFileURL = URL.createObjectURL(file);
             videoPlayer.src = currentFileURL;
-            console.log(`[Video Player] Loaded video: ${file.name}`);
+            console.log(`[Video Player] Loading video source: ${file.name}`);
 
-            // Set judul video
             const fileName = file.name;
-            videoTitleDisplay.textContent = fileName.length > 30 ? fileName.substring(0, 27) + '...' : fileName;
+            videoTitleDisplay.textContent = fileName;
 
-            // PENTING: Panggil toggleControlsActive(true) setelah videoPlayer.src di-set
-            // untuk mengaktifkan tombol.
+            // Enable basic controls immediately, subtitle button later
             toggleControlsActive(true);
 
 
-            // >> LANGKAH BARU: Coba muat subtitle tertanam
+            // Coba memuat subtitle yang tersemat jika file adalah MKV
             if (file.name.toLowerCase().endsWith('.mkv')) {
-                 showSubtitleStatus("Memproses file MKV... Mohon tunggu.", false);
-                 const loadedTracks = await attemptLoadEmbeddedSubtitles(file);
-                 subtitleTracks = loadedTracks;
-                 renderSubtitleMenu(subtitleTracks);
-                 
-                 // Secara default, pilih track pertama jika ada
-                 if (loadedTracks.length > 0) {
-                     selectSubtitleTrack(loadedTracks[0]);
-                 }
+                try {
+                    // Gunakan FFmpeg/FFprobe untuk ekstaksi
+                    const loadedTracks = await extractAndProcessMkvSubtitles(file);
+                    subtitleTracks = loadedTracks; // Simpan hasil
+                    renderSubtitleMenu(subtitleTracks); // Perbarui UI
+
+                    // Pilih track pertama secara default jika tersedia
+                    if (subtitleTracks.length > 0) {
+                        subtitleBtn.disabled = false; // Aktifkan tombol
+                        // Pilih track pertama (index 0)
+                        selectSubtitleTrack(subtitleTracks[0]);
+                    } else {
+                        subtitleBtn.disabled = true; // Tetap nonaktif jika tidak ada track
+                    }
+                } catch (error) {
+                    showSubtitleStatus(`Gagal memproses subtitle MKV (FFmpeg worker error).`, 'error');
+                    subtitleTracks = [];
+                    renderSubtitleMenu([]);
+                    subtitleBtn.disabled = true;
+                }
+            } else {
+                showSubtitleStatus("File non-MKV dimuat. Tidak mencari subtitle tersemat.", 'info');
             }
 
 
-            videoPlayer.play().catch(e => {
-                console.error("[Video Player] Autoplay was prevented:", e);
-                // Jika autoplay gagal, video akan berada di status 'paused',
-                // yang akan ditangani oleh event listener 'pause' atau `updatePlayPauseIcon()`
+            // Attempt to play
+            try {
+                await videoPlayer.play();
+            } catch (e) {
+                console.warn("[Video Player] Autoplay was prevented:", e);
                 updatePlayPauseIcon();
-                toggleControlsActive(true); // Memastikan overlay 'Paused' muncul
-            });
+                toggleControlsActive(true); // Ensure paused overlay shows if autoplay fails
+            }
         }
 
+
+        // --- Event Listeners and Initialization ---
+
         function updatePlayPauseIcon() {
-            if (videoPlayer.paused) {
+            if (!videoPlayer || videoPlayer.paused) { // Check if videoPlayer exists
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
             } else {
@@ -1134,7 +1549,7 @@
         function setupPlayerEvents() {
             // Event Play/Pause
             playPauseBtn.addEventListener("click", () => {
-                if (!videoPlayer.src) return;
+                if (!videoPlayer.src || playPauseBtn.disabled) return;
                 if (videoPlayer.paused) {
                     videoPlayer.play();
                 } else {
@@ -1144,143 +1559,213 @@
 
             // Event Previous (Skip Back 10s)
             prevBtn.addEventListener("click", () => {
-                if (!videoPlayer.src) return;
+                if (!videoPlayer.src || prevBtn.disabled) return;
                 videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
             });
 
             // Event Next (Skip Forward 10s)
             nextBtn.addEventListener("click", () => {
-                if (!videoPlayer.src) return;
-                videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+                if (!videoPlayer.src || nextBtn.disabled) return;
+                // Cek jika durasi valid sebelum menambah waktu
+                if (!isNaN(videoPlayer.duration)) {
+                    videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+                } else {
+                    // Jika durasi tidak valid (misalnya stream), hanya maju 10 detik
+                    videoPlayer.currentTime += 10;
+                }
             });
 
             // Event Video State
             videoPlayer.addEventListener('play', () => {
                 updatePlayPauseIcon();
-                toggleControlsActive(true);
+                toggleControlsActive(true); // Sembunyikan overlay
                 parent.postMessage({
                     action: "show-media-notification",
-                    title: videoTitleDisplay.textContent,
-                    artist: "Video Player",
+                    title: videoTitleDisplay.textContent || "Video Player",
+                    artist: "Now Playing",
                     albumArt: "img/films-and-tv_171100.png",
                 }, "*");
             });
             videoPlayer.addEventListener('pause', () => {
                 updatePlayPauseIcon();
-                toggleControlsActive(true); // Tampilkan overlay "Paused"
+                if (!videoPlayer.seeking && !videoPlayer.ended) { // Jangan tampilkan overlay saat seeking atau ended
+                    toggleControlsActive(true); // Tampilkan overlay "Paused"
+                } else if (videoPlayer.ended) {
+                    // Handle ended state specifically if needed, maybe reset overlay differently
+                    toggleControlsActive(true); // Keep controls active
+                    videoOverlay.style.opacity = '0'; // Ensure overlay is hidden on end
+                    videoOverlay.classList.add('hidden-overlay');
+                }
             });
             videoPlayer.addEventListener('ended', () => {
                 updatePlayPauseIcon();
-                // Opsional: kembali ke awal dan pause
-                videoPlayer.currentTime = 0;
-                videoPlayer.pause();
-                // toggleControlsActive(false); // Atau biarkan aktif tapi di-pause
+                // Optional: Reset timeline to 0
+                updateTimeline(0);
+                timeDisplayCurrent.textContent = formatTime(0);
+                // Keep controls active but show video start state? Or reset overlay?
+                toggleControlsActive(true); // Keep controls enabled
+                // Show the initial overlay again
+                videoOverlay.style.opacity = '1';
+                videoOverlay.classList.remove('hidden-overlay');
+                videoOverlay.querySelector('p').textContent = 'Video ended. Drop another file.';
+                videoOverlay.querySelector('.text-xl').textContent = videoTitleDisplay.textContent || 'Video Player';
+                videoOverlay.querySelector('svg').classList.add('hidden'); // Hide icon on end
+
+
             });
 
             videoPlayer.addEventListener('timeupdate', () => {
-                if (!isTimelineDragging) {
+                if (!isTimelineDragging && !isNaN(videoPlayer.currentTime) && !isNaN(videoPlayer.duration)) {
                     const percent = (videoPlayer.duration > 0) ? (videoPlayer.currentTime / videoPlayer.duration) * 100 : 0;
                     updateTimeline(percent);
+                    timeDisplayCurrent.textContent = formatTime(videoPlayer.currentTime);
+                } else if (!isNaN(videoPlayer.currentTime)) {
+                    timeDisplayCurrent.textContent = formatTime(videoPlayer.currentTime);
                 }
-                // Perbarui waktu saat ini
-                timeDisplayCurrent.textContent = formatTime(videoPlayer.currentTime);
             });
 
             videoPlayer.addEventListener('loadedmetadata', () => {
-                // Set durasi total
+                if (!isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+                    timeDisplayDuration.textContent = formatTime(videoPlayer.duration);
+                    // Enable seeking controls only if duration is valid
+                    timelineContainer.style.cursor = 'pointer';
+                    timelineThumb.style.cursor = 'grab';
+                } else {
+                    timeDisplayDuration.textContent = '--:--';
+                    // Disable seeking if duration is unknown (like live stream)
+                    timelineContainer.style.cursor = 'default';
+                    timelineThumb.style.cursor = 'default';
+                    // Consider disabling timeline interaction completely here if needed
+                }
                 timeDisplayCurrent.textContent = '00:00';
-                timeDisplayDuration.textContent = formatTime(videoPlayer.duration);
-                // Set volume awal
-                parent.postMessage({
-                    action: 'request-volume'
-                }, '*');
-                
-                // PERBAIKAN 3: Pastikan kontrol diperbarui setelah metadata dimuat (jika tombol dinonaktifkan karena masalah autoplay)
-                toggleControlsActive(true);
-                updatePlayPauseIcon();
 
+                // FIX 4: Panggil resizeCanvas untuk subtitle setelah metadata dimuat
+                resizeSubtitleCanvas();
+                
+                parent.postMessage({ action: 'request-volume' }, '*');
+                toggleControlsActive(true); // Ensure controls are active
+                updatePlayPauseIcon();
             });
 
-            // Mengatur Fullscreen API (jika didukung)
+            videoPlayer.addEventListener('error', (e) => {
+                console.error("[Video Player] Error:", videoPlayer.error);
+                let errorMsg = 'Gagal memutar video.';
+                if (videoPlayer.error) {
+                    switch (videoPlayer.error.code) {
+                        case MediaError.MEDIA_ERR_ABORTED: errorMsg = 'Pemutaran dibatalkan.'; break;
+                        case MediaError.MEDIA_ERR_NETWORK: errorMsg = 'Kesalahan jaringan.'; break;
+                        case MediaError.MEDIA_ERR_DECODE: errorMsg = 'Kesalahan decode (format?).'; break;
+                        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: errorMsg = 'Format video tidak didukung.'; break;
+                        default: errorMsg = `Kesalahan tidak diketahui (Kode: ${videoPlayer.error.code}).`;
+                    }
+                }
+                showSubtitleStatus(errorMsg, 'error');
+                toggleControlsActive(false); // Disable controls on error
+            });
+
+
             fullscreenBtn.addEventListener('click', () => {
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                } else if (videoDisplayArea.requestFullscreen) {
-                    videoDisplayArea.requestFullscreen(); // Fullscreen seluruh area player
-                } else if (videoDisplayArea.webkitRequestFullscreen) {
-                    videoDisplayArea.webkitRequestFullscreen();
-                } else if (videoDisplayArea.msRequestFullscreen) {
-                    videoDisplayArea.msRequestFullscreen();
+                if (fullscreenBtn.disabled) return;
+                try {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else if (appWindow.requestFullscreen) {
+                        appWindow.requestFullscreen();
+                    } else if (appWindow.webkitRequestFullscreen) {
+                        appWindow.webkitRequestFullscreen();
+                    } else if (appWindow.msRequestFullscreen) {
+                        appWindow.msRequestFullscreen();
+                    }
+                } catch (err) {
+                    console.error("Fullscreen request failed:", err);
+                    showSubtitleStatus("Gagal masuk mode fullscreen.", 'error');
                 }
             });
 
-            // Mengabaikan Volume Button, karena volume diatur oleh Desktop
             volumeBtn.addEventListener('click', () => {
-                parent.postMessage({
-                    action: 'toggle-volume-flyout'
-                }, '*');
+                if (volumeBtn.disabled) return;
+                parent.postMessage({ action: 'toggle-volume-flyout' }, '*');
             });
-            
-            // Tambahkan dukungan keyboard untuk play/pause (spacebar)
+
             document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && videoPlayer.src) {
+                if (e.code === 'Space' && videoPlayer.src && !playPauseBtn.disabled) {
                     e.preventDefault();
                     if (videoPlayer.paused) {
-                        videoPlayer.play();
+                        videoPlayer.play().catch(err => console.error("Play error:", err));
                     } else {
                         videoPlayer.pause();
                     }
                 }
+                else if (e.code === 'ArrowLeft' && videoPlayer.src && !prevBtn.disabled && !isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+                    e.preventDefault();
+                    prevBtn.click();
+                } else if (e.code === 'ArrowRight' && videoPlayer.src && !nextBtn.disabled && !isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+                    e.preventDefault();
+                    nextBtn.click();
+                }
             });
-
         }
 
-        // --- Logika Timeline Slider ---
         function updateTimeline(percent) {
             percent = Math.max(0, Math.min(100, percent));
             const containerWidth = timelineContainer.offsetWidth;
-            const px = (percent / 100) * containerWidth;
             timelineFill.style.width = `${percent}%`;
-
-            // Pastikan thumb tidak keluar batas
-            const containerRect = timelineContainer.getBoundingClientRect();
-            const thumbWidth = timelineThumb.offsetWidth;
-            const maxPx = containerRect.width - (thumbWidth / 2);
             const thumbPx = (percent / 100) * containerWidth;
-            timelineThumb.style.left = `${Math.max(0, Math.min(thumbPx, containerWidth))}px`;
-
+            // Ensure thumb stays within bounds
+            const thumbHalfWidth = timelineThumb.offsetWidth / 2;
+            timelineThumb.style.left = `${Math.max(thumbHalfWidth, Math.min(thumbPx, containerWidth - thumbHalfWidth))}px`;
         }
+
 
         function getPercentFromClientX(container, clientX) {
             const sliderRect = container.getBoundingClientRect();
             const offsetX = clientX - sliderRect.left;
             const containerWidth = container.offsetWidth;
-            // Batasi antara 0 dan 100
             return Math.max(0, Math.min(100, (offsetX / containerWidth) * 100));
         }
 
         function seekVideo(clientX) {
-            if (!videoPlayer.src || isNaN(videoPlayer.duration) || videoPlayer.duration === 0) return;
+            if (!videoPlayer.src || isNaN(videoPlayer.duration) || videoPlayer.duration <= 0) return;
             const percent = getPercentFromClientX(timelineContainer, clientX);
             updateTimeline(percent);
             videoPlayer.currentTime = (percent / 100) * videoPlayer.duration;
+            timeDisplayCurrent.textContent = formatTime(videoPlayer.currentTime);
+            
+            // Manual sync untuk Octopus saat seek
+            if (octopusRenderer && octopusRenderer.worker) {
+                octopusRenderer.setCurrentTime(videoPlayer.currentTime);
+            }
         }
+
 
         function setupTimelineEvents() {
             timelineThumb.addEventListener('mousedown', (e) => {
-                if (!videoPlayer.src) return;
+                // Allow dragging only if duration is valid
+                if (!videoPlayer.src || isNaN(videoPlayer.duration) || videoPlayer.duration <= 0) return;
                 isTimelineDragging = true;
                 timelineThumb.style.transform = 'translate(-50%, -50%) scale(1.1)';
                 document.body.style.cursor = 'grabbing';
+                videoPlayer.pause(); // Pause while scrubbing
+                
+                // Pause Octopus rendering
+                if (octopusRenderer && octopusRenderer.worker) {
+                    octopusRenderer.setIsPaused(true, videoPlayer.currentTime);
+                }
             });
 
             document.addEventListener('mousemove', (e) => {
-                if (isTimelineDragging) {
+                if (isTimelineDragging && !isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
                     const percent = getPercentFromClientX(timelineContainer, e.clientX);
                     updateTimeline(percent);
                     const newTime = (percent / 100) * videoPlayer.duration;
-                    // Perbarui waktu saat menyeret
                     timeDisplayCurrent.textContent = formatTime(newTime);
+                    // Optionally update video currentTime live while dragging (can be laggy)
+                    // videoPlayer.currentTime = newTime;
+                    
+                    // Update Octopus time live while dragging (Opsional, dapat menyebabkan lag)
+                    if (octopusRenderer && octopusRenderer.worker) {
+                        octopusRenderer.setCurrentTime(newTime);
+                    }
                 }
             });
 
@@ -1289,186 +1774,233 @@
                     isTimelineDragging = false;
                     timelineThumb.style.transform = 'translate(-50%, -50%)';
                     document.body.style.cursor = 'default';
+                    // Final seek on mouseup
                     seekVideo(e.clientX);
+                    videoPlayer.play().catch(err => console.warn("Could not resume playing after scrub:", err)); // Try to resume playing
+                    
+                    // Resume Octopus rendering
+                    if (octopusRenderer && octopusRenderer.worker) {
+                        octopusRenderer.setIsPaused(false, videoPlayer.currentTime);
+                    }
                 }
             });
 
-            timelineContainer.addEventListener('mousedown', (e) => {
-                if (e.target !== timelineThumb) seekVideo(e.clientX);
+            timelineContainer.addEventListener('click', (e) => {
+                if (e.target !== timelineThumb && !isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+                    seekVideo(e.clientX);
+                }
             });
         }
 
-        // --- Setup Subtitle Events ---
         function setupSubtitleEvents() {
             subtitleBtn.addEventListener('click', (e) => {
                 if (subtitleBtn.disabled) return;
-                e.stopPropagation(); // Cegah event menyebar ke document
+                e.stopPropagation();
                 subtitleMenu.classList.toggle('hidden');
             });
 
-            // Tutup menu jika mengklik di luar
             document.addEventListener('click', (e) => {
-                if (!subtitleMenu.contains(e.target) && e.target !== subtitleBtn) {
+                // Close menu if clicked outside, unless clicking the button itself
+                if (!subtitleMenu.classList.contains('hidden') && !subtitleMenu.contains(e.target) && e.target !== subtitleBtn && !subtitleBtn.contains(e.target)) {
                     subtitleMenu.classList.add('hidden');
                 }
             });
 
-            // Awalnya, sembunyikan tombol subtitle dan render menu kosong
             renderSubtitleMenu([]);
+
+            // NEW: Tambahkan event listener untuk resize agar canvas Octopus menyesuaikan
+            window.addEventListener('resize', () => {
+                // Ini akan dipanggil saat jendela browser diubah ukurannya
+                // Panggil resizeSubtitleCanvas untuk menghitung ulang posisi dan ukuran
+                resizeSubtitleCanvas();
+            });
+            
+            // Perlu dipanggil segera setelah window load untuk memastikan ukuran canvas sudah benar,
+            // terutama jika video di load via autoplay atau secara cepat.
+            resizeSubtitleCanvas(); 
         }
 
-
-        // --- Logika Drag and Drop ---
         function setupDragAndDrop() {
-            const dropZone = videoDisplayArea; // FIX: Menggunakan videoDisplayArea
+            const dropZone = videoDisplayArea;
 
             dropZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                const types = e.dataTransfer.types;
-                // Periksa apakah ada file video
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    const fileName = e.dataTransfer.files[0].name.toLowerCase();
-                    // Mendukung tipe video atau ekstensi MKV
-                    if (e.dataTransfer.files[0].type.startsWith('video/') || fileName.endsWith('.mkv') || fileName.endsWith('.webm')) {
-                        dropZone.classList.add('drag-over');
+                e.stopPropagation();
+                let hasVideo = false;
+                // Use try-catch for items access as it can throw errors in some scenarios
+                try {
+                    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+                        for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                            if (e.dataTransfer.items[i].kind === 'file' && (e.dataTransfer.items[i].type.startsWith('video/') || e.dataTransfer.items[i].type === 'video/x-matroska')) {
+                                hasVideo = true;
+                                break;
+                            }
+                        }
+                    } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                            const file = e.dataTransfer.files[i];
+                            if (file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mkv') || file.type === 'video/x-matroska') {
+                                hasVideo = true;
+                                break;
+                            }
+                        }
                     }
-                } else if (types.includes('Files')) {
-                    // Fallback jika 'items' tidak tersedia
+                } catch (err) {
+                    console.warn("Error accessing dataTransfer items:", err);
+                    // Fallback check based on files if items access failed
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                            const file = e.dataTransfer.files[i];
+                            if (file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mkv') || file.type === 'video/x-matroska') {
+                                hasVideo = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+                if (hasVideo) {
                     dropZone.classList.add('drag-over');
+                    e.dataTransfer.dropEffect = 'copy';
+                } else {
+                    dropZone.classList.remove('drag-over'); // Remove highlight if no valid file
+                    e.dataTransfer.dropEffect = 'none';
                 }
             });
 
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('drag-over');
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Add a small delay or check relatedTarget to prevent flickering when moving over child elements
+                if (!dropZone.contains(e.relatedTarget)) {
+                    dropZone.classList.remove('drag-over');
+                }
             });
 
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 dropZone.classList.remove('drag-over');
 
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    const file = e.dataTransfer.files[0];
-                    const fileNameLower = file.name.toLowerCase();
-
-                    if (file && (file.type.startsWith('video/') || fileNameLower.endsWith('.mkv') || fileNameLower.endsWith('.webm'))) {
-                        loadVideo(file);
-                    } else {
-                        videoOverlay.style.opacity = '1';
-                        videoOverlay.classList.remove('hidden-overlay');
-                        videoOverlay.querySelector('.text-xl').textContent = 'File Not Supported';
-                        videoOverlay.querySelector('p').textContent = 'Please drop a video file (.mp4, .webm, .mkv, etc.)';
+                let videoFile = null;
+                try {
+                    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+                        for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                            if (e.dataTransfer.items[i].kind === 'file') {
+                                const file = e.dataTransfer.items[i].getAsFile();
+                                if (file && (file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mkv') || file.type === 'video/x-matroska')) {
+                                    videoFile = file;
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                            const file = e.dataTransfer.files[i];
+                            if (file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mkv') || file.type === 'video/x-matroska') {
+                                videoFile = file;
+                                break;
+                            }
+                            // NEW: Cek jika file drop adalah file ASS/SRT eksternal
+                            if (file.name.toLowerCase().endsWith('.ass') || file.name.toLowerCase().endsWith('.srt')) {
+                                // Jika file subtitle eksternal di-drop, kita bisa menambahkannya sebagai track eksternal
+                                // NAMUN, karena kita fokus pada ekstrak MKV, kita biarkan hanya video yang diproses loadVideo
+                                // Untuk menyederhanakan, kita hanya proses file video yang di-drop.
+                            }
+                        }
                     }
+                } catch (err) {
+                    console.error("Error processing dropped files:", err);
+                    showSubtitleStatus("Gagal memproses file yang di-drop.", 'error');
+                    return; // Exit if error processing files
+                }
+
+
+                if (videoFile) {
+                    loadVideo(videoFile);
+                } else {
+                    videoOverlay.style.opacity = '1';
+                    videoOverlay.classList.remove('hidden-overlay');
+                    videoOverlay.querySelector('.text-xl').textContent = 'File Not Supported';
+                    videoOverlay.querySelector('p').textContent = 'Please drop a video file (.mp4, .webm, .mkv)';
+                    videoOverlay.querySelector('svg').classList.remove('hidden');
+                    showSubtitleStatus("Hanya file video (.mp4, .webm, .mkv) yang didukung.", 'warning');
                 }
             });
         }
 
-
-        // --- Logika Interaksi Jendela ---
         header.addEventListener("mousedown", (e) => {
-            if (isMaximized) return;
+            if (isMaximized || e.target.closest('button')) return;
             isDragging = true;
-            parent.postMessage({
-                action: "bring-vp-to-front"
-            }, "*");
+            parent.postMessage({ action: "bring-vp-to-front" }, "*");
             e.preventDefault();
         });
 
         window.addEventListener("mousemove", (e) => {
             if (isDragging) {
-                parent.postMessage({
-                    action: "drag-vp-frame",
-                    dx: e.movementX,
-                    dy: e.movementY,
-                }, "*");
+                parent.postMessage({ action: "drag-vp-frame", dx: e.movementX, dy: e.movementY }, "*");
             }
         });
 
         window.addEventListener("mouseup", () => {
-            isDragging = false;
+            if (isDragging) isDragging = false;
+        });
+        window.addEventListener("mouseleave", () => {
+            if (isDragging) isDragging = false;
         });
 
-        closeBtn.addEventListener("click", () =>
-            parent.postMessage({
-                action: "close-vp-frame"
-            }, "*"),
-        );
-        minimizeBtn.addEventListener("click", () =>
-            parent.postMessage({
-                action: "minimize-vp-frame"
-            }, "*"),
-        );
+        closeBtn.addEventListener("click", () => parent.postMessage({ action: "close-vp-frame" }, "*"));
+        minimizeBtn.addEventListener("click", () => parent.postMessage({ action: "minimize-vp-frame" }, "*"));
+        maximizeBtn.addEventListener("click", () => parent.postMessage({ action: "maximize-vp-frame" }, "*"));
 
-        maximizeBtn.addEventListener("click", () =>
-            parent.postMessage({
-                action: "maximize-vp-frame"
-            }, "*"),
-        );
-
-        // --- Message Listener (receives messages from parent) ---
         window.addEventListener("message", (event) => {
-            const {
-                action,
-                isDark,
-                value,
-                volume,
-                isMaximized: newMaximizedState,
-                borderRadius,
-            } = event.data;
+            const { action, isDark, value, volume, isMaximized: newMaximizedState, borderRadius } = event.data;
 
             if (action === "theme-change") {
-                // Tema Light/Dark
                 document.body.classList.toggle("dark", isDark);
             }
             if (action === "toggle-fancy-mode") {
-                // Tema Fancy Mode
-                document.body.classList.toggle(
-                    "fancy-mode",
-                    value,
-                );
+                document.body.classList.toggle("fancy-mode", value);
             }
-
-            if (action === "set-volume") {
-                if (videoPlayer.volume !== volume) {
+            if (action === "set-volume" && videoPlayer) {
+                if (typeof volume === 'number' && volume >= 0 && volume <= 100) {
                     videoPlayer.volume = volume / 100;
                 }
             }
-
             if (action === "set-maximized-state") {
                 isMaximized = newMaximizedState;
-
-                // Tambahkan/Hapus class 'maximized' pada appWindow
                 appWindow.classList.toggle('maximized', isMaximized);
-
                 if (isMaximized) {
                     maximizeBtn.title = "Restore Down";
-                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
-
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d=\"M3 1H9V7H3V1ZM2 0H10V8H2V0Z\" fill=\"currentColor\"/><path d=\"M1 3H7V9H1V3ZM0 2H8V10H0V2Z\" fill=\"currentColor\" opacity=\"0.5\"/></svg>`;
                     appWindow.style.borderRadius = borderRadius || "0";
                     header.style.padding = '3px 3px 3px 6px';
                 } else {
                     maximizeBtn.title = "Maximize";
-                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
-
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill=\"currentColor\"/></svg>`;
                     appWindow.style.borderRadius = "8px";
                     header.style.padding = '3px 3px 3px 6px';
                 }
             }
         });
 
-        // Inisialisasi
         window.addEventListener('load', () => {
+            // Cek inisialisasi worker
+            if (typeof Worker === 'undefined') {
+                showSubtitleStatus("Browser Anda tidak mendukung Web Worker, FFmpeg/FFprobe tidak dapat digunakan.", 'error');
+            } else {
+                console.log("Web Workers available for FFmpeg/FFprobe.");
+            }
+
             setupPlayerEvents();
             setupTimelineEvents();
             setupDragAndDrop();
-            setupSubtitleEvents(); // Panggil event setup subtitle
-            // Minta pengaturan awal dari parent
-            parent.postMessage({
-                action: 'request-settings'
-            }, '*');
+            setupSubtitleEvents();
+            parent.postMessage({ action: 'request-settings' }, '*');
+            toggleControlsActive(false); // Initial state is inactive
         });
 
-        // Pastikan kontrol dinonaktifkan dan overlay terlihat saat inisialisasi
-        toggleControlsActive(false);
     </script>
 </body>
 
