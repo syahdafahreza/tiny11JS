@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="id">
 
-<!-- Harusnya file saya lengkap seperti ini -->
+<!-- Harusnya file saya tetap lengkap seperti ini -->
+<!-- Ini document HTML panjang (immersive document) -->
 
 <head>
     <meta charset="UTF-8" />
@@ -265,7 +266,7 @@
             transform: translate(-50%, -50%);
             width: 16px;
             height: 16px;
-            border-radius: 999px;
+            border-radius: 9999px;
             background-color: var(--control-highlight);
             /* NEW */
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
@@ -417,12 +418,12 @@
 </head>
 
 <body>
-    <!-- Filter SVG for Liquid Glass effect -->
+    <!-- Filter SVG for Liquid Glass effect (Tolong jangan diubah) -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1">
         <svg>
             <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
                 <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none"
-                    href="img/svg-filter.jpg" />
+                    href="img/svg-filter.jpg" /> <!-- Ini saya gak peduli meskipun kamu anggap salah, saya mau tetap seperti ini (JANGAN DIUBAH SEDIKIT PUN) -->
                 <feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
                 <feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
                 </feDisplacementMap>
@@ -632,10 +633,8 @@
         </div>
     </div>
 
-    <!-- HAPUS Pustaka MatroskaSubtitles: Kita akan menggunakan FFmpeg/FFprobe Worker -->
-    <!-- <script src="js/matroska-subtitles.min.js"></script> -->
-
     <!-- REINSTATE: Static load of Subtitles Octopus. This must execute before the main script. -->
+    <!-- Lokasi library sudah benar. Didalam sub dir js/ -->
     <script src="js/subtitles-octopus.js"></script> 
 
     <script>
@@ -648,7 +647,11 @@
         const FFPROBE_WORKER_PATH = 'js/ffprobe-worker-mkve.js'; 
         const FFMPEG_WORKER_PATH = 'js/ffmpeg-worker-mkve.js'; 
         
-        const OCTOPUS_WORKER_PATH = 'js/subtitles-octopus-worker.js'; 
+        const OCTOPUS_WORKER_PATH = 'js/subtitles-octopus-worker.js';
+        
+        // --- NEW: Subtitles Octopus Font Path ---
+        // Sudah benar di subdir fonts/
+        const OCTOPUS_FALLBACK_FONT = '../fonts/default.woff2';
 
 
         // Helper untuk Mutex (untuk memastikan hanya satu worker yang berjalan)
@@ -1125,7 +1128,7 @@
                     workerUrl: OCTOPUS_WORKER_PATH,
                     // FIX 1: Set fallbackFont ke null untuk mencegah error worker
                     // Error terjadi karena worker mencoba memuat 'default.woff2' yang tidak ada di path /js/
-                    fallbackFont: null
+                    fallbackFont: OCTOPUS_FALLBACK_FONT
                 });
                 console.log("[Octopus Init] Renderer ASS/SSA berhasil diinisialisasi.");
 
@@ -1982,6 +1985,41 @@
                     appWindow.style.borderRadius = "8px";
                     header.style.padding = '3px 3px 3px 6px';
                 }
+            }
+            
+            // NEW: Handle stop action (Unload media and reset state)
+            if (action === "stop") {
+                console.log("[Video Player] Received stop action. Unloading media and resetting state.");
+                
+                // 1. Pause video
+                videoPlayer.pause();
+
+                // 2. Unload media source
+                videoPlayer.src = ""; 
+                if (currentFileURL) {
+                    URL.revokeObjectURL(currentFileURL);
+                    currentFileURL = null;
+                }
+
+                // 3. Cleanup subtitles (Octopus worker and native tracks)
+                removeExistingSubtitleTracks(); 
+                subtitleTracks = [];
+                renderSubtitleMenu([]);
+                
+                // 4. Reset UI to initial state
+                videoPlayer.load(); // Force reload/reset state (shows poster)
+                // Reset title
+                videoTitleDisplay.textContent = "Nama Video";
+                
+                // Clear subtitle status message if visible after reset
+                const currentTimeout = subtitleStatusMsg.dataset.timeoutId;
+                if (currentTimeout) clearTimeout(parseInt(currentTimeout));
+                subtitleStatusMsg.classList.add('hidden');
+                
+                // Reset controls state and show initial overlay
+                toggleControlsActive(false); 
+                
+                console.log("[Video Player] Media unloaded and state reset complete.");
             }
         });
 

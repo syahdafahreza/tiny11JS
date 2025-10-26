@@ -778,6 +778,8 @@ function closeApp(appName) {
         isVideoPlayerOpen = false;
         appFrame = videoPlayerFrame;
         taskbarIcon = taskbarVideoPlayerIcon;
+        // NEW: Send stop action to the video player iframe
+        appFrame.contentWindow.postMessage({ action: "stop" }, "*");
     } else if (appName === "explorer") {
         // [KEPT] Dari file lokal
         isExplorerOpen = false;
