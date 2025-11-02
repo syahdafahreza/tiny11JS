@@ -47,8 +47,9 @@
         <iframe id="wallpaper-iframe" src="about:blank"></iframe>
 
         <!-- NEW: Invisible layer to intercept clicks for the live wallpaper -->
+        <!-- DIHAPUS: style="... display: none;" agar context menu selalu terdeteksi pada lapisan ini -->
         <div id="click-interceptor"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; display: none; -webkit-user-drag: none;">
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; -webkit-user-drag: none;">
         </div>
 
         <!-- MODIFIED: Changed to flex-row for multi-column layout -->
@@ -86,7 +87,32 @@
             style="top: 15%; left: 30%; width: 550px; height: 550px; min-width: 480px; min-height: 400px;">
         </iframe>
 
-        <!-- GANTI: Gunakan ID #start-menu (bukan iframe) dan hapus class app-iframe -->
+        <!-- BARU: Iframe Equalizer -->
+        <iframe id="equalizer-frame" class="app-iframe" src="equalizer.html" allowtransparency="true"
+            style="display: none; top: 30%; left: 45%; width: 700px; height: 500px; min-width: 400px; min-height: 300px;">
+        </iframe>
+        
+        <iframe id="music-player-frame" class="app-iframe" src="music_player.html" allowtransparency="true"
+            style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
+        </iframe>
+
+        <!-- NEW: Video Player Iframe -->
+        <iframe id="video-player-frame" class="app-iframe" src="video_player.html" allowtransparency="true"
+            style="top: 25%; left: 15%; width: 640px; height: 500px; min-width: 400px; min-height: 300px;">
+        </iframe>
+
+        <!-- NEW: Iframe for the Live2D Wallpaper App window -->
+        <iframe id="live2d-wallpaper-frame" class="app-iframe" src="live2d_wallpaper.html" allowtransparency="true"
+            style="top: 25%; left: 40%; width: 400px; height: 255px; min-width: 350px; min-height: 200px;"
+            allow="clipboard-write">
+        </iframe>
+
+        <!-- [KEPT] Mempertahankan iframe File Explorer dari file lokal -->
+        <iframe id="file-explorer-frame" class="app-iframe" src="file_explorer.html" allowtransparency="true"
+            style="top: 10%; left: 15%; width: 800px; height: 500px; min-width: 500px; min-height: 400px;">
+        </iframe>
+        
+        <!-- NEW: START MENU CONTAINER (Diambil dari index-reference.html) -->
         <div id="start-menu">
             <div id="start-menu-container">
                 <div class="search-container"><svg xmlns="http://www.w3.org/2000/svg" class="search-icon"
@@ -185,27 +211,10 @@
                 </div>
             </div>
         </div>
-        <!-- Start Menu HTML End -->
+        <!-- END START MENU CONTAINER -->
 
-        <iframe id="music-player-frame" class="app-iframe" src="music_player.html" allowtransparency="true"
-            style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
-        </iframe>
 
-        <!-- NEW: Video Player Iframe -->
-        <iframe id="video-player-frame" class="app-iframe" src="video_player.html" allowtransparency="true"
-            style="top: 25%; left: 15%; width: 640px; height: 500px; min-width: 400px; min-height: 300px;">
-        </iframe>
-
-        <!-- NEW: Iframe for the Live2D Wallpaper App window -->
-        <iframe id="live2d-wallpaper-frame" class="app-iframe" src="live2d_wallpaper.html" allowtransparency="true"
-            style="top: 25%; left: 40%; width: 400px; height: 255px; min-width: 350px; min-height: 200px;"
-            allow="clipboard-write">
-        </iframe>
-
-        <!-- [KEPT] Mempertahankan iframe File Explorer dari file lokal -->
-        <iframe id="file-explorer-frame" class="app-iframe" src="file_explorer.html" allowtransparency="true"
-            style="top: 10%; left: 15%; width: 800px; height: 500px; min-width: 500px; min-height: 400px;">
-        </iframe>
+        <canvas id="visualizer"></canvas>
 
         <div id="context-menu">
             <ul class="context-menu-items">
@@ -426,6 +435,12 @@
                     <!-- NEW: Taskbar icon for Live Wallpaper -->
                     <div id="taskbar-live2d-icon" class="taskbar-icon" style="display: none;"><img
                             src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /></div>
+                    <!-- BARU: Taskbar icon for Equalizer (Sudah ada di index-edit-this.html) -->
+                    <div id="taskbar-eq-icon" class="taskbar-icon" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
             <div id="system-tray" class="flex items-center gap-2">
@@ -540,6 +555,7 @@
         <script src="js/startmenu.js"></script>
         <script src="js/jquery-3.7.1.min.js"></script>
         <script src="js/jquery-ui.min.js"></script>
+        <script src="js/windowmanager.js"></script>
         <script src="js/index-main.js"></script>
 
 </body>

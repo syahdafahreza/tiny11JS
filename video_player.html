@@ -637,7 +637,7 @@
 
     <!-- REINSTATE: Static load of Subtitles Octopus. This must execute before the main script. -->
     <!-- Lokasi library sudah benar. Didalam sub dir js/ -->
-    <script src="js/subtitles-octopus.js"></script> 
+    <script src="js/subtitles-octopus.js"></script>
 
     <script>
         // --- PROMISE GLOBAL untuk memastikan Octopus siap ---
@@ -646,14 +646,18 @@
 
         // --- FFmpeg/FFprobe Worker Paths ---
         // Sudah benar didalam subdir js/
-        const FFPROBE_WORKER_PATH = 'js/ffprobe-worker-mkve.js'; 
-        const FFMPEG_WORKER_PATH = 'js/ffmpeg-worker-mkve.js'; 
-        
+        const FFPROBE_WORKER_PATH = 'js/ffprobe-worker-mkve.js';
+        const FFMPEG_WORKER_PATH = 'js/ffmpeg-worker-mkve.js';
+
         const OCTOPUS_WORKER_PATH = 'js/subtitles-octopus-worker.js';
-        
+
         // --- NEW: Subtitles Octopus Font Path ---
         // Sudah benar di subdir fonts/
         const OCTOPUS_FALLBACK_FONT = '../fonts/default.woff2';
+
+        // NEW: Konstanta Nama Aplikasi
+        // PENTING: Nama ini harus didaftarkan di Window Manager Anda (windowmanager.js)
+        const APP_NAME = 'video';
 
 
         // Helper untuk Mutex (untuk memastikan hanya satu worker yang berjalan)
@@ -725,7 +729,7 @@
         let currentSubtitleTrackElement = null; // Menyimpan referensi ke elemen <track> yang sedang aktif
         let decoder = new TextDecoder('utf-8'); // Decoder untuk output teks worker
         let octopusRenderer = null; // NEW: Instance SubtitleOctopus
-        
+
         // NEW: Interval untuk sinkronisasi waktu subtitle
         let subtitleSyncInterval = null;
 
@@ -1075,7 +1079,7 @@
          */
         function initializeOctopus(assContent) {
             console.log("[Octopus Init] Memulai inisialisasi SubtitlesOctopus.");
-            
+
             // Hapus instance lama
             if (octopusRenderer) {
                 octopusRenderer.dispose();
@@ -1092,7 +1096,7 @@
             // === FIX 3: Pemeriksaan Eksplisit untuk Elemen DOM (Sesuai saran forum) ===
             const videoElement = document.getElementById('video-player');
             const canvasElement = document.getElementById('subtitle-canvas');
-            
+
             console.log(`[Octopus Init] Status DOM: Video tersedia: ${!!videoElement}, Canvas tersedia: ${!!canvasElement}`);
 
             if (!videoElement || !canvasElement) {
@@ -1102,7 +1106,7 @@
                 return; // Hentikan eksekusi jika elemen tidak ditemukan
             }
             // ====================================================================
-            
+
             // Logik konten ASS
             if (!assContent) {
                 console.log("[Octopus Init] Konten ASS kosong. Octopus dimatikan.");
@@ -1136,7 +1140,7 @@
 
                 // Panggil resize secara manual setelah inisialisasi berhasil.
                 // Ini akan memastikan canvas di resize sebelum frame pertama dirender.
-                resizeSubtitleCanvas(); 
+                resizeSubtitleCanvas();
 
                 // === FIX 5: Mulai interval sinkronisasi waktu ===
                 // Kami harus secara manual memberi tahu Octopus waktu saat ini karena kami tidak memberikan elemen <video> padanya.
@@ -1218,7 +1222,7 @@
                     videoPlayer.textTracks[i].mode = 'disabled';
                 }
             }
-            
+
             // Hapus listener manual sync
             videoPlayer.removeEventListener('seeking', manualSeekSync, false);
             videoPlayer.removeEventListener('seeked', manualSeekSync, false);
@@ -1297,7 +1301,7 @@
                 subtitleCanvas.style.height = '100%';
                 subtitleCanvas.style.left = '0px';
                 subtitleCanvas.style.top = '0px';
-                
+
                 // Set resolusi internal canvas ke dimensi container
                 subtitleCanvas.width = containerWidth;
                 subtitleCanvas.height = containerHeight;
@@ -1308,7 +1312,7 @@
                 }
                 return;
             }
-            
+
             // --- Logika Penyesuaian Aspek Rasio (object-fit: contain) ---
             const aspectRatio = videoPlayer.videoWidth / videoPlayer.videoHeight;
             let newWidth, newHeight;
@@ -1322,7 +1326,7 @@
                 newWidth = containerWidth;
                 newHeight = containerWidth / aspectRatio;
             }
-            
+
             // Hitung posisi tengah
             videoLeft = (containerWidth - newWidth) / 2;
             videoTop = (containerHeight - newHeight) / 2;
@@ -1334,12 +1338,12 @@
             subtitleCanvas.style.height = `${newHeight}px`;
             subtitleCanvas.style.left = `${videoLeft}px`;
             subtitleCanvas.style.top = `${videoTop}px`;
-            
+
             // Set resolusi internal canvas (UKURAN RESOLUSI RENDER)
             // Resolusi internal harus diatur ke resolusi video asli untuk rendering yang optimal
             subtitleCanvas.width = videoPlayer.videoWidth;
             subtitleCanvas.height = videoPlayer.videoHeight;
-            
+
             // Informasikan SubtitlesOctopus tentang ukuran barunya (ukuran DOM, bukan resolusi internal)
             if (octopusRenderer) {
                 // Octopus membutuhkan ukuran DOM (piksel yang terlihat) untuk rendering yang benar
@@ -1432,7 +1436,7 @@
 
             // Reset status active Octopus pada semua track
             subtitleTracks.forEach(t => t.isOctopusActive = false);
-            
+
             // Hapus dulu track dan renderer yang ada SEBELUM memilih yang baru
             removeExistingSubtitleTracks();
 
@@ -1441,13 +1445,13 @@
                 try {
                     // Panggil inisialisasi Octopus
                     initializeOctopus(trackMetadata.content);
-                    
+
                     // Jika berhasil, tandai sebagai aktif
                     if (octopusRenderer) {
                         trackMetadata.isOctopusActive = true;
                         showSubtitleStatus(`Subtitle ASS/SSA dimuat dengan Octopus.`, 'success');
                     }
-                    
+
 
                 } catch (e) {
                     // Jika initializeOctopus gagal (karena SubtitleOctopus belum terdefinisi)
@@ -1646,7 +1650,7 @@
 
                 // FIX 4: Panggil resizeCanvas untuk subtitle setelah metadata dimuat
                 resizeSubtitleCanvas();
-                
+
                 parent.postMessage({ action: 'request-volume' }, '*');
                 toggleControlsActive(true); // Ensure controls are active
                 updatePlayPauseIcon();
@@ -1735,7 +1739,7 @@
             updateTimeline(percent);
             videoPlayer.currentTime = (percent / 100) * videoPlayer.duration;
             timeDisplayCurrent.textContent = formatTime(videoPlayer.currentTime);
-            
+
             // Manual sync untuk Octopus saat seek
             if (octopusRenderer && octopusRenderer.worker) {
                 octopusRenderer.setCurrentTime(videoPlayer.currentTime);
@@ -1751,7 +1755,7 @@
                 timelineThumb.style.transform = 'translate(-50%, -50%) scale(1.1)';
                 document.body.style.cursor = 'grabbing';
                 videoPlayer.pause(); // Pause while scrubbing
-                
+
                 // Pause Octopus rendering
                 if (octopusRenderer && octopusRenderer.worker) {
                     octopusRenderer.setIsPaused(true, videoPlayer.currentTime);
@@ -1766,7 +1770,7 @@
                     timeDisplayCurrent.textContent = formatTime(newTime);
                     // Optionally update video currentTime live while dragging (can be laggy)
                     // videoPlayer.currentTime = newTime;
-                    
+
                     // Update Octopus time live while dragging (Opsional, dapat menyebabkan lag)
                     if (octopusRenderer && octopusRenderer.worker) {
                         octopusRenderer.setCurrentTime(newTime);
@@ -1782,7 +1786,7 @@
                     // Final seek on mouseup
                     seekVideo(e.clientX);
                     videoPlayer.play().catch(err => console.warn("Could not resume playing after scrub:", err)); // Try to resume playing
-                    
+
                     // Resume Octopus rendering
                     if (octopusRenderer && octopusRenderer.worker) {
                         octopusRenderer.setIsPaused(false, videoPlayer.currentTime);
@@ -1819,10 +1823,10 @@
                 // Panggil resizeSubtitleCanvas untuk menghitung ulang posisi dan ukuran
                 resizeSubtitleCanvas();
             });
-            
+
             // Perlu dipanggil segera setelah window load untuk memastikan ukuran canvas sudah benar,
             // terutama jika video di load via autoplay atau secara cepat.
-            resizeSubtitleCanvas(); 
+            resizeSubtitleCanvas();
         }
 
         function setupDragAndDrop() {
@@ -1935,16 +1939,25 @@
             });
         }
 
+        // --- UPDATED: Window Manager Interactions ---
         header.addEventListener("mousedown", (e) => {
-            if (isMaximized || e.target.closest('button')) return;
+            // Kita tidak perlu mengecek isMaximized di sini, WM yang akan menanganinya.
+            if (e.target.closest('button')) return; // Jangan drag jika klik tombol
+
+            // **PENTING: Pastikan hanya klik kiri yang memulai drag**
+            if (e.button !== 0) return;
+
+            // PENTING: Menggunakan pesan LAMA (drag-vp-frame) untuk kompatibilitas
+            parent.postMessage({ action: "bring-vp-to-front" }, "*"); // <-- Changed action
+
             isDragging = true;
-            parent.postMessage({ action: "bring-vp-to-front" }, "*");
             e.preventDefault();
         });
 
         window.addEventListener("mousemove", (e) => {
             if (isDragging) {
-                parent.postMessage({ action: "drag-vp-frame", dx: e.movementX, dy: e.movementY }, "*");
+                // Menggunakan pesan LAMA (drag-vp-frame) untuk kompatibilitas
+                parent.postMessage({ action: "drag-vp-frame", dx: e.movementX, dy: e.movementY }, "*"); // <-- Changed action
             }
         });
 
@@ -1955,9 +1968,10 @@
             if (isDragging) isDragging = false;
         });
 
-        closeBtn.addEventListener("click", () => parent.postMessage({ action: "close-vp-frame" }, "*"));
-        minimizeBtn.addEventListener("click", () => parent.postMessage({ action: "minimize-vp-frame" }, "*"));
-        maximizeBtn.addEventListener("click", () => parent.postMessage({ action: "maximize-vp-frame" }, "*"));
+        // Menggunakan pesan LAMA (close-vp-frame, minimize-vp-frame, maximize-vp-frame)
+        closeBtn.addEventListener("click", () => parent.postMessage({ action: "close-vp-frame" }, "*")); // <-- Changed action
+        minimizeBtn.addEventListener("click", () => parent.postMessage({ action: "minimize-vp-frame" }, "*")); // <-- Changed action
+        maximizeBtn.addEventListener("click", () => parent.postMessage({ action: "maximize-vp-frame" }, "*")); // <-- Changed action
 
         window.addEventListener("message", (event) => {
             const { action, isDark, value, volume, isMaximized: newMaximizedState, borderRadius } = event.data;
@@ -1973,54 +1987,63 @@
                     videoPlayer.volume = volume / 100;
                 }
             }
+
+            // PENTING: Menerima state maximized dari Window Manager
+            // Action ini adalah GENERIC karena WM mengirimnya secara generic
             if (action === "set-maximized-state") {
                 isMaximized = newMaximizedState;
                 appWindow.classList.toggle('maximized', isMaximized);
+
+                // Perbarui ikon maximize/restore
                 if (isMaximized) {
                     maximizeBtn.title = "Restore Down";
-                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d=\"M3 1H9V7H3V1ZM2 0H10V8H2V0Z\" fill=\"currentColor\"/><path d=\"M1 3H7V9H1V3ZM0 2H8V10H0V2Z\" fill=\"currentColor\" opacity=\"0.5\"/></svg>`;
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
+                    // Atur borderRadius yang dikirim oleh WM (penting untuk mode Island)
                     appWindow.style.borderRadius = borderRadius || "0";
                     header.style.padding = '3px 3px 3px 6px';
                 } else {
                     maximizeBtn.title = "Maximize";
-                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill=\"currentColor\"/></svg>`;
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
+                    // Kembalikan radius default
                     appWindow.style.borderRadius = "8px";
                     header.style.padding = '3px 3px 3px 6px';
                 }
+                // Panggil resizeSubtitleCanvas setiap kali status jendela berubah
+                resizeSubtitleCanvas();
             }
-            
+
             // NEW: Handle stop action (Unload media and reset state)
             if (action === "stop") {
                 console.log("[Video Player] Received stop action. Unloading media and resetting state.");
-                
+
                 // 1. Pause video
                 videoPlayer.pause();
 
                 // 2. Unload media source
-                videoPlayer.src = ""; 
+                videoPlayer.src = "";
                 if (currentFileURL) {
                     URL.revokeObjectURL(currentFileURL);
                     currentFileURL = null;
                 }
 
                 // 3. Cleanup subtitles (Octopus worker and native tracks)
-                removeExistingSubtitleTracks(); 
+                removeExistingSubtitleTracks();
                 subtitleTracks = [];
                 renderSubtitleMenu([]);
-                
+
                 // 4. Reset UI to initial state
                 videoPlayer.load(); // Force reload/reset state (shows poster)
                 // Reset title
                 videoTitleDisplay.textContent = "Nama Video";
-                
+
                 // Clear subtitle status message if visible after reset
                 const currentTimeout = subtitleStatusMsg.dataset.timeoutId;
                 if (currentTimeout) clearTimeout(parseInt(currentTimeout));
                 subtitleStatusMsg.classList.add('hidden');
-                
+
                 // Reset controls state and show initial overlay
-                toggleControlsActive(false); 
-                
+                toggleControlsActive(false);
+
                 console.log("[Video Player] Media unloaded and state reset complete.");
             }
         });

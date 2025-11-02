@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Equalizer 10-Band</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS Variabel untuk Theming (sinkronisasi dengan Music Player) */
+        :root {
+            --font-family: 'Inter', sans-serif;
+            --window-bg: #f0f0f0;
+            --window-text: #000;
+            --window-border: #a0a0a0;
+            --control-hover-bg: #e6e6e6;
+            --control-close-hover-bg: #e81123;
+            --control-close-hover-text: white;
+            --slider-track-color: #cbd5e1; /* slate-300 */
+            --slider-fill-color: #3b82f6; /* blue-500 */
+            --knob-bg: #1d4ed8; /* blue-700 */
+            --center-line-color: #94a3b8; /* slate-400 */
+        }
+
+        body.dark {
+            --window-bg: #2b2b2b;
+            --window-text: #f0f0f0;
+            --window-border: #555555;
+            --control-hover-bg: #3c3c3c;
+            --slider-track-color: #4b5563; /* gray-600 */
+            --slider-fill-color: #f97316; /* orange-500 */
+            --knob-bg: #ea580c; /* orange-600 */
+            --center-line-color: #6b7280; /* gray-500 */
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            font-family: var(--font-family);
+            color: var(--window-text);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .app-window {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            border: 1px solid var(--window-border);
+            border-radius: 8px;
+            background-color: var(--window-bg);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+            padding: 3px 3px 3px 6px;
+            border-bottom: 1px solid var(--window-border);
+        }
+
+        .window-controls { display: flex; }
+        .window-control-btn {
+            width: 45px;
+            height: 29px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--window-text);
+        }
+        .window-control-btn:hover { background-color: var(--control-hover-bg); }
+        .close-window-btn:hover {
+            background-color: var(--control-close-hover-bg);
+            color: var(--control-close-hover-text);
+        }
+
+        /* --- Custom Vertical Slider Style (10 Band) --- */
+        .eq-band-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 10 Band, total 100% / 10 = 10% per band (gunakan gap) */
+            width: 10%; 
+            min-width: 40px; 
+            padding: 0 4px; /* Padding samping untuk jarak antar slider */
+        }
+
+        .eq-slider-wrapper {
+            position: relative;
+            height: 180px; /* Tinggi slider yang ditingkatkan */
+            width: 14px; /* Lebar track yang ditingkatkan */
+            background-color: var(--slider-track-color);
+            border-radius: 7px;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Bar yang menunjukkan nilai gain (pusat 0dB) */
+        .eq-gain-bar {
+            position: absolute;
+            width: 100%;
+            background-color: var(--slider-fill-color);
+            border-radius: 7px;
+            top: 50%;
+            height: 0;
+            transform: translateY(-50%);
+            transition: background-color 0.2s;
+        }
+        
+        /* Titik 0dB (garis tengah) */
+        .eq-center-line {
+            position: absolute;
+            width: 180%; /* Lebih lebar dari track */
+            height: 2px;
+            background-color: var(--center-line-color);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        /* Knob (Thumb) */
+        .eq-knob {
+            position: absolute;
+            width: 26px; /* Lebih lebar */
+            height: 14px;
+            background-color: var(--knob-bg);
+            border-radius: 3px;
+            cursor: grab;
+            z-index: 20;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+            left: 50%;
+            transition: transform 0.1s;
+            border: 1px solid var(--window-bg); /* Highlight */
+        }
+
+        .eq-knob:active, .eq-knob.active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scaleY(1.2);
+        }
+        
+        /* Teks Nilai Band */
+        .eq-band-container span:last-child {
+            font-weight: bold;
+            font-size: 0.75rem; /* text-xs */
+        }
+        
+        /* Teks Frekuensi */
+        .eq-band-container span:first-child {
+             font-size: 0.65rem; /* Lebih kecil */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-window">
+        <div id="eq-window-header" class="window-header">
+            <div class="flex items-center gap-2">
+                <!-- Icon Equalizer -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z" />
+                </svg>
+                <h2 class="text-sm font-medium">10-Band Equalizer (Live)</h2>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="window-control-btn" title="Minimize">
+                    <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
+            </div>
+        </div>
+
+        <div class="p-4 flex flex-col h-full overflow-y-auto relative">
+            
+            <!-- Kontrol Utama -->
+            <div class="flex items-center gap-6 mb-6 pb-4 border-b border-gray-300 dark:border-gray-600">
+                <input type="checkbox" id="enable-eq" checked class="h-4 w-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:text-orange-500 dark:focus:ring-orange-500">
+                <label for="enable-eq" class="text-sm font-medium">Aktifkan Equalizer</label>
+                
+                <label for="preset-select" class="text-sm opacity-70 ml-8">Preset:</label>
+                <select id="preset-select" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm flex-grow">
+                    <option value="flat">Flat (0 dB)</option>
+                    <option value="rock">Rock</option>
+                    <option value="pop">Pop</option>
+                    <option value="classic">Classic</option>
+                </select>
+                <button id="save-btn" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-sm font-medium transition text-indigo-800 dark:text-white ml-4">Simpan</button>
+
+            </div>
+
+            <!-- Kontainer Slider EQ (10 Band) -->
+            <div id="eq-sliders" class="flex justify-between items-center flex-grow gap-x-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner">
+                <!-- Band Frekuensi (10-Band EQ) akan diisi secara dinamis oleh JavaScript -->
+            </div>
+
+            <!-- Teks penanda gain vertikal (Di luar div eq-sliders agar tidak terpotong) -->
+            <div class="absolute right-4 flex flex-col justify-between items-end opacity-60 pointer-events-none text-xs pr-2" style="top: 130px; bottom: 85px;">
+                <span style="height: 14px; transform: translateY(-7px);" class="font-mono text-gray-500 dark:text-gray-400">+12 dB</span>
+                <span style="height: 14px; transform: translateY(7px);" class="font-mono text-gray-500 dark:text-gray-400">-12 dB</span>
+            </div>
+            
+            <!-- Teks penanda 0 dB (Tingkat vertikal) -->
+            <div class="absolute w-full flex justify-center opacity-70 pointer-events-none text-xs" style="top: 50%; transform: translateY(-50%);">
+                 <span class="text-xs font-mono px-2 bg-gray-100 dark:bg-gray-800 rounded-full">0 dB</span>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-300 dark:border-gray-600">
+                <button id="reset-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md text-sm font-medium transition">Reset (Flat)</button>
+                <button id="close-eq-btn" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition dark:bg-orange-500 dark:hover:bg-orange-600">Tutup</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/music_player.js"></script>
+</body>
+</html>
