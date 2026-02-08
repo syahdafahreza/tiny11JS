@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
 
+<!-- ================================================================================== -->
+<!-- BAGIAN 1: HEAD & METADATA -->
+<!-- ================================================================================== -->
+<!-- Summary: Konfigurasi metadata halaman, judul, favicon, dan import file CSS (Tailwind & Custom). -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pratinjau Wallpaper Desktop Modern</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.webp">
+    
     <!-- Tailwind Offline CSS, Local Copy (In case of CDN failures) -->
     <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
     <link rel="stylesheet" href="css/startmenu.css">
@@ -13,10 +18,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet"> -->
 </head>
+<!-- ================================================================================== -->
+<!-- BAGIAN 1: HEAD & METADATA | END -->
+<!-- ================================================================================== -->
 
 <body class="bg-gray-800 select-none">
 
-    <!-- Filter SVG for Liquid Glass effect -->
+    <!-- ================================================================================== -->
+    <!-- BAGIAN 2: SVG FILTERS (EFEK KACA) -->
+    <!-- ================================================================================== -->
+    <!-- Summary: Definisi filter SVG untuk menciptakan efek distorsi 'liquid glass' atau blur 
+         pada jendela aplikasi dan taskbar. Tidak terlihat secara langsung, tapi dipanggil oleh CSS. -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1;">
         <svg>
             <!-- Original Filter (for windows) -->
@@ -38,8 +50,19 @@
             </filter>
         </svg>
     </div>
+    <!-- ================================================================================== -->
+    <!-- BAGIAN 2: SVG FILTERS (EFEK KACA) | END -->
+    <!-- ================================================================================== -->
+
 
     <div id="desktop" class="relative">
+        
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 3: WALLPAPER & BACKGROUND LAYERS -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Lapisan paling bawah desktop. Berisi gambar statis, iframe untuk live wallpaper, 
+             dan div transparan (click-interceptor) untuk menangani event klik di atas wallpaper. -->
+        
         <!-- [MERGED] Menambahkan tag <img> untuk wallpaper default -->
         <img src="img/img0_1920x1200.jpg" alt="Desktop Background" class="desktop-image">
 
@@ -47,16 +70,22 @@
         <iframe id="wallpaper-iframe" src="about:blank"></iframe>
 
         <!-- NEW: Invisible layer to intercept clicks for the live wallpaper -->
-        <!-- DIHAPUS: style="... display: none;" agar context menu selalu terdeteksi pada lapisan ini -->
         <div id="click-interceptor"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; -webkit-user-drag: none;">
         </div>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 3: WALLPAPER & BACKGROUND LAYERS | END -->
+        <!-- ================================================================================== -->
 
-        <!-- MODIFIED: Changed to flex-row for multi-column layout -->
+
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 4: DESKTOP ICONS -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Kumpulan ikon pintasan (shortcut) yang tampil di desktop. 
+             Menggunakan Flexbox untuk tata letak kolom. -->
         <div id="desktop-icons" class="absolute top-4 left-4 flex flex-row gap-4 z-10">
-            <!-- Column 1 (MENGHAPUS class 'gap-2') -->
+            <!-- Column 1 -->
             <div class="flex flex-col">
-                <!-- [KEPT] Mempertahankan ID dari file lokal -->
                 <div id="this-pc-icon" class="desktop-icon" tabindex="0"><img
                         src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC" /><span>This PC</span>
                 </div>
@@ -70,19 +99,27 @@
                         src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin" /><span>Recycle
                         Bin</span></div>
             </div>
-            <!-- Column 2 (MENGHAPUS class 'gap-2') -->
+            <!-- Column 2 -->
             <div class="flex flex-col">
-                <!-- MOVED: Live2D Wallpaper icon is now the first in the second column -->
                 <div id="live2d-icon" class="desktop-icon" tabindex="0"><img
                         src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /><span>Live
                         Wallpaper</span></div>
-                <!-- NEW: Video Player Icon -->
-                <div id="video-player-icon" class="desktop-icon" tabindex="0"><img
-                        src="img/films-and-tv_171100.png" alt="Video Player" /><span>Video
+                <div id="video-player-icon" class="desktop-icon" tabindex="0"><img src="img/films-and-tv_171100.png"
+                        alt="Video Player" /><span>Video
                         Player</span></div>
             </div>
         </div>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 4: DESKTOP ICONS | END -->
+        <!-- ================================================================================== -->
 
+
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 5: APPLICATION WINDOWS (IFRAMES) -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Area ini memuat semua jendela aplikasi dalam bentuk <iframe>.
+             Setiap iframe mewakili satu aplikasi (Control Panel, Music, Video, dll) yang bisa digeser/di-resize. -->
+        
         <iframe id="control-panel-frame" class="app-iframe" src="control_panel.html" allowtransparency="true"
             style="top: 15%; left: 30%; width: 550px; height: 550px; min-width: 480px; min-height: 400px;">
         </iframe>
@@ -91,7 +128,7 @@
         <iframe id="equalizer-frame" class="app-iframe" src="equalizer.html" allowtransparency="true"
             style="display: none; top: 30%; left: 45%; width: 700px; height: 500px; min-width: 400px; min-height: 300px;">
         </iframe>
-        
+
         <iframe id="music-player-frame" class="app-iframe" src="music_player.html" allowtransparency="true"
             style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
         </iframe>
@@ -111,16 +148,27 @@
         <iframe id="file-explorer-frame" class="app-iframe" src="file_explorer.html" allowtransparency="true"
             style="top: 10%; left: 15%; width: 800px; height: 500px; min-width: 500px; min-height: 400px;">
         </iframe>
-        
-        <!-- NEW: START MENU CONTAINER (Diambil dari index-reference.html) -->
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 5: APPLICATION WINDOWS (IFRAMES) | END -->
+        <!-- ================================================================================== -->
+
+
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 6: START MENU -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Komponen Start Menu Windows 11-style. 
+             Berisi kolom pencarian, aplikasi yang di-pin (Pinned), dan rekomendasi file (Recommended). -->
         <div id="start-menu">
             <div id="start-menu-container">
+                <!-- Search Bar -->
                 <div class="search-container"><svg xmlns="http://www.w3.org/2000/svg" class="search-icon"
                         viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                             clip-rule="evenodd" />
                     </svg><input type="text" placeholder="Type here to search"></div>
+                
+                <!-- Pinned Apps Section -->
                 <div class="apps-section">
                     <div class="section-header">
                         <h3>Pinned</h3><button class="all-apps-btn">All apps &gt;</button>
@@ -140,10 +188,9 @@
                             <div class="app-icon bg-green-700"><img src="https://img.icons8.com/fluency/48/ms-excel.png"
                                     alt="Excel" /></div><span>Excel</span>
                         </div>
-                        <!-- NEW: Video Player Start Menu Item -->
                         <div id="start-menu-video-player" class="app-item">
-                            <div class="app-icon bg-[#ff6e40]"><img
-                                    src="img/films-and-tv_171100.png" alt="Video" /></div>
+                            <div class="app-icon bg-[#ff6e40]"><img src="img/films-and-tv_171100.png" alt="Video" />
+                            </div>
                             <span>Video Player</span>
                         </div>
                         <div class="app-item">
@@ -165,6 +212,8 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Recommended Section -->
                 <div class="recommended-section">
                     <div class="section-header">
                         <h3>Recommended</h3>
@@ -200,6 +249,8 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Footer / User Profile -->
                 <div class="footer-bar">
                     <div class="user-profile"><img src="https://placehold.co/40x40/555/fff?text=U" alt="User"
                             class="user-avatar"><span>Umarkov</span></div>
@@ -211,11 +262,29 @@
                 </div>
             </div>
         </div>
-        <!-- END START MENU CONTAINER -->
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 6: START MENU | END -->
+        <!-- ================================================================================== -->
 
 
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 7: AUDIO VISUALIZER -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Element Canvas yang digunakan untuk menggambar visualisasi audio (gelombang suara)
+             di layar desktop. -->
         <canvas id="visualizer"></canvas>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 7: AUDIO VISUALIZER | END -->
+        <!-- ================================================================================== -->
 
+
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 8: CONTEXT MENUS (KLIK KANAN) -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Kumpulan menu dropdown yang muncul saat pengguna melakukan klik kanan.
+             Terdiri dari menu Desktop, menu Explorer Umum, dan menu Item Explorer. -->
+        
+        <!-- Context Menu Utama (Desktop) -->
         <div id="context-menu">
             <ul class="context-menu-items">
                 <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -269,7 +338,7 @@
             </ul>
         </div>
 
-        <!-- NEW: Explorer General Context Menu -->
+        <!-- NEW: Explorer General Context Menu (Klik kanan di area kosong Explorer) -->
         <div id="explorer-context-menu-general" class="explorer-context-menu">
             <ul class="context-menu-list">
                 <li class="context-menu-item" data-command="view">
@@ -355,7 +424,7 @@
             </ul>
         </div>
 
-        <!-- NEW: Explorer Item Context Menu -->
+        <!-- NEW: Explorer Item Context Menu (Klik kanan pada file/folder) -->
         <div id="explorer-context-menu-item" class="explorer-context-menu">
             <ul class="context-menu-list">
                 <li id="explorer-item-open" data-command="open" class="context-menu-item"><img
@@ -410,115 +479,181 @@
                         class="menu-text">Properties</span></li>
             </ul>
         </div>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 8: CONTEXT MENUS (KLIK KANAN) | END -->
+        <!-- ================================================================================== -->
 
 
         <canvas id="visualizer"></canvas>
 
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 9: TASKBAR & SYSTEM TRAY -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Bar navigasi utama di bagian bawah layar. 
+             Berisi tombol Start, ikon aplikasi yang sedang berjalan/pinned, dan System Tray (jam, notif). -->
         <div id="taskbar" class="taskbar-bottom">
-            <div id="taskbar-main-group" class="flex items-center gap-1">
-                <div id="start-button" class="taskbar-icon"><img src="https://img.icons8.com/fluency/48/windows-11.png"
-                        alt="Start" /></div>
-                <div id="app-icons" class="flex items-center gap-1">
-                    <!-- [KEPT] Mempertahankan ikon explorer dari file lokal -->
-                    <div id="taskbar-explorer-icon" class="taskbar-icon"><img src="img/explorer.png" alt="Folder" />
-                    </div>
-                    <div class="taskbar-icon"><img src="img/msedge2019.png" alt="Edge" /></div>
-                    <div class="taskbar-icon"><img src="img/winstoreapp-dark.png" alt="Store" /></div>
-                    <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;"><img
-                            src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel" />
-                    </div>
-                    <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img
-                            src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player" /></div>
-                    <!-- NEW: Taskbar icon for Video Player -->
-                    <div id="taskbar-video-player-icon" class="taskbar-icon" style="display: none;"><img
-                            src="img/films-and-tv_171100.png" alt="Video Player" /></div>
-                    <!-- NEW: Taskbar icon for Live Wallpaper -->
-                    <div id="taskbar-live2d-icon" class="taskbar-icon" style="display: none;"><img
-                            src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /></div>
-                    <!-- BARU: Taskbar icon for Equalizer (Sudah ada di index-edit-this.html) -->
-                    <div id="taskbar-eq-icon" class="taskbar-icon" style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            <div id="system-tray" class="flex items-center gap-2">
-                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    </svg></div>
-                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0" />
-                    </svg></div>
-                <div class="text-sm px-1"><span>ENG</span></div>
-                <div id="datetime-container" class="text-xs text-right leading-tight px-1 cursor-default"><span
-                        id="clock">15:45</span><span id="date" class="block">28/09/2025</span></div>
-                <div id="notification-center-trigger" class="taskbar-icon p-2"><svg class="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg></div>
-            </div>
-            <div id="notification-center">
 
-                <div class="flex justify-between items-center px-1">
-                    <h2 class="text-lg font-semibold" style="color: var(--window-text);">
-                        Notifications
-                    </h2>
-                    <button id="clear-all-notifications-btn" class="text-sm px-2 py-1 rounded-md transition-colors"
-                        style="color: var(--window-text); background-color: var(--quick-settings-bg);"
-                        onmouseover="this.style.backgroundColor='var(--quick-settings-hover-bg)'"
-                        onmouseout="this.style.backgroundColor='var(--quick-settings-bg)'">
-                        Clear all
-                    </button>
-                </div>
-                <div id="notification-list" class="notification-area">
-                    <div id="notification-placeholder" class="p-4 text-center text-sm"
-                        style="color: var(--explorer-text-secondary);">
-                        Tidak ada notifikasi baru
+            <div id="taskbar-content-wrapper" class="w-full h-full flex justify-between items-center">
+                <!-- Start Button & Apps Icons -->
+                <div id="taskbar-main-group" class="flex items-center gap-1">
+                    <div id="start-button" class="taskbar-icon"><img
+                            src="https://img.icons8.com/fluency/48/windows-11.png" alt="Start" /></div>
+                    <div id="app-icons" class="flex items-center gap-1">
+                        <div id="taskbar-explorer-icon" class="taskbar-icon"><img src="img/explorer.png" alt="Folder" />
+                        </div>
+                        <div class="taskbar-icon"><img src="img/msedge2019.png" alt="Edge" /></div>
+                        <div class="taskbar-icon"><img src="img/winstoreapp-dark.png" alt="Store" /></div>
+                        <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;"><img
+                                src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="CP" /></div>
+                        <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img
+                                src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music" /></div>
+                        <div id="taskbar-video-player-icon" class="taskbar-icon" style="display: none;"><img
+                                src="img/films-and-tv_171100.png" alt="Video" /></div>
+                        <div id="taskbar-live2d-icon" class="taskbar-icon" style="display: none;"><img
+                                src="https://img.icons8.com/fluency/48/domain.png" alt="Live" /></div>
                     </div>
                 </div>
-                <div class="quick-settings-grid">
-                    <button class="quick-setting-btn active">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0"
-                                clip-rule="evenodd" />
+
+                <!-- System Tray (Right Side) -->
+                <div id="system-tray" class="flex items-center gap-2">
+                    <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg></div>
+                    <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0" />
+                        </svg></div>
+                    <div class="text-sm px-1"><span>ENG</span></div>
+                    <div id="datetime-container" class="text-xs text-right leading-tight px-1 cursor-default"><span
+                            id="clock">15:45</span><span id="date" class="block">28/09/2025</span></div>
+                    <div id="notification-center-trigger" class="taskbar-icon p-2"><svg class="h-5 w-5"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg></div>
+                </div>
+            </div>
+
+            <!-- Taskbar Pill Overlay (Internal) -->
+            <div id="pill-content-wrapper"
+                class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 flex justify-center items-center">
+                <!-- Notification Pill -->
+                <div id="notification-content"
+                    class="absolute w-full h-full flex items-center gap-3 px-4 opacity-0 scale-95 transition-all duration-300">
+                    <div id="notification-icon" class="flex-shrink-0 w-10 h-10 rounded overflow-hidden"></div>
+                    <div class="flex-grow min-w-0 text-left">
+                        <p id="notification-title" class="font-semibold text-sm truncate text-[var(--window-text)]"></p>
+                        <p id="notification-message" class="text-xs text-[var(--explorer-text-secondary)] truncate"></p>
+                    </div>
+                    <button id="close-button"
+                        class="flex-shrink-0 text-gray-500 hover:text-black dark:hover:text-white transition-colors duration-200 pointer-events-auto z-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                        <span>Wi-Fi</span>
                     </button>
-                    <button class="quick-setting-btn active">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                        </svg>
-                        <span>Bluetooth</span>
-                    </button>
-                    <button class="quick-setting-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                        </svg>
-                        <span>Mode Pesawat</span>
-                    </button>
-                    <button class="quick-setting-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 10a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zM15 9a1 1 0 100 2h1a1 1 0 100-2h-1zM4.343 5.343a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM14.243 15.657a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707zM4.343 14.243a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM15.657 5.757a1 1 0 010-1.414l-.707-.707a1 1 0 01-1.414 1.414l.707.707a1 1 0 011.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span>Mode Malam</span>
-                    </button>
+                </div>
+
+                <!-- Volume Pill -->
+                <div id="volume-content"
+                    class="absolute w-full h-full flex items-center gap-3 px-4 opacity-0 scale-95 transition-all duration-300">
+                    <div id="volume-icon" class="flex-shrink-0 w-6 h-6 text-[var(--window-text)]"></div>
+                    <div class="flex-grow min-w-0 flex items-center gap-3">
+                        <div id="volume-bar-wrapper"
+                            class="w-full h-2 rounded-full bg-[var(--taskbar-hover-bg)] overflow-hidden">
+                            <div id="volume-bar-fill"
+                                class="h-full rounded-full bg-[var(--volume-bar-fill-color)] transition-all duration-100">
+                            </div>
+                        </div>
+                        <span id="volume-value"
+                            class="font-medium text-sm w-10 text-right text-[var(--window-text)]">80%</span>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 9: TASKBAR & SYSTEM TRAY | END -->
+        <!-- ================================================================================== -->
 
-        <!-- Container Pill -->
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 9.5: NOTIFICATION CENTER (YANG HILANG) -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Panel notifikasi dan Quick Settings (Wifi, Bluetooth, dll).
+             Ini harus ada agar tombol di taskbar bisa memunculkan sesuatu. -->
+        <div id="notification-center">
+            
+            <!-- Header: Title & Clear Button -->
+            <div class="flex justify-between items-center px-1 mb-2">
+                <h2 class="text-lg font-semibold" style="color: var(--window-text);">
+                    Notifications
+                </h2>
+                <button id="clear-all-notifications-btn" class="text-xs px-2 py-1 rounded-md transition-colors"
+                    style="color: var(--window-text); background-color: var(--quick-settings-bg);"
+                    onmouseover="this.style.backgroundColor='var(--quick-settings-hover-bg)'"
+                    onmouseout="this.style.backgroundColor='var(--quick-settings-bg)'">
+                    Clear all
+                </button>
+            </div>
+
+            <!-- List Notifikasi -->
+            <div id="notification-list" class="notification-area custom-scrollbar">
+                <div id="notification-placeholder" class="p-4 text-center text-sm"
+                    style="color: var(--explorer-text-secondary);">
+                    No new notifications
+                </div>
+            </div>
+
+            <!-- Separator -->
+            <div class="w-full h-[1px] my-3 bg-[var(--window-border)] opacity-30"></div>
+
+            <!-- Quick Settings Grid -->
+            <div class="quick-settings-grid">
+                <button class="quick-setting-btn active">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span>Wi-Fi</span>
+                </button>
+                <button class="quick-setting-btn active">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <span>Bluetooth</span>
+                </button>
+                <button class="quick-setting-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                    </svg>
+                    <span>Airplane</span>
+                </button>
+                <button class="quick-setting-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 10a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zM15 9a1 1 0 100 2h1a1 1 0 100-2h-1zM4.343 5.343a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM14.243 15.657a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707zM4.343 14.243a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM15.657 5.757a1 1 0 010-1.414l-.707-.707a1 1 0 01-1.414 1.414l.707.707a1 1 0 011.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span>Night Light</span>
+                </button>
+            </div>
+        </div>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 9.5: NOTIFICATION CENTER (YANG HILANG) | END -->
+        <!-- ================================================================================== -->
+
+
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 10: PILL CONTAINER (HIDDEN TEMPLATE) -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Container tersembunyi yang menyimpan template HTML untuk notifikasi dan volume.
+             Struktur ini kemungkinan digunakan sebagai fallback atau template yang akan dikloning oleh JS. -->
         <div id="pill-container" class="hidden">
             <!-- Pindahkan elemen notifikasi dan volume ke sini -->
             <div id="notification-content" class="flex items-center gap-3 w-full px-5 opacity-0 pointer-events-none">
@@ -550,14 +685,26 @@
                 </div>
             </div>
         </div>
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 10: PILL CONTAINER (HIDDEN TEMPLATE) | END -->
+        <!-- ================================================================================== -->
 
+
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 11: SCRIPTS -->
+        <!-- ================================================================================== -->
+        <!-- Summary: Bagian akhir body tempat meload semua library JavaScript dan logika utama. -->
+        
         <!-- MODIFIKASI: Tambahkan type="module" pada windowmanager.js dan index.js -->
         <script src="js/startmenu.js"></script>
         <script src="js/jquery-3.7.1.min.js"></script>
         <script src="js/jquery-ui.min.js"></script>
         <script src="js/windowmanager.js"></script>
         <script src="js/index-main.js"></script>
+        
+        <!-- ================================================================================== -->
+        <!-- BAGIAN 11: SCRIPTS | END -->
+        <!-- ================================================================================== -->
 
 </body>
-
 </html>

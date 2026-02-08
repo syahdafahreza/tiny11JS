@@ -1,5 +1,13 @@
+/* index-mai.css */
+/* ==================================================================================
+   BAGIAN 1: GLOBAL VARIABLES & THEMING
+   ==================================================================================
+   Summary: Mendefinisikan variabel warna CSS (CSS Variables) untuk tema Light (Default)
+   dan Dark Mode. Bagian ini mengontrol palet warna seluruh sistem.
+*/
+
 :root {
-    /* General Theme */
+    /* General Theme - Light Mode Defaults */
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --window-bg: #f0f0f0;
     --window-text: #000;
@@ -7,15 +15,19 @@
     --control-hover-bg: #e6e6e6;
     --control-close-hover-bg: #e81123;
     --control-close-hover-text: white;
+    
+    /* Taskbar & Menu Backgrounds */
     --taskbar-bg: rgba(245, 245, 245, 0.85);
     --taskbar-text: #000;
     --taskbar-hover-bg: rgba(0, 0, 0, 0.1);
     --backdrop-blur: blur(15px);
     --menu-bg: rgba(255, 255, 255, 0.85);
+    
+    /* Visualizer */
     --visualizer-fill: rgba(255, 255, 255, 0.7);
     --visualizer-shadow: rgba(255, 255, 255, 0.5);
 
-    /* Liquid Glass Effect */
+    /* Liquid Glass Effect Config */
     --c-glass: #f0f0f0;
     --c-light: #ffffff;
     --c-dark: #000000;
@@ -43,7 +55,7 @@
     --volume-bar-track-color: color-mix(in srgb, var(--window-text) 20%, transparent);
     --volume-text-color: var(--window-text);
 
-    /* [FIXED] Start Menu Theme Variables - Light ONLY */
+    /* Start Menu Theme Variables - Light */
     --start-menu-bg: rgba(255, 255, 255, 0.85);
     --start-menu-border: rgba(0, 0, 0, 0.1);
     --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
@@ -56,15 +68,18 @@
     --start-menu-footer-border: rgba(0, 0, 0, 0.1);
 }
 
+/* Dark Mode Overrides */
 body.dark {
     --window-bg: #2b2b2b;
     --window-text: #f0f0f0;
     --window-border: #555555;
     --control-hover-bg: #3c3c3c;
+    
     --taskbar-bg: rgba(20, 20, 20, 0.85);
     --taskbar-text: white;
     --taskbar-hover-bg: rgba(255, 255, 255, 0.1);
     --menu-bg: rgba(30, 30, 30, 0.75);
+    
     --visualizer-fill: rgba(0, 0, 0, 0.6);
     --visualizer-shadow: rgba(0, 0, 0, 0.4);
 
@@ -87,7 +102,7 @@ body.dark {
     --quick-settings-active-bg: #60cdff;
     --quick-settings-active-text: #000;
 
-    /* [FIXED] Start Menu Theme Variables - Dark MOVED HERE */
+    /* Start Menu Theme Variables - Dark */
     --start-menu-bg: rgba(30, 30, 30, 0.75);
     --start-menu-border: rgba(255, 255, 255, 0.1);
     --start-menu-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -100,10 +115,133 @@ body.dark {
     --start-menu-footer-border: rgba(255, 255, 255, 0.1);
 }
 
+/* ==================================================================================
+   BAGIAN 1: GLOBAL VARIABLES & THEMING | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 2: BASE LAYOUT & DESKTOP ENVIRONMENT
+   ==================================================================================
+   Summary: Mengatur layout dasar body, container desktop, wallpaper, dan ikon desktop.
+   Termasuk animasi ikon saat booting/refresh.
+*/
+
 body {
     font-family: var(--font-family);
     overflow: hidden;
+    margin: 0;
+    padding: 0;
 }
+
+/* Desktop Container & Background */
+#desktop {
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image: 0.3s ease-in-out;
+    position: relative;
+}
+
+.desktop-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+#wallpaper-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 0;
+    display: none;
+}
+
+/* Desktop Icons Grid & Styling */
+#desktop-icons .flex-col > .desktop-icon:last-child {
+    margin-bottom: 0;
+}
+
+.desktop-icon {
+    align-items: flex-start;
+    height: 120px;
+    margin-bottom: 8px;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100px;
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    transition: background-color 0.2s ease-out;
+}
+
+.desktop-icon:hover,
+.desktop-icon:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    outline: none;
+}
+
+.desktop-icon img,
+.desktop-icon svg {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 8px auto;
+}
+
+/* Desktop Icon Animation States */
+.desktop-icon.hide-for-refresh {
+    transition: none !important;
+    opacity: 0 !important;
+    visibility: hidden;
+}
+
+.desktop-icon.animate-in {
+    visibility: visible;
+    animation: slide-fade-in 0.4s ease-out forwards;
+}
+
+@keyframes slide-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dragging visual effect */
+.drag-over {
+    border: 4px dashed rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+/* ==================================================================================
+   BAGIAN 2: BASE LAYOUT & DESKTOP ENVIRONMENT | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 3: DYNAMIC ISLAND / PILL ANIMATION
+   ==================================================================================
+   Summary: Mengatur style untuk efek "Dynamic Island" (Pill).
+   Ini menangani transisi morphing saat notifikasi muncul atau volume berubah.
+*/
 
 #pill-container {
     position: fixed;
@@ -112,12 +250,20 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* State Awal: Transparan & Pointer Events None */
     opacity: 0;
     pointer-events: none;
+    
     background-color: var(--taskbar-bg);
     backdrop-filter: var(--backdrop-blur);
     -webkit-backdrop-filter: var(--backdrop-blur);
+    
+    /* KEY PART: The Dynamic Island Animation Curve */
+    transition: all 0.5s cubic-bezier(0.42, 0.24, 0.02, 1), opacity 0.3s ease;
+    
+    /* Default shadow */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
 #pill-container.show {
@@ -125,57 +271,233 @@ body {
     pointer-events: auto;
 }
 
+/* Konten di dalam pill (Notifikasi & Volume) */
 #pill-container #notification-content,
 #pill-container #volume-content {
-    position: relative;
-    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    
+    /* Initial state untuk konten: Hidden */
     opacity: 0;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    visibility: hidden;
+    
+    /* Delay content fade-in slightly to wait for morphing */
+    transition: opacity 0.3s ease;
 }
 
-body.fancy-mode #taskbar.notification-mode,
-body.fancy-mode #pill-container {
-    background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
-    backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
-    -webkit-backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
-    box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-        0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-        0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
-    border-color: transparent;
+/* Helper Class untuk menampilkan konten setelah animasi selesai */
+.pill-content-visible #notification-content,
+.pill-content-visible #volume-content {
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-#volume-icon svg {
-    fill: var(--volume-icon-color);
-    color: var(--volume-icon-color);
+/* Elemen Text dalam Pill */
+#notification-message {
+    color: var(--explorer-text-secondary);
 }
 
-#volume-bar-fill {
-    background-color: var(--volume-bar-fill-color);
+#notification-content,
+#volume-content {
+    transition: opacity 0.2s ease-in-out;
 }
 
-#volume-track {
-    background-color: var(--volume-bar-track-color);
+/* ==================================================================================
+   BAGIAN 3: DYNAMIC ISLAND / PILL ANIMATION | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 4: TASKBAR SYSTEM (UNIFIED BASE, MORPHING & ISLAND MODES)
+   ==================================================================================
+   Summary: Styling untuk Taskbar, Pill Morphing, serta variasi mode Island.
+   UPDATE: Logic delay animasi konten taskbar agar tidak tabrakan saat morphing.
+*/
+
+#taskbar {
+    /* Base Appearance */
+    background-color: var(--taskbar-bg);
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
+    color: var(--taskbar-text);
+    
+    /* Positioning & Layout */
+    position: absolute;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    
+    /* ANIMATION CORE */
+    transition: width 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                height 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                left 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                right 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                bottom 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                top 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                border-radius 0.5s cubic-bezier(0.42, 0.24, 0.02, 1),
+                background-color 0.3s ease,
+                box-shadow 0.3s ease,
+                transform 0.5s cubic-bezier(0.42, 0.24, 0.02, 1);
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-#volume-value {
-    color: var(--volume-text-color);
+/* --- STATE: PILL ACTIVE --- */
+#taskbar.pill-active {
+    background-color: var(--menu-bg); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    backdrop-filter: var(--backdrop-blur) !important; 
+    -webkit-backdrop-filter: var(--backdrop-blur) !important;
 }
+
+/* --- LAYER 1: TASKBAR NORMAL CONTENT (ICONS & TRAY) --- */
+#taskbar-content-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+
+    /* [CRITICAL UPDATE] ANIMASI FADE IN (SAAT KEMBALI KE NORMAL) */
+    /* Delay 0.3s memberikan waktu agar Morphing hampir selesai dulu, baru ikon muncul */
+    /* Urutan: property duration timing-function delay */
+    transition: opacity 0.4s ease 0.3s, transform 0.4s ease 0.3s;
+}
+
+#taskbar.pill-active #taskbar-content-wrapper {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+
+    /* [CRITICAL UPDATE] ANIMASI FADE OUT (SAAT JADI PILL) */
+    /* Saat berubah jadi pill, ikon harus hilang INSTAN/CEPAT tanpa delay */
+    transition: opacity 0.1s ease 0s, transform 0.1s ease 0s;
+}
+
+/* --- LAYER 2: PILL CONTENT (Notification & Volume) --- */
+#pill-content-wrapper {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#taskbar.pill-active #pill-content-wrapper {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#notification-content,
+#volume-content {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.3s cubic-bezier(0.42, 0.24, 0.02, 1);
+    position: absolute;
+    width: 100%; height: 100%;
+    display: flex; align-items: center;
+    padding: 0 16px; 
+}
+
+.show-pill-content {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    pointer-events: auto !important;
+}
+
+/* Typography & Icons */
+#notification-title { color: var(--window-text); }
+#notification-message { color: var(--explorer-text-secondary); }
+#volume-value { color: var(--window-text); }
+
+.taskbar-icon {
+    padding: 8px; border-radius: 4px; cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.taskbar-icon:hover { background-color: var(--taskbar-hover-bg); }
+.taskbar-icon img, .taskbar-icon svg { height: 24px; width: 24px; pointer-events: none; }
+#taskbar-main-group, #system-tray { transition: opacity 0.2s ease-in-out; }
+
+
+/* --- TASKBAR POSITION MODES --- */
+.taskbar-bottom { bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 48px; flex-direction: row; padding: 0 0.5rem; }
+.taskbar-top { top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 48px; flex-direction: row; padding: 0 0.5rem; }
+.taskbar-left { top: 0; left: 0; bottom: 0; width: 60px; height: 100vh; flex-direction: column; padding: 0.5rem 0; transform: none; }
+.taskbar-right { top: 0; right: 0; bottom: 0; width: 60px; height: 100vh; flex-direction: column; padding: 0.5rem 0; transform: none; }
+
+.taskbar-left #taskbar-content-wrapper, .taskbar-right #taskbar-content-wrapper { flex-direction: column; width: 100%; justify-content: space-between; }
+.taskbar-left #taskbar-main-group, .taskbar-right #taskbar-main-group, .taskbar-left #system-tray, .taskbar-right #system-tray, .taskbar-left #app-icons, .taskbar-right #app-icons { flex-direction: column; width: 100%; gap: 8px; }
+
+
+/* --- ISLAND MODES --- */
+/* Single Island */
+#taskbar.island.single { border-radius: 12px; padding: 0 0.5rem; }
+#taskbar.island.single.taskbar-bottom { bottom: 0.5rem; width: auto; }
+#taskbar.island.single.taskbar-top { top: 0.5rem; width: auto; }
+#taskbar.island.single.taskbar-left { left: 0.5rem; height: auto; bottom: 0.5rem; top: 0.5rem; }
+#taskbar.island.single.taskbar-right { right: 0.5rem; height: auto; bottom: 0.5rem; top: 0.5rem; }
+
+/* Split Mode */
+#taskbar.island.split:not(.pill-active) {
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    pointer-events: none;
+}
+#taskbar.island.split:not(.pill-active) #taskbar-main-group,
+#taskbar.island.split:not(.pill-active) #system-tray {
+    background-color: var(--taskbar-bg);
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
+    border-radius: 12px;
+    padding: 0 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    pointer-events: auto;
+}
+#taskbar.island.split:not(.pill-active) #taskbar-content-wrapper { gap: 12px; }
+
+/* Space-Between Modifier */
+#taskbar.island.space-between.taskbar-bottom,
+#taskbar.island.space-between.taskbar-top { width: calc(100% - 1rem); }
+#taskbar.island.space-between.taskbar-left,
+#taskbar.island.space-between.taskbar-right { height: calc(100vh - 1rem); }
+
+/* ==================================================================================
+   BAGIAN 4: TASKBAR SYSTEM | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 5: NOTIFICATION CENTER & QUICK SETTINGS
+   ==================================================================================
+   Summary: Style untuk panel notifikasi yang muncul di kanan bawah/atas,
+   termasuk item notifikasi dan tombol quick settings (Wifi, BT, dll).
+*/
 
 #notification-center {
-    position: absolute;
+    position: fixed; /* FIXED agar relatif terhadap layar, bukan parent */
     bottom: 60px;
-    right: 8px;
+    right: 12px;
     width: 360px;
     max-height: 520px;
-    z-index: 1900;
+    z-index: 5005; /* HARUS LEBIH TINGGI dari Taskbar (5000) */
     color: var(--window-text);
     display: flex;
     flex-direction: column;
@@ -198,6 +520,18 @@ body.fancy-mode #pill-container {
     visibility: visible;
     opacity: 1;
     transform: translateY(0) scale(1);
+}
+
+/* Notification Items (The alerts) */
+.notification-area {
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--explorer-text-secondary);
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 80px;
 }
 
 .notification-item {
@@ -257,43 +591,13 @@ body.fancy-mode #pill-container {
         opacity: 0;
         transform: scale(0.95);
     }
-
     to {
         opacity: 1;
         transform: scale(1);
     }
 }
 
-body.fancy-mode #notification-center {
-    background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
-    backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-    -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-    box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-        0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-        0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
-    border-color: transparent;
-}
-
-.notification-area {
-    /* background-color: var(--quick-settings-bg); */
-    border-radius: 6px;
-    padding: 16px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--explorer-text-secondary);
-    flex-grow: 1;
-    overflow-y: auto;
-    min-height: 80px;
-}
-
+/* Quick Settings Buttons (Wifi, BT, dll) */
 .quick-settings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -333,251 +637,19 @@ body.fancy-mode #notification-center {
     cursor: pointer !important;
 }
 
-.desktop-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-}
+/* ==================================================================================
+   BAGIAN 5: NOTIFICATION CENTER & QUICK SETTINGS | END
+   ================================================================================== */
 
-.desktop-icon {
-            align-items: flex-start;
-            height: 120px;
-            margin-bottom: 8px;
-        }
-        
-        #desktop-icons .flex-col > .desktop-icon:last-child {
-            margin-bottom: 0;
-        }
 
-#desktop {
-    width: 100vw;
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: background-image: 0.3s ease-in-out;
-}
+/* ==================================================================================
+   BAGIAN 6: CONTEXT MENUS
+   ==================================================================================
+   Summary: Styling untuk menu klik kanan.
+   Terbagi menjadi #context-menu (Umum) dan .explorer-context-menu (File Explorer).
+*/
 
-#wallpaper-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    z-index: 0;
-    display: none;
-}
-
-.drag-over {
-    border: 4px dashed rgba(255, 255, 255, 0.7);
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
-}
-
-.desktop-icon {
-    color: white;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-    text-align: center;
-    padding: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100px;
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-    transition: background-color 0.2s ease-out;
-}
-
-.desktop-icon:hover,
-.desktop-icon:focus {
-    background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    outline: none;
-}
-
-.desktop-icon img,
-.desktop-icon svg {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 8px auto;
-}
-
-.app-iframe {
-    position: absolute;
-    display: none;
-    z-index: 1001;
-    overflow: hidden;
-    border: none;
-    background-color: transparent;
-}
-
-#taskbar {
-    background-color: var(--taskbar-bg);
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
-    color: var(--taskbar-text);
-    position: absolute;
-    display: flex;
-    align-items: center;
-    z-index: 500;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-#taskbar.notification-mode {
-    position: fixed !important;
-    z-index: 5000 !important;
-}
-
-#taskbar.notification-mode #taskbar-main-group,
-#taskbar.notification-mode #system-tray {
-    display: none !important;
-    opacity: 0 !important;
-}
-
-#notification-content,
-#volume-content,
-#taskbar-main-group,
-#system-tray {
-    transition: opacity 0.3s ease-in-out !important;
-}
-
-#volume-bar-fill {
-    transition: width 0.15s ease-out, background-color 0.3s ease;
-}
-
-#volume-icon svg {
-    transition: fill 0.3s ease, color 0.3s ease;
-}
-
-#volume-value {
-    transition: color 0.3s ease;
-}
-
-#notification-content {
-    display: none;
-    color: var(--window-text);
-}
-
-#notification-message {
-    color: var(--explorer-text-secondary);
-}
-
-.taskbar-icon {
-    padding: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.taskbar-icon:hover {
-    background-color: var(--taskbar-hover-bg);
-}
-
-.taskbar-icon img,
-.taskbar-icon svg {
-    height: 24px;
-    width: 24px;
-}
-
-.taskbar-icon svg {
-    pointer-events: none;
-}
-
-.taskbar-bottom {
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 48px;
-    flex-direction: row;
-    padding: 0 0.5rem;
-    justify-content: space-between;
-}
-
-.taskbar-top {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 48px;
-    flex-direction: row;
-    padding: 0 0.5rem;
-    justify-content: space-between;
-}
-
-.taskbar-left {
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 60px;
-    flex-direction: column;
-    padding: 0.5rem 0;
-    justify-content: space-between;
-}
-
-.taskbar-right {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 60px;
-    flex-direction: column;
-    padding: 0.5rem 0;
-    justify-content: space-between;
-}
-
-#taskbar.island {
-    width: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
-}
-
-#taskbar.island.taskbar-bottom {
-    bottom: 0.5rem;
-}
-
-#taskbar.island.taskbar-top {
-    top: 0.5rem;
-}
-
-#taskbar.island.single {
-    border-radius: 12px;
-    padding: 0.25rem 0.5rem;
-    gap: 0.5rem;
-}
-
-#taskbar.island.space-between {
-    width: calc(100% - 1rem);
-    left: 0.5rem;
-    right: 0.5rem;
-    transform: none;
-    justify-content: space-between;
-}
-
-#taskbar.island.split {
-    background-color: transparent;
-    backdrop-filter: none;
-    gap: 0.75rem;
-}
-
-#taskbar.island.split>div {
-    background-color: var(--taskbar-bg);
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    /* height: 40px; */
-}
-
+/* General Context Menu */
 #context-menu {
     --menu-text: var(--window-text, #212529);
     --menu-hover-bg: var(--taskbar-hover-bg, rgba(0, 0, 0, 0.08));
@@ -640,6 +712,7 @@ body.fancy-mode #notification-center {
     margin: 4px 0;
 }
 
+/* Explorer Specific Context Menu */
 .explorer-context-menu {
     position: absolute;
     z-index: 2100;
@@ -707,6 +780,7 @@ body.fancy-mode #notification-center {
     margin: 6px 0;
 }
 
+/* Submenus */
 .explorer-context-menu .submenu {
     display: none;
     position: absolute;
@@ -714,10 +788,43 @@ body.fancy-mode #notification-center {
     top: -6px;
 }
 
-.explorer-context-menu .context-menu-item:hover>.submenu {
+.explorer-context-menu .context-menu-item:hover > .submenu {
     display: block;
 }
 
+/* ==================================================================================
+   BAGIAN 6: CONTEXT MENUS | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 7: VOLUME & VISUALIZER
+   ==================================================================================
+   Summary: Styling untuk kontrol volume (icon, slider bar) dan overlay visualizer musik.
+*/
+
+/* Volume Styles */
+#volume-icon svg {
+    fill: var(--volume-icon-color);
+    color: var(--volume-icon-color);
+    transition: fill 0.3s ease, color 0.3s ease;
+}
+
+#volume-bar-fill {
+    background-color: var(--volume-bar-fill-color);
+    transition: width 0.15s ease-out, background-color 0.3s ease;
+}
+
+#volume-track {
+    background-color: var(--volume-bar-track-color);
+}
+
+#volume-value {
+    color: var(--volume-text-color);
+    transition: color 0.3s ease;
+}
+
+/* Audio Visualizer Overlay */
 #visualizer {
     position: absolute;
     z-index: 498;
@@ -726,8 +833,82 @@ body.fancy-mode #notification-center {
     transition: all 0.2s ease-out;
 }
 
+/* ==================================================================================
+   BAGIAN 7: VOLUME & VISUALIZER | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 8: APP CONTAINERS
+   ==================================================================================
+   Summary: Kelas utilitas untuk container aplikasi (Iframe) yang berjalan di OS.
+*/
+
+.app-iframe {
+    position: absolute;
+    display: none;
+    z-index: 1001;
+    overflow: hidden;
+    border: none;
+    background-color: transparent;
+}
+
+/* ==================================================================================
+   BAGIAN 8: APP CONTAINERS | END
+   ================================================================================== */
+
+
+/* ==================================================================================
+   BAGIAN 9: FANCY MODE (LIQUID GLASS EFFECTS)
+   ==================================================================================
+   Summary: Efek visual berat (Glassmorphism/Liquid) yang hanya aktif jika body memiliki
+   class 'fancy-mode'. Mengandung box-shadow dan backdrop-filter yang kompleks.
+*/
+
+/* 1. Fancy Effect untuk Taskbar & Pill (Saat Pill Aktif) */
+body.fancy-mode #taskbar.notification-mode,
+body.fancy-mode #pill-container {
+    background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+    backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
+    -webkit-backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
+    border-color: transparent;
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+        inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+        inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+        inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+        inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+        inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+        0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+        0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+}
+
+/* 2. Fancy Effect untuk Notification Center & Context Menus */
+body.fancy-mode #notification-center,
+body.fancy-mode #context-menu,
+body.fancy-mode .explorer-context-menu {
+    background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+    backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+    -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+    border-color: transparent;
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+        inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+        inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+        inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+        inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+        inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+        0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+        0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+}
+
+/* 3. Fancy Effect untuk Taskbar (Standard & Island) */
 body.fancy-mode #taskbar:not(.split),
-body.fancy-mode #taskbar.split>div {
+body.fancy-mode #taskbar.split > div {
     background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
     backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
     -webkit-backdrop-filter: blur(8px) url(#taskbar-liquid-glass-filter) saturate(var(--saturation));
@@ -744,50 +925,14 @@ body.fancy-mode #taskbar.split>div {
         0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
 }
 
-body.fancy-mode #context-menu,
-body.fancy-mode .explorer-context-menu {
-    background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
-    backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-    -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
-    box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-        0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
-        0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
-    border-color: transparent;
-}
-
+/* 4. Reset Taskbar Container saat mode Split + Fancy (Agar transparan) */
 body.fancy-mode #taskbar {
     background-color: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
 }
 
-.desktop-icon.hide-for-refresh {
-    transition: none !important;
-    opacity: 0 !important;
-    visibility: hidden;
-}
-
-.desktop-icon.animate-in {
-    visibility: visible;
-    animation: slide-fade-in 0.4s ease-out forwards;
-}
-
-@keyframes slide-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* ==================================================================================
+   BAGIAN 9: FANCY MODE (LIQUID GLASS EFFECTS) | END
+   ================================================================================== */
+   /* index-main.css | END */
