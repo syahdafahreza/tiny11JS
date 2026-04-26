@@ -70,22 +70,109 @@
             flex-direction: column;
             width: 100vw;
             height: 100vh;
+            border: 1px solid var(--window-border);
+            border-radius: 8px;
             background-color: var(--window-bg);
             transition: background-color 0.3s, box-shadow 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        /* "Fancy Mode" style with Liquid Glass effect */
         body.fancy-mode .app-window {
-            background-color: transparent;
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow:
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
         }
 
-        .content-wrapper {
-            flex: 1;
-            overflow: auto;
+        .window-header {
+            /* PENTING: Dibuat absolute dan Z-index tinggi */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10; /* Pastikan di atas semua konten utama */
+            
             display: flex;
-            position: relative;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+            padding: 3px 3px 3px 6px;
+            
+            /* Background transparan agar konten di bawah header terlihat, tapi tetap bisa di drag */
+            background-color: transparent; 
+        }
+        
+        /* Wrapper untuk konten utama di bawah header */
+        .content-wrapper {
+            position: absolute;
+            top: 35px; /* Sesuaikan dengan tinggi header (approx 35px) */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            overflow: auto;
+            display: flex; /* Untuk menampung player dan eq container */
+        }
+
+
+        .window-title-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .window-controls {
+            display: flex;
+        }
+
+        .window-control-btn {
+            width: 45px;
+            height: 29px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--window-text);
+            padding: 0; /* Pastikan padding diatur ulang agar tombol seragam */
+        }
+
+        .window-control-btn:hover {
+            background-color: var(--control-hover-bg);
+        }
+
+        /* PERBAIKAN: Gaya Tombol Tutup agar sama dengan referensi */
+        .close-window-btn {
+            font-size: 16px; /* Gunakan ukuran font yang lebih kecil dan seragam */
+            font-weight: 500; /* Font weight seragam */
+            line-height: 29px; /* Sesuaikan line-height dengan tinggi tombol */
+            padding-bottom: 0; /* Hapus padding-bottom */
+        }
+        /* Menggunakan SVG untuk simbol 'X' agar lebih seragam */
+        .close-window-btn svg {
+            width: 10px;
+            height: 10px;
+        }
+        /* PERBAIKAN: Hover tombol tutup */
+        .close-window-btn:hover {
+            background-color: var(--control-close-hover-bg);
+            color: var(--control-close-hover-text);
         }
 
         /* Container Utama Player (Fade Transition) */
@@ -347,9 +434,6 @@
 </head>
 
 <body>
-    <script>/* Anti-FOUC: Apply theme from URL params before render */
-    (function(){var p=new URLSearchParams(location.search);if(p.get('dark')==='1')document.body.classList.add('dark');if(p.get('fancy')==='1')document.body.classList.add('fancy-mode');})();
-    </script>
     <!-- Filter SVG untuk efek Liquid Glass -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1;">
         <svg>
@@ -367,7 +451,31 @@
     <audio id="audio-player" class="hidden"></audio>
 
     <div class="app-window">
-
+        <!-- Header (DIPOSISI ABSOLUT DI ATAS SEMUA KONTEN) -->
+        <div id="music-window-header" class="window-header">
+            <div class="window-title-container">
+                <img src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Icon" class="h-4 w-4">
+                <h2 id="window-main-title">Music Player</h2>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="window-control-btn" title="Minimize">
+                    <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <button id="maximize-btn" class="window-control-btn" title="Maximize">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <!-- PERBAIKAN: Menggunakan SVG untuk simbol 'X' agar seragam -->
+                <button id="close-btn" class="window-control-btn close-window-btn" title="Close">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 1L9 9M9 1L1 9"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
         <!-- CONTENT WRAPPER BARU -->
         <div class="content-wrapper">
@@ -513,11 +621,15 @@
     </div>
     <script>
         // Elemen DOM
-        // Elemen DOM
+        const header = document.getElementById('music-window-header');
+        const closeBtn = document.getElementById('close-btn');
+        const minimizeBtn = document.getElementById('minimize-btn');
+        const maximizeBtn = document.getElementById('maximize-btn');
         const musicPlayerContainer = document.getElementById('music-player-container'); // Player Utama
         const equalizerContainer = document.getElementById('equalizer-container'); // EQ Container
         const eqBtn = document.getElementById('eq-btn'); // Tombol EQ di Player
         const closeEqBtn = document.getElementById('close-eq-btn'); // Tombol X di EQ
+        const windowMainTitle = document.getElementById('window-main-title'); // Judul Utama
 
         const audioPlayer = document.getElementById('audio-player');
         const albumArt = document.getElementById('album-art');
@@ -549,7 +661,8 @@
         const resetBtn = document.getElementById('reset-eq-btn');
         const eqEnabledToggle = document.getElementById('eq-enabled-toggle');
 
-
+        // Variabel state
+        let isWindowDragging = false;
         let isAudioSetup = false;
         let currentAlbumArtUrl = null;
 
@@ -1112,7 +1225,21 @@
         musicPlayerContainer.addEventListener('drop', handleDrop);
 
 
-
+        // Logika window (Tidak Berubah)
+        header.addEventListener('mousedown', (e) => {
+            isWindowDragging = true;
+            parent.postMessage({ action: 'bring-music-to-front' }, '*');
+            e.preventDefault();
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (isWindowDragging) parent.postMessage({ action: 'drag-music-frame', dx: e.movementX, dy: e.movementY }, '*');
+        });
+        window.addEventListener('mouseup', () => isWindowDragging = false);
+        closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-music-frame' }, '*'));
+        minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-music-frame' }, '*'));
+        maximizeBtn.addEventListener('click', () => { 
+            parent.postMessage({ action: 'maximize-music-frame' }, '*');
+        });
 
         window.addEventListener('message', (event) => {
             const { action, isDark, value, isMaximized, borderRadius } = event.data;
@@ -1133,6 +1260,20 @@
             if (action === 'theme-change') document.body.classList.toggle('dark', isDark);
             if (action === 'toggle-fancy-mode') document.body.classList.toggle('fancy-mode', value);
 
+            if (action === 'set-maximized-state') {
+                if (isMaximized) {
+                    maximizeBtn.title = "Restore Down";
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
+                    windowElement.style.borderRadius = borderRadius || '0'; 
+                    header.style.cursor = 'default';
+                    isWindowDragging = false;
+                } else {
+                    maximizeBtn.title = "Maximize";
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
+                    windowElement.style.borderRadius = '8px';
+                    header.style.cursor = 'move';
+                }
+            }
         });
 
         // --- Event Listener Transisi View BARU ---

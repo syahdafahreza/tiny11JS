@@ -935,4 +935,189 @@ body.fancy-mode #taskbar {
 /* ==================================================================================
    BAGIAN 9: FANCY MODE (LIQUID GLASS EFFECTS) | END
    ================================================================================== */
-   /* index-main.css | END */
+   /* index-main.css | END *//* =========================================
+   WINBOX OVERRIDES (WINDOWS 11 STYLE)
+   ========================================= */
+.winbox {
+  border-radius: 8px; /* Rounded corners ala Win 11 */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  backdrop-filter: blur(20px); /* Efek Mica / Acrylic jika memungkinkan */
+  /* Pastikan origin transform ada di tengah untuk animasi yang rapi */
+  transform-origin: center center;
+  /* Tambahkan properti will-change untuk performa animasi yang lebih smooth */
+  will-change: transform, opacity;
+}
+
+.winbox .wb-header {
+  display: flex;
+  flex-direction: row-reverse; /* control tetap di kanan, drag area mengisi sisa */
+  align-items: center;
+}
+
+.winbox .wb-drag {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  overflow: hidden;
+}
+
+.winbox .wb-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  margin: 0 6px 0 0;
+  float: none;
+  background-size: contain;
+  background-position: center;
+}
+
+.winbox .wb-title {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.winbox .wb-control {
+  float: none;
+  display: flex;
+  align-items: center;
+}
+
+/* -----------------------------------------
+   KUSTOMISASI ICON CONTROL
+   Menggunakan Inline SVG agar 100% Lokal
+   ----------------------------------------- */
+.winbox .wb-control {
+  display: flex;
+}
+
+.winbox .wb-control * {
+  width: 45px !important;
+  background-size: 10px auto !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  opacity: 1 !important; /* Matikan opacity bawaan WinBox */
+  transition: background-color 0.15s;
+}
+
+/* Tombol Minimize Kustom kita */
+.wb-custom-min {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='10' height='2' viewBox='0 0 10 2' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 1H10V2H0V1Z' fill='%23ffffff' /%3E%3C/svg%3E") !important;
+}
+
+/* Icon Maximize */
+.winbox .wb-max {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 1V9H1V1H9ZM10 0H0V10H10V0Z' fill='%23ffffff' /%3E%3C/svg%3E") !important;
+}
+
+/* Icon Close */
+.winbox .wb-close {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1L9 9M9 1L1 9'/%3E%3C/svg%3E") !important;
+}
+
+/* --- LIGHT THEME (DEFAULT) --- */
+.win11-light {
+  background: #f3f3f3;
+}
+.win11-light .wb-title {
+  color: #1a1a1a;
+}
+.win11-light .wb-body {
+  background: transparent;
+  color: #1a1a1a;
+}
+.win11-light .wb-control * {
+  filter: invert(1);
+}
+.win11-light .wb-control *:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.win11-light .wb-close:hover {
+  background-color: #e81123 !important;
+  filter: invert(0) !important;
+}
+
+/* --- DARK THEME --- */
+.win11-dark {
+  background: #202020;
+  border: 1px solid #333333;
+}
+.win11-dark .wb-title {
+  color: #ffffff;
+}
+.win11-dark .wb-body {
+  background: transparent;
+  color: #ffffff;
+}
+.win11-dark .wb-control * {
+  filter: invert(0);
+}
+.win11-dark .wb-control *:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.win11-dark .wb-close:hover {
+  background-color: #e81123 !important;
+  filter: invert(0) !important;
+}
+
+/* -----------------------------------------
+   FANCY MODE UNTUK WINBOX
+   Menerapkan Liquid Glass Effect ke Winbox Wrapper
+   ----------------------------------------- */
+body.fancy-mode .winbox {
+    background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+    backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+    -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+        inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+        inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+        inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+        inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+        inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+        0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+        0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+    border: none; /* Hilangkan border default winbox karena shadow sudah ada */
+}
+
+/* Pastikan title text tidak terpengaruh filter aneh */
+body.fancy-mode .win11-light .wb-title, 
+body.fancy-mode .win11-dark .wb-title {
+    opacity: 1;
+}
+
+/* iframe background tembus pandang */
+body.fancy-mode .winbox .wb-body {
+    background: transparent !important;
+}
+
+/* -----------------------------------------
+   NATIVE MINIMIZE KE TASKBAR
+   Sembunyikan mode strip bawaan WinBox
+   ----------------------------------------- */
+.winbox {
+    /* Tambahkan opacity dan transform ke transition bawaan WinBox. Hindari !important yang mengunci saat dragging */
+    transition: width 0.3s, height 0.3s, left 0.3s, top 0.3s, opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+/* Pastikan saat dragging (WinBox menambahkan class wb-lock di body), transition dimatikan agar tidak lag/glitchy */
+body.wb-lock .winbox {
+    transition: none !important;
+}
+
+.winbox.min {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    /* Efek visual tambahan saat menghilang ke taskbar */
+    transform: translateY(10px) scale(0.95) !important;
+}

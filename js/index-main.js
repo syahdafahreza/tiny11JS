@@ -45,11 +45,10 @@ const videoPlayerIcon = document.getElementById("video-player-icon");
 const thisPcIcon = document.getElementById("this-pc-icon");
 
 // --- App Frames (Windows) ---
-const controlPanelFrame = document.getElementById("control-panel-frame");
-const musicPlayerFrame = document.getElementById("music-player-frame");
-const live2dWallpaperFrame = document.getElementById("live2d-wallpaper-frame");
-const videoPlayerFrame = document.getElementById("video-player-frame");
-const fileExplorerFrame = document.getElementById("file-explorer-frame");
+let musicPlayerWinBox = null;
+let live2dWallpaperWinBox = null;
+let videoPlayerWinBox = null;
+let fileExplorerWinBox = null;
 
 // --- Taskbar Elements ---
 const taskbar = document.getElementById("taskbar");
@@ -99,6 +98,7 @@ const visualizerCtx = visualizerCanvas ? visualizerCanvas.getContext("2d") : nul
 // --- Global State Variables (Status Aplikasi) ---
 let isMusicPlayerOpen = false;
 let isControlPanelOpen = false;
+let controlPanelWinBox = null;
 let isLive2dOpen = false;
 let isVideoPlayerOpen = false; 
 let isExplorerOpen = false; 
@@ -219,391 +219,153 @@ function setupWallpaperDragDrop() {
 // ==================================================================================
 // BAGIAN 3: SISTEM WINDOW MANAGEMENT (MANAJEMEN JENDELA)
 // ==================================================================================
-// Summary: Mengatur pembukaan, penutupan, minimize, maximize, dan restore aplikasi.
-// Juga mengatur urutan tumpukan (z-index) agar aplikasi aktif berada di depan.
 
 function openApp(appName) {
-    let appFrame, taskbarIcon;
-    
-    // Mapping App Name ke Element
+    let winBoxInstance, taskbarIcon, title, icon, url, width, height, isDark = document.body.classList.contains("dark");
+    const taskbar = document.getElementById('taskbar');
+    const bounds = {
+        top: taskbar?.classList.contains('taskbar-top') ? 48 : 0,
+        bottom: taskbar?.classList.contains('taskbar-bottom') ? 48 : 0,
+        left: taskbar?.classList.contains('taskbar-left') ? 48 : 0,
+        right: taskbar?.classList.contains('taskbar-right') ? 48 : 0
+    };
+
     if (appName === "music") {
-        appFrame = musicPlayerFrame;
         taskbarIcon = taskbarMusicIcon;
-        if (isMusicPlayerOpen) { bringToFront(appName); return; }
+        if (isMusicPlayerOpen) { if (musicPlayerWinBox) { if (musicPlayerWinBox.min) musicPlayerWinBox.restore(); musicPlayerWinBox.focus(); } return; }
         isMusicPlayerOpen = true;
+        title = "Music Player"; icon = "https://img.icons8.com/fluency/48/000000/apple-music.png"; url = "music_player.html"; width = "420px"; height = "500px";
     } else if (appName === "cp") {
-        appFrame = controlPanelFrame;
         taskbarIcon = taskbarControlPanelIcon;
-        if (isControlPanelOpen) { bringToFront(appName); return; }
+        if (isControlPanelOpen) { if (controlPanelWinBox) { if (controlPanelWinBox.min) controlPanelWinBox.restore(); controlPanelWinBox.focus(); } return; }
         isControlPanelOpen = true;
+        title = "Control Panel"; icon = "https://img.icons8.com/fluency/48/000000/control-panel.png"; url = "control_panel.html"; width = "550px"; height = "550px";
     } else if (appName === "live2d") {
-        appFrame = live2dWallpaperFrame;
         taskbarIcon = taskbarLive2dIcon;
-        if (isLive2dOpen) { bringToFront(appName); return; }
+        if (isLive2dOpen) { if (live2dWallpaperWinBox) { if (live2dWallpaperWinBox.min) live2dWallpaperWinBox.restore(); live2dWallpaperWinBox.focus(); } return; }
         isLive2dOpen = true;
+        title = "Live2D Wallpaper"; icon = "img/live2d_icon.png"; url = "live2d_wallpaper.html"; width = "400px"; height = "255px";
     } else if (appName === "video") {
-        appFrame = videoPlayerFrame;
         taskbarIcon = taskbarVideoPlayerIcon;
-        if (isVideoPlayerOpen) { bringToFront(appName); return; }
+        if (isVideoPlayerOpen) { if (videoPlayerWinBox) { if (videoPlayerWinBox.min) videoPlayerWinBox.restore(); videoPlayerWinBox.focus(); } return; }
         isVideoPlayerOpen = true;
+        title = "Video Player"; icon = "img/films-and-tv_171100.png"; url = "video_player.html"; width = "800px"; height = "550px";
     } else if (appName === "explorer") {
-        appFrame = fileExplorerFrame;
-        taskbarIcon = taskbarExplorerIcon; 
-        if (isExplorerOpen) { bringToFront(appName); return; }
+        taskbarIcon = taskbarExplorerIcon;
+        if (isExplorerOpen) { if (fileExplorerWinBox) { if (fileExplorerWinBox.min) fileExplorerWinBox.restore(); fileExplorerWinBox.focus(); } return; }
         isExplorerOpen = true;
-    }
-
-    if (!appFrame) return; 
-
-    // Handle Start Menu khusus
-    if (appName === "startMenu") {
-        appFrame.style.display = "flex";
-    } else {
-        appFrame.style.display = "block";
-    }
-
-    // Reset styles
-    appFrame.style.transition = "none";
-    appFrame.style.transform = "scale(1)";
-    appFrame.style.opacity = "1";
-
-    bringToFront(appName);
-
-    // Khusus Music Player (Visualizer)
-    if (appName === "music" && visualizerCanvas) {
-        visualizerCanvas.style.display = "block";
-        drawVisualizer();
-    }
-    
-    updateTaskbarIconsVisibility();
-    setTimeout(positionVisualizer, 50);
-}
-
-function closeApp(appName) {
-    let appFrame, taskbarIcon;
-    
-    if (appName === "music") {
-        isMusicPlayerOpen = false;
-        appFrame = musicPlayerFrame;
-        taskbarIcon = taskbarMusicIcon;
-        if (visualizerCanvas) visualizerCanvas.style.display = "none";
-        visualizerData = null;
-        if (appFrame && appFrame.contentWindow) appFrame.contentWindow.postMessage({ action: "stop" }, "*");
-    } else if (appName === "cp") {
-        isControlPanelOpen = false;
-        appFrame = controlPanelFrame;
-        taskbarIcon = taskbarControlPanelIcon;
-    } else if (appName === "live2d") {
-        isLive2dOpen = false;
-        appFrame = live2dWallpaperFrame;
-        taskbarIcon = taskbarLive2dIcon;
-    } else if (appName === "video") {
-        isVideoPlayerOpen = false;
-        appFrame = videoPlayerFrame;
-        taskbarIcon = taskbarVideoPlayerIcon;
-        if (appFrame && appFrame.contentWindow) appFrame.contentWindow.postMessage({ action: "stop" }, "*");
-    } else if (appName === "explorer") {
-        isExplorerOpen = false;
-        appFrame = fileExplorerFrame;
-        taskbarIcon = taskbarExplorerIcon;
-    }
-
-    if (!appFrame) return; 
-
-    appFrame.style.display = "none";
-    setTimeout(positionVisualizer, 50);
-    updateTaskbarIconsVisibility(); 
-}
-
-function minimizeApp(appName) {
-    let appFrame, lastRect, taskbarIcon;
-    
-    // Tentukan elemen berdasarkan appName
-    if (appName === "music") {
-        appFrame = musicPlayerFrame;
-        taskbarIcon = taskbarMusicIcon;
-        if (appFrame) lastMusicPlayerRect = appFrame.getBoundingClientRect();
-        lastRect = lastMusicPlayerRect;
-    } else if (appName === "cp") {
-        appFrame = controlPanelFrame;
-        taskbarIcon = taskbarControlPanelIcon;
-        if (appFrame) lastControlPanelRect = appFrame.getBoundingClientRect();
-        lastRect = lastControlPanelRect;
-    } else if (appName === "live2d") {
-        appFrame = live2dWallpaperFrame;
-        taskbarIcon = taskbarLive2dIcon;
-        if (appFrame) lastLive2dRect = appFrame.getBoundingClientRect();
-        lastRect = lastLive2dRect;
-    } else if (appName === "video") {
-        appFrame = videoPlayerFrame;
-        taskbarIcon = taskbarVideoPlayerIcon;
-        if (appFrame) lastVideoPlayerRect = appFrame.getBoundingClientRect();
-        lastRect = lastVideoPlayerRect;
-    } else if (appName === "explorer") {
-        appFrame = fileExplorerFrame;
-        taskbarIcon = taskbarExplorerIcon;
-        if (appFrame) lastExplorerRect = appFrame.getBoundingClientRect();
-        lastRect = lastExplorerRect;
-    }
-
-    if (!appFrame || !taskbarIcon || !lastRect) return; 
-    if (appFrame.style.display === "none" || appFrame.style.opacity === "0") return;
-
-    // Animasi menuju icon di taskbar
-    const targetRect = taskbarIcon.getBoundingClientRect();
-    const translateX = targetRect.left - lastRect.left;
-    const translateY = targetRect.top - lastRect.top;
-
-    appFrame.style.transition = "transform 0.3s ease-in, opacity 0.3s ease-in";
-    appFrame.style.transformOrigin = "top left";
-    appFrame.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1)`;
-    appFrame.style.opacity = "0";
-
-    setTimeout(() => {
-        appFrame.style.display = "none";
-    }, 300);
-}
-
-function restoreApp(appName) {
-    let appFrame, lastRect, taskbarIcon;
-    
-    if (appName === "music") {
-        appFrame = musicPlayerFrame;
-        lastRect = lastMusicPlayerRect;
-        taskbarIcon = taskbarMusicIcon;
-    } else if (appName === "cp") {
-        appFrame = controlPanelFrame;
-        lastRect = lastControlPanelRect;
-        taskbarIcon = taskbarControlPanelIcon;
-    } else if (appName === "live2d") {
-        appFrame = live2dWallpaperFrame;
-        lastRect = lastLive2dRect;
-        taskbarIcon = taskbarLive2dIcon;
-    } else if (appName === "video") {
-        appFrame = videoPlayerFrame;
-        lastRect = lastVideoPlayerRect;
-        taskbarIcon = taskbarVideoPlayerIcon;
-    } else if (appName === "explorer") {
-        appFrame = fileExplorerFrame;
-        lastRect = lastExplorerRect;
-        taskbarIcon = taskbarExplorerIcon;
-    }
-
-    if (!appFrame || !lastRect || !taskbarIcon) return; 
-
-    // Hitung posisi awal animasi (dari taskbar icon)
-    const targetRect = taskbarIcon.getBoundingClientRect();
-    const startX = targetRect.left - lastRect.left;
-    const startY = targetRect.top - lastRect.top;
-
-    appFrame.style.transition = "none";
-    appFrame.style.transform = `translate(${startX}px, ${startY}px) scale(0.1)`;
-    appFrame.style.opacity = "0";
-    appFrame.style.display = "block";
-
-    bringToFront(appName);
-
-    // Animasi kembali ke ukuran normal
-    setTimeout(() => {
-        appFrame.style.transition = "transform 0.3s ease-out, opacity 0.3s ease-out";
-        appFrame.style.transform = "translate(0, 0) scale(1)";
-        appFrame.style.opacity = "1";
-    }, 10);
-}
-
-function maximizeApp(appName) {
-    let appFrame, originalRectStorage;
-    if (!taskbar) return;
-    
-    const taskbarHeight = taskbar.offsetHeight;
-    const taskbarWidth = taskbar.offsetWidth;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const MAXIMIZED_RADIUS = "8px";
-    const WINDOW_GAP = 8; 
-
-    // Tentukan frame dan penyimpanan rect asli
-    if (appName === "music") {
-        appFrame = musicPlayerFrame;
-        originalRectStorage = originalMusicPlayerRect;
-    } else if (appName === "cp") {
-        appFrame = controlPanelFrame;
-        originalRectStorage = originalControlPanelRect;
-    } else if (appName === "live2d") {
-        appFrame = live2dWallpaperFrame;
-        originalRectStorage = originalLive2dRect;
-    } else if (appName === "video") {
-        appFrame = videoPlayerFrame;
-        originalRectStorage = originalVideoPlayerRect;
-    } else if (appName === "explorer") {
-        appFrame = fileExplorerFrame;
-        originalRectStorage = originalExplorerRect;
+        title = "File Explorer"; icon = "https://img.icons8.com/color/48/000000/folder-invoices--v1.png"; url = "file_explorer.html"; width = "850px"; height = "600px";
     } else {
         return;
     }
 
-    if (!appFrame || appFrame.style.display === "none") return; 
-
-    // Jika belum maximized, lakukan maximize
-    if (!appFrame.dataset.isMaximized || appFrame.dataset.isMaximized === "false") {
-        const rect = appFrame.getBoundingClientRect();
-
-        // Simpan posisi sebelum dimaximize
-        if (!originalRectStorage || rect.width > 100) {
-            if (appName === "music") originalMusicPlayerRect = rect;
-            else if (appName === "cp") originalControlPanelRect = rect;
-            else if (appName === "live2d") originalLive2dRect = rect;
-            else if (appName === "video") originalVideoPlayerRect = rect; 
-            else if (appName === "explorer") originalExplorerRect = rect;
+    const isFancy = document.body.classList.contains("fancy-mode");
+    const stateParams = `?dark=${isDark ? 1 : 0}&fancy=${isFancy ? 1 : 0}`;
+    const winBoxConf = {
+        title: title,
+        icon: icon,
+        url: url + stateParams,
+        class: [isDark ? "win11-dark" : "win11-light", "no-full"],
+        top: bounds.top, bottom: bounds.bottom, left: bounds.left, right: bounds.right,
+        width: width, height: height, x: "center", y: "center",
+        onclose: function() {
+            if (appName === "music") { musicPlayerWinBox = null; isMusicPlayerOpen = false; if (visualizerCanvas) visualizerCanvas.style.display = "none"; }
+            else if (appName === "cp") { controlPanelWinBox = null; isControlPanelOpen = false; }
+            else if (appName === "live2d") { live2dWallpaperWinBox = null; isLive2dOpen = false; }
+            else if (appName === "video") { videoPlayerWinBox = null; isVideoPlayerOpen = false; }
+            else if (appName === "explorer") { fileExplorerWinBox = null; isExplorerOpen = false; }
+            updateTaskbarIconsVisibility();
         }
+    };
 
-        let top = WINDOW_GAP, left = WINDOW_GAP;
-        let width = windowWidth - 2 * WINDOW_GAP;
-        let height = windowHeight - 2 * WINDOW_GAP;
-        let borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
+    if (appName === "music") musicPlayerWinBox = new WinBox(winBoxConf);
+    else if (appName === "cp") controlPanelWinBox = new WinBox(winBoxConf);
+    else if (appName === "live2d") live2dWallpaperWinBox = new WinBox(winBoxConf);
+    else if (appName === "video") videoPlayerWinBox = new WinBox(winBoxConf);
+    else if (appName === "explorer") fileExplorerWinBox = new WinBox(winBoxConf);
 
-        const isTaskbarIsland = currentTaskbarStyle.startsWith("island");
-
-        // Hitung area kerja yang tersedia berdasarkan posisi taskbar
-        if (isTaskbarIsland) {
-            const taskbarRect = taskbar.getBoundingClientRect();
-            if (currentTaskbarPosition === "top") {
-                top = taskbarRect.bottom + WINDOW_GAP;
-                height = windowHeight - top - WINDOW_GAP;
-                borderRadius = `0 0 ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
-            } else if (currentTaskbarPosition === "bottom") {
-                height = (taskbarRect.top - WINDOW_GAP) - top;
-                borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS}`;
-            } else if (currentTaskbarPosition === "left") {
-                left = taskbarRect.right + WINDOW_GAP;
-                width = windowWidth - left - WINDOW_GAP;
-                borderRadius = `${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} ${MAXIMIZED_RADIUS} 0`;
-            } else if (currentTaskbarPosition === "right") {
-                width = (taskbarRect.left - WINDOW_GAP) - left;
-                borderRadius = `${MAXIMIZED_RADIUS} 0 0 ${MAXIMIZED_RADIUS}`;
-            }
-        } else {
-            // Taskbar Normal
-            left = 0; top = 0; width = windowWidth; height = windowHeight;
-            borderRadius = "0"; 
-
-            if (currentTaskbarPosition === "top") {
-                top = taskbarHeight;
-                height = windowHeight - taskbarHeight;
-            } else if (currentTaskbarPosition === "bottom") {
-                height = windowHeight - taskbarHeight;
-            } else if (currentTaskbarPosition === "left") {
-                left = taskbarWidth;
-                width = windowWidth - taskbarWidth;
-            } else if (currentTaskbarPosition === "right") {
-                width = windowWidth - taskbarWidth;
-            }
+    // Sync current theme & fancy state to the newly loaded iframe
+    const createdWb = (appName === "music") ? musicPlayerWinBox
+        : (appName === "cp") ? controlPanelWinBox
+        : (appName === "live2d") ? live2dWallpaperWinBox
+        : (appName === "video") ? videoPlayerWinBox
+        : fileExplorerWinBox;
+    if (createdWb) {
+        const iframe = createdWb.body.querySelector('iframe');
+        if (iframe) {
+            iframe.addEventListener('load', function() {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ action: "theme-change", isDark: isDark }, "*");
+                    iframe.contentWindow.postMessage({ action: "toggle-fancy-mode", value: isFancy }, "*");
+                }
+            }, { once: true });
         }
+    }
 
-        if (currentTaskbarStyle === 'default' && currentTaskbarPosition === 'bottom') {
-            height -= 1; // Buffer
-        }
+    updateTaskbarIconsVisibility();
+    if (appName === "music" && visualizerCanvas) {
+        visualizerCanvas.style.display = "block";
+        drawVisualizer();
+        setTimeout(positionVisualizer, 50);
+    }
+}
 
-        // Terapkan styles
-        appFrame.style.transition = "all 0.3s ease-in-out";
-        appFrame.style.left = `${left}px`;
-        appFrame.style.top = `${top}px`;
-        appFrame.style.width = `${width}px`;
-        appFrame.style.height = `${height}px`;
-        appFrame.style.borderRadius = borderRadius;
-        appFrame.style.transform = "none";
+function closeApp(appName) {
+    if (appName === "music" && musicPlayerWinBox) musicPlayerWinBox.close();
+    else if (appName === "cp" && controlPanelWinBox) controlPanelWinBox.close();
+    else if (appName === "live2d" && live2dWallpaperWinBox) live2dWallpaperWinBox.close();
+    else if (appName === "video" && videoPlayerWinBox) videoPlayerWinBox.close();
+    else if (appName === "explorer" && fileExplorerWinBox) fileExplorerWinBox.close();
+}
 
-        // Set state
-        appFrame.dataset.isMaximized = "true";
-        if (appFrame.contentWindow) appFrame.contentWindow.postMessage(
-            { action: "set-maximized-state", isMaximized: true, borderRadius: borderRadius }, "*"
-        );
+function minimizeApp(appName) {
+    let wb = null;
+    if (appName === "music") wb = musicPlayerWinBox;
+    else if (appName === "cp") wb = controlPanelWinBox;
+    else if (appName === "live2d") wb = live2dWallpaperWinBox;
+    else if (appName === "video") wb = videoPlayerWinBox;
+    else if (appName === "explorer") wb = fileExplorerWinBox;
+    if (wb && !wb.min) wb.minimize();
+}
 
-        // Update global flags
-        if (appName === "music") isMusicPlayerMaximized = true;
-        else if (appName === "cp") isControlPanelMaximized = true;
-        else if (appName === "live2d") isLive2dMaximized = true;
-        else if (appName === "video") isVideoPlayerMaximized = true; 
-        else if (appName === "explorer") isExplorerMaximized = true;
-    } else {
-        // Jika sudah maximized, lakukan restore
-        restoreMaximizedApp(appName);
+function restoreApp(appName) {
+    let wb = null;
+    if (appName === "music") wb = musicPlayerWinBox;
+    else if (appName === "cp") wb = controlPanelWinBox;
+    else if (appName === "live2d") wb = live2dWallpaperWinBox;
+    else if (appName === "video") wb = videoPlayerWinBox;
+    else if (appName === "explorer") wb = fileExplorerWinBox;
+    if (wb) {
+        if (wb.min) wb.restore();
+        wb.focus();
+    }
+}
+
+function maximizeApp(appName) {
+    let wb = null;
+    if (appName === "music") wb = musicPlayerWinBox;
+    else if (appName === "cp") wb = controlPanelWinBox;
+    else if (appName === "live2d") wb = live2dWallpaperWinBox;
+    else if (appName === "video") wb = videoPlayerWinBox;
+    else if (appName === "explorer") wb = fileExplorerWinBox;
+    if (wb) {
+        wb.max ? wb.restore() : wb.maximize();
     }
 }
 
 function restoreMaximizedApp(appName) {
-    let appFrame, originalRect;
-
-    if (appName === "music") { appFrame = musicPlayerFrame; originalRect = originalMusicPlayerRect; } 
-    else if (appName === "cp") { appFrame = controlPanelFrame; originalRect = originalControlPanelRect; } 
-    else if (appName === "live2d") { appFrame = live2dWallpaperFrame; originalRect = originalLive2dRect; } 
-    else if (appName === "video") { appFrame = videoPlayerFrame; originalRect = originalVideoPlayerRect; } 
-    else if (appName === "explorer") { appFrame = fileExplorerFrame; originalRect = originalExplorerRect; } 
-    else { return; }
-
-    if (!appFrame) return; 
-
-    if (!originalRect) {
-        // Fallback jika tidak ada data posisi original
-        console.warn(`[${appName}] Original size data not found. Using default restore position.`);
-        appFrame.style.transition = "all 0.3s ease-in-out";
-        appFrame.style.left = "15%";
-        appFrame.style.top = "15%";
-        
-        let defaultWidth = "800px", defaultHeight = "500px";
-        if (appName === "music") { defaultWidth = "420px"; defaultHeight = "500px"; }
-        else if (appName === "cp") { defaultWidth = "550px"; defaultHeight = "550px"; }
-        else if (appName === "video") { defaultWidth = "640px"; defaultHeight = "500px"; }
-        
-        appFrame.style.width = defaultWidth;
-        appFrame.style.height = defaultHeight;
-    } else {
-        // Kembalikan ke posisi semula
-        appFrame.style.transition = "all 0.3s ease-in-out";
-        appFrame.style.left = `${originalRect.left}px`;
-        appFrame.style.top = `${originalRect.top}px`;
-        appFrame.style.width = `${originalRect.width}px`;
-        appFrame.style.height = `${originalRect.height}px`;
-    }
-    
-    // Bersihkan transition setelah animasi selesai
-    setTimeout(() => {
-        appFrame.style.transition = 'none';
-        appFrame.offsetHeight; 
-    }, 350); 
-
-    // Reset state
-    appFrame.dataset.isMaximized = "false";
-    if (appFrame.contentWindow) appFrame.contentWindow.postMessage(
-        { action: "set-maximized-state", isMaximized: false }, "*"
-    );
-
-    if (appName === "music") isMusicPlayerMaximized = false;
-    else if (appName === "cp") isControlPanelMaximized = false;
-    else if (appName === "live2d") isLive2dMaximized = false;
-    else if (appName === "video") isVideoPlayerMaximized = false; 
-    else if (appName === "explorer") isExplorerMaximized = false;
+    restoreApp(appName);
 }
 
 function bringToFront(appName) {
-    const zIndexApp = 1002;
-    const zIndexOther = 1001;
-
-    // Reset semua ke level bawah
-    if (musicPlayerFrame) musicPlayerFrame.style.zIndex = zIndexOther;
-    if (controlPanelFrame) controlPanelFrame.style.zIndex = zIndexOther;
-    if (live2dWallpaperFrame) live2dWallpaperFrame.style.zIndex = zIndexOther;
-    if (videoPlayerFrame) videoPlayerFrame.style.zIndex = zIndexOther; 
-    if (fileExplorerFrame) fileExplorerFrame.style.zIndex = zIndexOther; 
-
-    // Angkat aplikasi target
-    if (appName === "music" && musicPlayerFrame) musicPlayerFrame.style.zIndex = zIndexApp;
-    else if (appName === "cp" && controlPanelFrame) controlPanelFrame.style.zIndex = zIndexApp;
-    else if (appName === "live2d" && live2dWallpaperFrame) live2dWallpaperFrame.style.zIndex = zIndexApp;
-    else if (appName === "video" && videoPlayerFrame) videoPlayerFrame.style.zIndex = zIndexApp;
-    else if (appName === "explorer" && fileExplorerFrame) fileExplorerFrame.style.zIndex = zIndexApp;
+    let wb = null;
+    if (appName === "music") wb = musicPlayerWinBox;
+    else if (appName === "cp") wb = controlPanelWinBox;
+    else if (appName === "live2d") wb = live2dWallpaperWinBox;
+    else if (appName === "video") wb = videoPlayerWinBox;
+    else if (appName === "explorer") wb = fileExplorerWinBox;
+    if (wb) wb.focus();
 }
-
 // ==================================================================================
 // BAGIAN 3: SISTEM WINDOW MANAGEMENT (MANAJEMEN JENDELA) | END
 // ==================================================================================
@@ -1213,7 +975,7 @@ function showDesktopContextMenu(e) {
 }
 
 function showExplorerContextMenu(data, frameRect) {
-    if (!startMenu || !contextMenu || !explorerGeneralMenu || !explorerItemMenu || !fileExplorerFrame) return; 
+    if (!startMenu || !contextMenu || !explorerGeneralMenu || !explorerItemMenu || !fileExplorerWinBox) return; 
 
     // Hide menus lain
     startMenu.classList.remove("show");
@@ -1268,7 +1030,7 @@ function showExplorerContextMenu(data, frameRect) {
 }
 
 function setupExplorerContextMenuActions() {
-    if (!explorerGeneralMenu || !explorerItemMenu || !fileExplorerFrame) return; 
+    if (!explorerGeneralMenu || !explorerItemMenu) return; 
     const menus = [explorerGeneralMenu, explorerItemMenu];
     
     menus.forEach((menu) => {
@@ -1276,7 +1038,8 @@ function setupExplorerContextMenuActions() {
             const item = e.target.closest("[data-command]");
             if (item && !item.classList.contains("disabled")) {
                 const command = item.dataset.command;
-                if (fileExplorerFrame.contentWindow) fileExplorerFrame.contentWindow.postMessage(
+                const explorerIframe = fileExplorerWinBox ? fileExplorerWinBox.body.querySelector('iframe') : null;
+                if (explorerIframe && explorerIframe.contentWindow) explorerIframe.contentWindow.postMessage(
                     { action: "execute-explorer-command", value: command }, "*"
                 );
                 
@@ -1383,23 +1146,23 @@ function setupAppInteractions() {
     // Taskbar Icon Clicks (Toggle Minimize/Restore)
     if (taskbarExplorerIcon) taskbarExplorerIcon.addEventListener("click", () => {
         if (!isExplorerOpen) openApp("explorer");
-        else (fileExplorerFrame.style.opacity === "1" && fileExplorerFrame.style.display !== "none") ? minimizeApp("explorer") : restoreApp("explorer");
+        else (fileExplorerWinBox && !fileExplorerWinBox.min) ? minimizeApp("explorer") : restoreApp("explorer");
     });
     if (taskbarControlPanelIcon) taskbarControlPanelIcon.addEventListener("click", () => {
-        if (!isControlPanelOpen) return;
-        (controlPanelFrame.style.opacity === "1" && controlPanelFrame.style.display !== "none") ? minimizeApp("cp") : restoreApp("cp");
+        if (!isControlPanelOpen) { openApp("cp"); return; }
+        (controlPanelWinBox && !controlPanelWinBox.min) ? minimizeApp("cp") : restoreApp("cp");
     });
     if (taskbarMusicIcon) taskbarMusicIcon.addEventListener("click", () => {
         if (!isMusicPlayerOpen) return;
-        (musicPlayerFrame.style.opacity === "1" && musicPlayerFrame.style.display !== "none") ? minimizeApp("music") : restoreApp("music");
+        (musicPlayerWinBox && !musicPlayerWinBox.min) ? minimizeApp("music") : restoreApp("music");
     });
     if (taskbarLive2dIcon) taskbarLive2dIcon.addEventListener("click", () => {
         if (!isLive2dOpen) return;
-        (live2dWallpaperFrame.style.opacity === "1" && live2dWallpaperFrame.style.display !== "none") ? minimizeApp("live2d") : restoreApp("live2d");
+        (live2dWallpaperWinBox && !live2dWallpaperWinBox.min) ? minimizeApp("live2d") : restoreApp("live2d");
     });
     if (taskbarVideoPlayerIcon) taskbarVideoPlayerIcon.addEventListener("click", () => {
         if (!isVideoPlayerOpen) return;
-        (videoPlayerFrame.style.opacity === "1" && videoPlayerFrame.style.display !== "none") ? minimizeApp("video") : restoreApp("video");
+        (videoPlayerWinBox && !videoPlayerWinBox.min) ? minimizeApp("video") : restoreApp("video");
     });
 }
 
@@ -1496,9 +1259,7 @@ function initialize() {
 
             // --- Music Player Actions ---
             case "drag-music-frame":
-                if (!musicPlayerFrame || musicPlayerFrame.dataset.isMaximized === "true") return;
-                musicPlayerFrame.style.left = `${musicPlayerFrame.getBoundingClientRect().left + dx}px`;
-                musicPlayerFrame.style.top = `${musicPlayerFrame.getBoundingClientRect().top + dy}px`;
+                // Legacy: WinBox handles dragging natively
                 break;
             case "close-music-frame": closeApp("music"); break;
             case "minimize-music-frame": minimizeApp("music"); break;
@@ -1509,9 +1270,7 @@ function initialize() {
 
             // --- Video Player Actions ---
             case "drag-vp-frame":
-                if (!videoPlayerFrame || videoPlayerFrame.dataset.isMaximized === "true") return;
-                videoPlayerFrame.style.left = `${videoPlayerFrame.getBoundingClientRect().left + dx}px`;
-                videoPlayerFrame.style.top = `${videoPlayerFrame.getBoundingClientRect().top + dy}px`;
+                // Legacy: WinBox handles dragging natively
                 break;
             case "close-vp-frame": closeApp("video"); break;
             case "minimize-vp-frame": minimizeApp("video"); break;
@@ -1520,37 +1279,29 @@ function initialize() {
 
             // --- Control Panel Actions ---
             case "drag-cp-frame":
-                if (!controlPanelFrame || controlPanelFrame.dataset.isMaximized === "true") return;
-                controlPanelFrame.style.left = `${controlPanelFrame.getBoundingClientRect().left + dx}px`;
-                controlPanelFrame.style.top = `${controlPanelFrame.getBoundingClientRect().top + dy}px`;
+                // Legacy: WinBox handles dragging natively
                 break;
             case "close-cp-frame": closeApp("cp"); break;
             case "minimize-cp-frame": minimizeApp("cp"); break;
             case "bring-cp-to-front": bringToFront("cp"); break;
             case "maximize-cp-frame": maximizeApp("cp"); break;
             case "request-settings":
-                 if (controlPanelFrame?.contentWindow) controlPanelFrame.contentWindow.postMessage({ action: "request-settings" }, "*");
+                 if (controlPanelWinBox && controlPanelWinBox.body.querySelector('iframe')?.contentWindow) {
+                     controlPanelWinBox.body.querySelector('iframe').contentWindow.postMessage({ action: "request-settings" }, "*");
+                 }
                  break;
 
             // --- File Explorer Actions ---
-            case "drag-explorer-frame":
-                if (!fileExplorerFrame || fileExplorerFrame.dataset.isMaximized === "true") return;
-                fileExplorerFrame.style.left = `${fileExplorerFrame.getBoundingClientRect().left + dx}px`;
-                fileExplorerFrame.style.top = `${fileExplorerFrame.getBoundingClientRect().top + dy}px`;
+            
+            case "show-explorer-context-menu": {
+                const explorerEl = fileExplorerWinBox ? fileExplorerWinBox.body : null;
+                if (explorerEl) showExplorerContextMenu(data, explorerEl.getBoundingClientRect());
                 break;
-            case "close-explorer-frame": closeApp("explorer"); break;
-            case "minimize-explorer-frame": minimizeApp("explorer"); break;
-            case "bring-explorer-to-front": bringToFront("explorer"); break;
-            case "maximize-explorer-frame": maximizeApp("explorer"); break;
-            case "show-explorer-context-menu":
-                if (fileExplorerFrame) showExplorerContextMenu(data, fileExplorerFrame.getBoundingClientRect());
-                break;
+            }
 
             // --- Live2D / Wallpaper Actions ---
             case "drag-live2d-frame":
-                if (!live2dWallpaperFrame || live2dWallpaperFrame.dataset.isMaximized === "true") return;
-                live2dWallpaperFrame.style.left = `${live2dWallpaperFrame.getBoundingClientRect().left + dx}px`;
-                live2dWallpaperFrame.style.top = `${live2dWallpaperFrame.getBoundingClientRect().top + dy}px`;
+                // Legacy: WinBox handles dragging natively
                 break;
             case "close-live2d-frame": closeApp("live2d"); break;
             case "minimize-live2d-frame": minimizeApp("live2d"); break;
@@ -1571,18 +1322,32 @@ function initialize() {
             // --- Settings & Customization Actions ---
             case "toggle-fancy-mode":
                 document.body.classList.toggle("fancy-mode", value);
-                [musicPlayerFrame, controlPanelFrame, videoPlayerFrame, live2dWallpaperFrame, fileExplorerFrame].forEach(frame => {
-                    if (frame?.contentWindow) frame.contentWindow.postMessage({ action: "toggle-fancy-mode", value: value }, "*");
+                [musicPlayerWinBox, videoPlayerWinBox, live2dWallpaperWinBox, fileExplorerWinBox, controlPanelWinBox].forEach(wb => {
+                    if (wb) {
+                        const frame = wb.body.querySelector('iframe');
+                        if (frame && frame.contentWindow) {
+                            frame.contentWindow.postMessage({ action: "toggle-fancy-mode", value: value }, "*");
+                        }
+                    }
                 });
+                
                 if (typeof toggleFancyMode === "function") toggleFancyMode(value);
                 window.dispatchEvent(new CustomEvent("fancy-mode-toggled", { detail: { value } }));
                 break;
             case "change-theme": {
                 const isDark = value === "dark";
                 document.body.classList.toggle("dark", isDark);
-                [musicPlayerFrame, controlPanelFrame, videoPlayerFrame].forEach(frame => {
-                    if (frame?.contentWindow) frame.contentWindow.postMessage({ action: "theme-change", isDark }, "*");
+                
+                [musicPlayerWinBox, videoPlayerWinBox, live2dWallpaperWinBox, fileExplorerWinBox, controlPanelWinBox].forEach(wb => {
+                    if (wb) {
+                        wb.removeClass("win11-light").removeClass("win11-dark").addClass(isDark ? "win11-dark" : "win11-light");
+                        const frame = wb.body.querySelector('iframe');
+                        if (frame && frame.contentWindow) {
+                            frame.contentWindow.postMessage({ action: "theme-change", isDark }, "*");
+                        }
+                    }
                 });
+                
                 if (typeof applyTheme === "function") applyTheme(isDark);
                 window.dispatchEvent(new CustomEvent("theme-changed", { detail: { isDark } }));
                 break;

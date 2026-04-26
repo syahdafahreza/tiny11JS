@@ -70,11 +70,14 @@
             user-select: none;
         }
 
+        /* Default "Safe Mode" style for the window */
         .app-window {
             display: flex;
             flex-direction: column;
             width: 100vw;
             height: 100vh;
+            border: 1px solid var(--window-border);
+            border-radius: 8px;
             background-color: var(--window-bg);
             transition:
                 background-color 0.3s,
@@ -85,7 +88,69 @@
 
         /* "Fancy Mode" style with Liquid Glass effect for the main window */
         body.fancy-mode .app-window {
-            background-color: transparent;
+            background-color: color-mix(in srgb, var(--c-glass) 15%, transparent);
+            backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(8px) url(#liquid-glass-filter) saturate(var(--saturation));
+            box-shadow:
+                inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 10%), transparent),
+                0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 8%), transparent);
+        }
+
+        /* Header/Title Bar */
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+            padding: 3px 3px 3px 6px;
+        }
+
+        .window-title-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .window-controls {
+            display: flex;
+        }
+
+        /* Control Buttons (Minimize, Maximize) */
+        .window-control-btn {
+            width: 45px;
+            height: 29px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--window-text);
+            font-size: 13px;
+        }
+
+        .window-control-btn:hover {
+            background-color: var(--control-hover-bg);
+        }
+
+        /* Close Button */
+        .close-window-btn {
+            font-size: 22px;
+            font-weight: 300;
+            padding-bottom: 4px;
+        }
+
+        .close-window-btn:hover {
+            background-color: var(--control-close-hover-bg);
+            color: var(--control-close-hover-text);
         }
 
         /* Player specific styles (Menggunakan Variabel Baru) */
@@ -280,7 +345,15 @@
             cursor: none;
         }
 
+        /* CSS tambahan untuk memastikan tidak ada clipping di mode maximize (UPDATED) */
+        .app-window.maximized {
+            border: none;
+        }
 
+        .app-window.maximized .player-controls {
+            border-radius: 0 !important;
+            /* NEW: Ratakan sudut bawah saat maximize */
+        }
 
         /* NEW: Info Video di Kiri Bawah */
         #video-info-display {
@@ -347,9 +420,6 @@
 </head>
 
 <body>
-    <script>/* Anti-FOUC: Apply theme from URL params before render */
-    (function(){var p=new URLSearchParams(location.search);if(p.get('dark')==='1')document.body.classList.add('dark');if(p.get('fancy')==='1')document.body.classList.add('fancy-mode');})();
-    </script>
     <!-- Filter SVG for Liquid Glass effect (Tolong jangan diubah) -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1">
         <svg>
@@ -364,7 +434,29 @@
     </div>
 
     <div class="app-window">
-
+        <!-- Window Header (Drag area) -->
+        <div id="vp-window-header" class="window-header">
+            <div class="window-title-container">
+                <img src="img/films-and-tv_171100.png" alt="Video Icon" class="h-4 w-4" />
+                <h2 class="text-sm font-normal">Video Player</h2>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="window-control-btn" title="Minimize">
+                    <svg width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <button id="maximize-btn" class="window-control-btn" title="Maximize">
+                    <!-- Ikon default Maximize (kotak tunggal) -->
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <button id="close-btn" class="window-control-btn close-window-btn" title="Close">
+                    &times;
+                </button>
+            </div>
+        </div>
 
         <!-- Main Content Area: (UPDATED) Struktur diubah -->
         <div id="video-display-area" class="flex-grow relative drop-zone border-2 border-transparent"
@@ -592,6 +684,10 @@
         const mutex = new Mutex();
 
         // Elemen DOM
+        const header = document.getElementById("vp-window-header");
+        const closeBtn = document.getElementById("close-btn");
+        const minimizeBtn = document.getElementById("minimize-btn");
+        const maximizeBtn = document.getElementById("maximize-btn");
         const appWindow = document.querySelector(".app-window");
         const videoDisplayArea = document.getElementById("video-display-area");
         const videoPlayer = document.getElementById("video-player");
@@ -622,7 +718,8 @@
         const subtitleStatusMsg = document.getElementById("subtitle-status-message");
 
         // Variabel state
-
+        let isDragging = false;
+        let isMaximized = false;
         let isTimelineDragging = false;
         let currentFileURL = null;
         // Struktur subtitleTracks diubah agar lebih sederhana untuk FFmpeg
@@ -1842,7 +1939,39 @@
             });
         }
 
+        // --- UPDATED: Window Manager Interactions ---
+        header.addEventListener("mousedown", (e) => {
+            // Kita tidak perlu mengecek isMaximized di sini, WM yang akan menanganinya.
+            if (e.target.closest('button')) return; // Jangan drag jika klik tombol
 
+            // **PENTING: Pastikan hanya klik kiri yang memulai drag**
+            if (e.button !== 0) return;
+
+            // PENTING: Menggunakan pesan LAMA (drag-vp-frame) untuk kompatibilitas
+            parent.postMessage({ action: "bring-vp-to-front" }, "*"); // <-- Changed action
+
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                // Menggunakan pesan LAMA (drag-vp-frame) untuk kompatibilitas
+                parent.postMessage({ action: "drag-vp-frame", dx: e.movementX, dy: e.movementY }, "*"); // <-- Changed action
+            }
+        });
+
+        window.addEventListener("mouseup", () => {
+            if (isDragging) isDragging = false;
+        });
+        window.addEventListener("mouseleave", () => {
+            if (isDragging) isDragging = false;
+        });
+
+        // Menggunakan pesan LAMA (close-vp-frame, minimize-vp-frame, maximize-vp-frame)
+        closeBtn.addEventListener("click", () => parent.postMessage({ action: "close-vp-frame" }, "*")); // <-- Changed action
+        minimizeBtn.addEventListener("click", () => parent.postMessage({ action: "minimize-vp-frame" }, "*")); // <-- Changed action
+        maximizeBtn.addEventListener("click", () => parent.postMessage({ action: "maximize-vp-frame" }, "*")); // <-- Changed action
 
         window.addEventListener("message", (event) => {
             const { action, isDark, value, volume, isMaximized: newMaximizedState, borderRadius } = event.data;
@@ -1859,7 +1988,29 @@
                 }
             }
 
+            // PENTING: Menerima state maximized dari Window Manager
+            // Action ini adalah GENERIC karena WM mengirimnya secara generic
+            if (action === "set-maximized-state") {
+                isMaximized = newMaximizedState;
+                appWindow.classList.toggle('maximized', isMaximized);
 
+                // Perbarui ikon maximize/restore
+                if (isMaximized) {
+                    maximizeBtn.title = "Restore Down";
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
+                    // Atur borderRadius yang dikirim oleh WM (penting untuk mode Island)
+                    appWindow.style.borderRadius = borderRadius || "0";
+                    header.style.padding = '3px 3px 3px 6px';
+                } else {
+                    maximizeBtn.title = "Maximize";
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
+                    // Kembalikan radius default
+                    appWindow.style.borderRadius = "8px";
+                    header.style.padding = '3px 3px 3px 6px';
+                }
+                // Panggil resizeSubtitleCanvas setiap kali status jendela berubah
+                resizeSubtitleCanvas();
+            }
 
             // NEW: Handle stop action (Unload media and reset state)
             if (action === "stop") {

@@ -69,6 +69,8 @@
             flex-direction: column;
             width: 100vw;
             height: 100vh;
+            border: 1px solid var(--window-border);
+            border-radius: 8px;
             background-color: var(--window-bg);
             transition: background-color 0.3s, box-shadow 0.3s;
         }
@@ -159,9 +161,6 @@
 </head>
 
 <body>
-    <script>/* Anti-FOUC: Apply theme from URL params before render */
-    (function(){var p=new URLSearchParams(location.search);if(p.get('dark')==='1')document.body.classList.add('dark');if(p.get('fancy')==='1')document.body.classList.add('fancy-mode');})();
-    </script>
     <!-- Filter SVG for Liquid Glass effect -->
     <div style="position: absolute; width: 0; height: 0; z-index: -1;">
         <svg>
@@ -176,7 +175,23 @@
     </div>
 
     <div class="app-window">
-
+        <div id="live2d-window-header" class="window-header">
+            <div class="window-title-container">
+                <img src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper Icon" class="h-4 w-4">
+                <h2>Live Wallpaper</h2>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="window-control-btn" title="Minimize"><svg width="10" height="2"
+                        viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 1H10V2H0V1Z" fill="currentColor" />
+                    </svg></button>
+                <button id="maximize-btn" class="window-control-btn" title="Maximize"><svg width="10" height="10"
+                        viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
+                    </svg></button>
+                <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
+            </div>
+        </div>
         <div class="window-content-area space-y-4">
             <div>
                 <label for="url-input" class="block mb-2 text-sm font-medium">Website URL</label>
@@ -197,6 +212,10 @@
     </div>
     <script>
         // Element declarations
+        const header = document.getElementById('live2d-window-header');
+        const closeBtn = document.getElementById('close-btn');
+        const minimizeBtn = document.getElementById('minimize-btn');
+        const maximizeBtn = document.getElementById('maximize-btn'); // <-- BARU: Deklarasi tombol Maximize
         const urlInput = document.getElementById('url-input');
         const setWallpaperBtn = document.getElementById('set-wallpaper-btn');
         const clearWallpaperBtn = document.getElementById('clear-wallpaper-btn');
@@ -204,7 +223,21 @@
         const exampleUrlLink = document.getElementById('example-url-link');
         const exampleUrl = exampleUrlLink.getAttribute('data-url').trim();
 
+        // State
+        let isDragging = false;
 
+        // Window Interaction Logic (communicates with parent)
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            parent.postMessage({ action: 'bring-live2d-to-front' }, '*');
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                parent.postMessage({ action: 'drag-live2d-frame', dx: e.movementX, dy: e.movementY }, '*');
+            }
+        });
 
         // Logika untuk menyalin URL contoh dan menampilkan notifikasi
         exampleUrlLink.addEventListener('click', async () => {
@@ -249,7 +282,15 @@
             }
         });
 
+        window.addEventListener('mouseup', () => { isDragging = false; });
 
+        closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-live2d-frame' }, '*'));
+        minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-live2d-frame' }, '*'));
+
+        // BARU: Event listener untuk maximize
+        maximizeBtn.addEventListener('click', () => {
+            parent.postMessage({ action: 'maximize-live2d-frame' }, '*');
+        });
 
         // App Functionality Logic
         setWallpaperBtn.addEventListener('click', () => {
@@ -273,6 +314,30 @@
             }
             if (action === 'toggle-fancy-mode') {
                 document.body.classList.toggle('fancy-mode', value);
+            }
+
+            // BARU: Logika Maximize/Restore
+            if (action === 'set-maximized-state') {
+                if (isMaximized) {
+                    maximizeBtn.title = "Restore Down";
+                    // Ganti ikon menjadi kotak bertumpuk untuk "restore"
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
+                    // Menggunakan borderRadius dari parent
+                    windowElement.style.borderRadius = borderRadius || '0'; 
+
+                    // Nonaktifkan Drag saat Maximized
+                    header.style.cursor = 'default';
+                    isDragging = false;
+
+                } else {
+                    maximizeBtn.title = "Maximize";
+                    // Ganti ikon kembali menjadi kotak tunggal untuk "maximize"
+                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
+                    windowElement.style.borderRadius = '8px'; // Kembalikan sudut
+
+                    // Aktifkan kembali Drag saat Restore
+                    header.style.cursor = 'move';
+                }
             }
         });
     </script>
