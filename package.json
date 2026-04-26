@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "ebml": "^3.0.0",
+    "ffmpeg.js": "^4.2.9003",
+    "filereader-stream": "^2.0.0"
+  },
+  "devDependencies": {
+    "video.js": "^8.23.4"
+  }
+}

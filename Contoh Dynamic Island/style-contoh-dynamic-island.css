@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap");
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #fff5e4;
+  color: #ff9494;
+}
+
+/* === Main Layout ========== */
+.layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.headerTitle {
+  font-size: 32px;
+}
+
+.headerTitle span {
+  font-size: 16px;
+}
+
+.content {
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button {
+  background-color: #ffd1d1;
+  padding: 20px;
+  border-radius: 30px;
+  margin: 10px;
+}
+
+.button:hover {
+  background-color: #ffe3e1;
+  cursor: pointer;
+}
+
+/* === Dynamic Island ========== */
+.islandContainer {
+  width: 300px;
+  height: 200px;
+
+  border-top: 4px solid #ff6550;
+  border-left: 4px solid #ff6550;
+  border-right: 4px solid #ff6550;
+  border-radius: 40px 40px 0 0;
+
+  position: relative;
+}
+
+/* .island 係黑色既一舊野 */
+.island {
+  background-color: black;
+  border-radius: 30px;
+  position: absolute;
+
+  /* 呢度控制佢既動畫時間，同埋佢既動態 */
+  transition: 0.5s;
+  transition-timing-function: cubic-bezier(0.42, 0.24, 0.02, 1);
+}
+
+/* 分開左3個Class去控制佢既size */
+.island.islandIsNormal {
+  width: 100px;
+  height: 30px;
+  left: 100px;
+  top: 10px;
+}
+
+.island.islandIsCompact {
+  width: 150px;
+  height: 30px;
+  left: 75px;
+  top: 10px;
+}
+
+.island.islandIsExpanded {
+  width: 280px;
+  height: 150px;
+  left: 10px;
+  top: 10px;
+}
+
+/* Compact 時既UI */
+.islandCompact {
+  width: 150px;
+  height: 30px;
+  position: absolute;
+  left: 75px;
+  top: 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  transition: 0.5s;
+  opacity: 0;
+}
+
+.compactLeading,
+.compactTrailing {
+  width: 28px;
+  height: 28px;
+}
+
+/* Expanded 時既UI */
+.islandExpanded {
+  position: absolute;
+  width: 280px;
+  height: 150px;
+  left: 10px;
+  top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  transition: 0.5s;
+  opacity: 0;
+}
+
+.expandedLeading {
+  width: 100px;
+  height: 100px;
+}
+
+.expandedSpacer {
+  width: 80px;
+  height: 100px;
+}
+
+.expandedTrailing {
+  width: 100px;
+  height: 100px;
+}
+
+.expandedButtom {
+  width: 280px;
+  height: 50px;
+}

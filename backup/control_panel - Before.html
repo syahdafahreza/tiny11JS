@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Panel</title>
-    <!-- Tailwind Offline CSS, Local Copy (In case of CDN failures) -->
+    <!-- Tailwind Offline CSS (In case of CDN failures) -->
     <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet"> -->
@@ -72,8 +72,7 @@
             width: 100vw;
             height: 100vh;
             border: 1px solid var(--window-border);
-            border-radius: 12px;
-            /* Ditingkatkan dari 8px ke 12px */
+            border-radius: 8px;
             background-color: var(--window-bg);
             transition: background-color 0.3s, box-shadow 0.3s;
         }
@@ -129,8 +128,6 @@
             background: transparent;
             border: none;
             color: var(--window-text);
-            /* Tambahkan transisi untuk hover yang halus */
-            transition: background-color 0.2s, color 0.2s;
         }
 
         .window-control-btn:hover {
@@ -163,12 +160,10 @@
         /* Toggle Switch Styles */
         .toggle-label {
             background-color: var(--toggle-bg-off);
-            transition: background-color 0.2s;
         }
 
         .toggle-checkbox {
             border-color: var(--toggle-handle-border);
-            transition: right 0.2s, border-color 0.2s;
         }
 
         .toggle-checkbox:checked {
@@ -209,8 +204,8 @@
                         viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 1H10V2H0V1Z" fill="currentColor" />
                     </svg></button>
-                <button id="maximize-btn" class="window-control-btn" title="Maximize"><svg width="10" height="10"
-                        viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <button class="window-control-btn" title="Maximize"><svg width="10" height="10" viewBox="0 0 10 10"
+                        fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor" />
                     </svg></button>
                 <button id="close-btn" class="window-control-btn close-window-btn" title="Close">&times;</button>
@@ -336,12 +331,11 @@
         const header = document.getElementById('cp-window-header');
         const closeBtn = document.getElementById('close-btn');
         const minimizeBtn = document.getElementById('minimize-btn');
-        const maximizeBtn = document.getElementById('maximize-btn');
         const testToastBtn = document.getElementById('test-toast-btn');
 
         // Control elements
         const themeSelect = document.getElementById('theme-select');
-        const toggleFancyMode = document.getElementById('toggle-fancy-mode');
+        const toggleFancyMode = document.getElementById('toggle-fancy-mode'); // New fancy mode toggle
         const bgSizeSelect = document.getElementById('bg-size');
         const bgRepeatSelect = document.getElementById('bg-repeat');
         const bgPositionSelect = document.getElementById('bg-position');
@@ -354,24 +348,16 @@
         // State
         let isDragging = false;
 
-        // Konstanta untuk nama aplikasi
-        const APP_NAME = 'cp';
-
         // --- Window Interaction Logic (communicates with parent) ---
         header.addEventListener('mousedown', (e) => {
-            // Mencegah drag jika window maximized (logika drag di parent)
-            if (document.querySelector('.app-window').style.borderRadius === '0px') return;
-
             isDragging = true;
-            // Pesan untuk membawa ke depan
-            parent.postMessage({ action: `bring-${APP_NAME}-to-front` }, '*');
+            parent.postMessage({ action: 'bring-cp-to-front' }, '*');
             e.preventDefault();
         });
 
         window.addEventListener('mousemove', (e) => {
             if (isDragging) {
-                // Menggunakan `dragFrame` dengan nama aplikasi yang ditentukan
-                parent.postMessage({ action: `drag-${APP_NAME}-frame`, dx: e.movementX, dy: e.movementY }, '*');
+                parent.postMessage({ action: 'drag-cp-frame', dx: e.movementX, dy: e.movementY }, '*');
             }
         });
 
@@ -379,104 +365,61 @@
             isDragging = false;
         });
 
-        // Mengirim aksi yang konsisten
-        closeBtn.addEventListener('click', () => parent.postMessage({ action: `close-${APP_NAME}-frame` }, '*'));
-        minimizeBtn.addEventListener('click', () => parent.postMessage({ action: `minimize-${APP_NAME}-frame` }, '*'));
-        maximizeBtn.addEventListener('click', () => {
-            parent.postMessage({ action: `maximize-${APP_NAME}-frame` }, '*');
-        });
+        closeBtn.addEventListener('click', () => parent.postMessage({ action: 'close-cp-frame' }, '*'));
+        minimizeBtn.addEventListener('click', () => parent.postMessage({ action: 'minimize-cp-frame' }, '*'));
 
         // --- Control Logic (sends messages to parent) ---
         themeSelect.addEventListener('change', (e) => {
-            console.log(`[CP] Mengubah tema ke: ${e.target.value}`); // LOG
             parent.postMessage({ action: 'change-theme', value: e.target.value }, '*');
         });
 
-        // Listener for Fancy Mode
+        // New listener for Fancy Mode
         toggleFancyMode.addEventListener('change', (e) => {
             const isFancy = e.target.checked;
-            console.log(`[CP] Mengubah Fancy Mode (Liquid Glass): ${isFancy}`); // LOG
             document.body.classList.toggle('fancy-mode', isFancy);
             parent.postMessage({ action: 'toggle-fancy-mode', value: isFancy }, '*');
         });
 
         bgSizeSelect.addEventListener('change', (e) => {
-            console.log(`[CP] Mengubah BG Size ke: ${e.target.value}`); // LOG
             parent.postMessage({ action: 'change-bg-size', value: e.target.value }, '*');
         });
         bgRepeatSelect.addEventListener('change', (e) => {
-            console.log(`[CP] Mengubah BG Repeat ke: ${e.target.value}`); // LOG
             parent.postMessage({ action: 'change-bg-repeat', value: e.target.value }, '*');
         });
         bgPositionSelect.addEventListener('change', (e) => {
-            console.log(`[CP] Mengubah BG Position ke: ${e.target.value}`); // LOG
             parent.postMessage({ action: 'change-bg-position', value: e.target.value }, '*');
         });
-
-        // MODIFIKASI: Menambahkan Logging untuk Taskbar Position
         taskbarPositionSelect.addEventListener('change', (e) => {
-            const position = e.target.value;
-            console.log(`%c[CP] MENGUBAH TASKBAR POSITION. Baru: ${position}`, 'background: #007bff; color: white'); // LOG VERBOSE
-            parent.postMessage({ action: 'change-taskbar-position', value: position }, '*');
+            parent.postMessage({ action: 'change-taskbar-position', value: e.target.value }, '*');
         });
-
-        // MODIFIKASI: Menambahkan Logging untuk Taskbar Style
         taskbarStyleSelect.addEventListener('change', (e) => {
             const style = e.target.value;
-            console.log(`%c[CP] MENGUBAH TASKBAR STYLE. Baru: ${style}`, 'background: #28a745; color: white'); // LOG VERBOSE
             spaceBetweenContainer.classList.toggle('flex', style.startsWith('island'));
             spaceBetweenContainer.classList.toggle('hidden', !style.startsWith('island'));
             if (!style.startsWith('island')) { toggleSpaceBetween.checked = false; }
-            parent.postMessage({ action: 'change-taskbar-style', value: style }, '*');
+            parent.postMessage({ action: 'change-taskbar-style', value: e.target.value }, '*');
             parent.postMessage({ action: 'toggle-taskbar-space-between', value: toggleSpaceBetween.checked }, '*');
         });
-
         toggleSpaceBetween.addEventListener('change', (e) => {
-            console.log(`[CP] Mengubah Taskbar Space Between: ${e.target.checked}`); // LOG
             parent.postMessage({ action: 'toggle-taskbar-space-between', value: e.target.checked }, '*');
         });
         toggleClock.addEventListener('change', (e) => {
-            console.log(`[CP] Mengubah Tampilkan Jam: ${e.target.checked}`); // LOG
             parent.postMessage({ action: 'toggle-clock', value: e.target.checked }, '*');
         });
         testToastBtn.addEventListener('click', () => {
-            console.log(`[CP] Mengirim permintaan Test Toast Notification`); // LOG
             parent.postMessage({ action: 'test-toast-notification' }, '*');
         });
 
         // --- Message Listener (receives messages from parent) ---
         window.addEventListener('message', (event) => {
-            const { action, isDark, isMaximized, borderRadius } = event.data;
-            const appWindow = document.querySelector('.app-window');
-            const defaultRadius = '12px'; // Radius default yang baru
-            
-            console.log(`[CP] Pesan diterima dari Parent. Action: ${action}`); // LOG
-
+            const { action, isDark } = event.data;
             if (action === 'theme-change') {
                 document.body.classList.toggle('dark', isDark);
             }
-
-            // FIX: Merespons permintaan pengaturan saat ini
+            // FIX: Listen for requests from other apps for the current settings
             if (action === 'request-settings') {
+                // Respond with the current state of the fancy mode toggle
                 parent.postMessage({ action: 'toggle-fancy-mode', value: toggleFancyMode.checked }, '*');
-            }
-
-            if (action === 'set-maximized-state') {
-                if (isMaximized) {
-                    maximizeBtn.title = "Restore Down";
-                    // Ganti ikon menjadi kotak bertumpuk untuk "restore"
-                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1H9V7H3V1ZM2 0H10V8H2V0Z" fill="currentColor"/><path d="M1 3H7V9H1V3ZM0 2H8V10H0V2Z" fill="currentColor" opacity="0.5"/></svg>`;
-
-                    // Gunakan nilai borderRadius yang dikirim dari parent
-                    // Ini akan menjadi '0' untuk mode taskbar penuh atau '8px' untuk mode island.
-                    appWindow.style.borderRadius = borderRadius || '0';
-                } else {
-                    maximizeBtn.title = "Maximize";
-                    // Ganti ikon kembali menjadi kotak tunggal untuk "maximize"
-                    maximizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1V9H1V1H9ZM10 0H0V10H10V0Z" fill="currentColor"/></svg>`;
-                    // Kembalikan sudut default (12px)
-                    appWindow.style.borderRadius = defaultRadius;
-                }
             }
         });
     </script>

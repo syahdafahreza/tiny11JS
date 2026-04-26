@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pratinjau Wallpaper Desktop Modern</title>
+    <!-- Tailwind Offline CSS (In case of CDN failures) -->
+    <link rel="stylesheet" href="css/all-tailwind-classes-full-min.css">
+    <link rel="stylesheet" href="css/startmenu.css">
+    <link rel="stylesheet" href="css/index-winbox.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet"> -->
+
+</head>
+
+<body class="bg-gray-800 select-none">
+
+    <!-- Filter SVG for Liquid Glass effect -->
+    <div style="position: absolute; width: 0; height: 0; z-index: -1;">
+        <svg>
+            <!-- Original Filter (for windows) -->
+            <filter id="liquid-glass-filter" primitiveUnits="objectBoundingBox">
+                <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none"
+                    href="img/svg-filter.jpg" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+                <feDisplacementMap id="disp" in="blur" in2="map" scale="0.4" xChannelSelector="R" yChannelSelector="G">
+                </feDisplacementMap>
+            </filter>
+            <!-- NEW: Taskbar-specific filter with reduced scale -->
+            <filter id="taskbar-liquid-glass-filter" primitiveUnits="objectBoundingBox">
+                <feImage result="map" width="120%" height="100%" x="0" y="0" preserveAspectRatio="none"
+                    href="img/svg-filter-taskbar.jpg" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.00" result="blur" />
+                <feDisplacementMap id="disp-taskbar" in="blur" in2="map" scale="0.06" xChannelSelector="R"
+                    yChannelSelector="G">
+                </feDisplacementMap>
+            </filter>
+        </svg>
+    </div>
+
+    <div id="desktop" class="relative">
+        <!-- [MERGED] Menambahkan tag <img> untuk wallpaper default -->
+        <img src="img/img0_1920x1200.jpg" alt="Desktop Background" class="desktop-image">
+
+        <!-- NEW: Iframe for live wallpaper, placed here to be under icons -->
+        <iframe id="wallpaper-iframe" src="about:blank"></iframe>
+
+        <!-- NEW: Invisible layer to intercept clicks for the live wallpaper -->
+        <div id="click-interceptor"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; display: none; -webkit-user-drag: none;">
+        </div>
+
+        <!-- MODIFIED: Changed to flex-row for multi-column layout -->
+        <div id="desktop-icons" class="absolute top-4 left-4 flex flex-row gap-4 z-10">
+            <!-- Column 1 -->
+            <div class="flex flex-col gap-2">
+                <!-- [KEPT] Mempertahankan ID dari file lokal -->
+                <div id="this-pc-icon" class="desktop-icon" tabindex="0"><img
+                        src="https://img.icons8.com/fluency/48/000000/desktop.png" alt="This PC" /><span>This PC</span>
+                </div>
+                <div id="control-panel-icon" class="desktop-icon" tabindex="0"><img
+                        src="https://img.icons8.com/fluency/48/000000/control-panel.png"
+                        alt="Control Panel" /><span>Control Panel</span></div>
+                <div id="music-player-icon" class="desktop-icon" tabindex="0"><img
+                        src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player" /><span>Music
+                        Player</span></div>
+                <div class="desktop-icon" tabindex="0"><img
+                        src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin" /><span>Recycle
+                        Bin</span></div>
+            </div>
+            <!-- Column 2 -->
+            <div class="flex flex-col gap-2">
+                <!-- MOVED: Live2D Wallpaper icon is now the first in the second column -->
+                <div id="live2d-icon" class="desktop-icon" tabindex="0"><img
+                        src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /><span>Live
+                        Wallpaper</span></div>
+            </div>
+        </div>
+
+        <iframe id="control-panel-frame" class="app-iframe" src="control_panel.html" allowtransparency="true"
+            style="top: 15%; left: 30%; width: 550px; height: 550px; min-width: 480px; min-height: 400px;">
+        </iframe>
+
+        <!-- GANTI: Gunakan ID #start-menu (bukan iframe) dan hapus class app-iframe -->
+        <div id="start-menu">
+            <div id="start-menu-container">
+                <div class="search-container"><svg xmlns="http://www.w3.org/2000/svg" class="search-icon"
+                        viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
+                    </svg><input type="text" placeholder="Type here to search"></div>
+                <div class="apps-section">
+                    <div class="section-header">
+                        <h3>Pinned</h3><button class="all-apps-btn">All apps &gt;</button>
+                    </div>
+                    <div class="pinned-grid">
+                        <div class="app-item">
+                            <div class="app-icon bg-blue-500"><img
+                                    src="https://syahdafahreza.my.id/images/desktopicons/msedge2019.png" alt="Edge" />
+                            </div><span>Edge</span>
+                        </div>
+                        <div id="start-menu-music-player" class="app-item">
+                            <div class="app-icon bg-pink-500"><img
+                                    src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music" /></div>
+                            <span>Music</span>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon bg-green-700"><img src="https://img.icons8.com/fluency/48/ms-excel.png"
+                                    alt="Excel" /></div><span>Excel</span>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon bg-red-500"><img src="img/winstoreapp-dark.png" alt="Store" /></div>
+                            <span>Store</span>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon bg-blue-700"><img src="https://img.icons8.com/color/48/ms-word.png"
+                                    alt="Word" /></div><span>Word</span>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon bg-gray-700"><img src="https://img.icons8.com/fluency/48/github.png"
+                                    alt="Github" /></div><span>Github</span>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon bg-purple-600"><img
+                                    src="https://img.icons8.com/fluency/48/visual-studio-code-2019.png" alt="VS Code" />
+                            </div><span>VS Code</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommended-section">
+                    <div class="section-header">
+                        <h3>Recommended</h3>
+                    </div>
+                    <div class="recommended-list">
+                        <div class="recommended-item">
+                            <div class="recommended-icon bg-orange-500 flex items-center justify-center"><img
+                                    src="https://img.icons8.com/color/48/ms-powerpoint.png" class="w-6 h-6"
+                                    alt="PowerPoint" /></div>
+                            <div class="recommended-info"><span class="font-semibold">Quarterly
+                                    Review.pptx</span><span>17m ago</span></div>
+                        </div>
+                        <div class="recommended-item">
+                            <div class="recommended-icon bg-blue-700 flex items-center justify-center"><img
+                                    src="https://img.icons8.com/color/48/ms-word.png" class="w-6 h-6" alt="Word" />
+                            </div>
+                            <div class="recommended-info"><span class="font-semibold">Project
+                                    Proposal.docx</span><span>Recently added</span></div>
+                        </div>
+                        <div class="recommended-item">
+                            <div class="recommended-icon bg-sky-500 flex items-center justify-center"><img
+                                    src="https://img.icons8.com/fluency/48/image-file.png" class="w-6 h-6"
+                                    alt="Image" /></div>
+                            <div class="recommended-info"><span
+                                    class="font-semibold">Brand_Logo_Final.png</span><span>Yesterday</span></div>
+                        </div>
+                        <div class="recommended-item">
+                            <div class="recommended-icon bg-green-700 flex items-center justify-center"><img
+                                    src="https://img.icons8.com/fluency/48/ms-excel.png" class="w-6 h-6" alt="Excel" />
+                            </div>
+                            <div class="recommended-info"><span class="font-semibold">Budget_2025.xlsx</span><span>2h
+                                    ago</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bar">
+                    <div class="user-profile"><img src="https://placehold.co/40x40/555/fff?text=U" alt="User"
+                            class="user-avatar"><span>Umarkov</span></div>
+                    <div class="power-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path
+                                d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A7.963 7.963 0 0120 12h2c0-2.34-1.01-4.43-2.6-5.98l-1.57-1.85zM5.59 5.59L4.17 4.17C2.59 5.76 1.58 7.84 1.58 10h2c0-1.85.73-3.54 1.93-4.8l1.08-1.61zM12 23c4.97 0 9-4.03 9-9h-2c0 3.86-3.14 7-7 7s-7-3.14-7-7H3c0 4.97 4.03 9 9 9z" />
+                        </svg></div>
+                </div>
+            </div>
+        </div>
+        <!-- Start Menu HTML End -->
+
+        <iframe id="music-player-frame" class="app-iframe" src="music_player.html" allowtransparency="true"
+            style="top: 20%; left: 20%; width: 420px; height: 500px; min-width: 380px; min-height: 250px;">
+        </iframe>
+
+        <!-- NEW: Iframe for the Live2D Wallpaper App window -->
+        <iframe id="live2d-wallpaper-frame" class="app-iframe" src="live2d_wallpaper.html" allowtransparency="true"
+            style="top: 25%; left: 40%; width: 400px; height: 255px; min-width: 350px; min-height: 200px;"
+            allow="clipboard-write">
+        </iframe>
+
+        <!-- [KEPT] Mempertahankan iframe File Explorer dari file lokal -->
+        <iframe id="file-explorer-frame" class="app-iframe" src="file_explorer.html" allowtransparency="true"
+            style="top: 10%; left: 15%; width: 800px; height: 500px; min-width: 500px; min-height: 400px;">
+        </iframe>
+
+        <div id="context-menu">
+            <ul class="context-menu-items">
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fill-rule="evenodd"
+                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                            clip-rule="evenodd" />
+                    </svg><span class="menu-text">View</span><svg class="arrow" width="16" height="16"
+                        viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg></li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            d="M3 3a1 1 0 000 2h14a1 1 0 100-2H3zM3 8a1 1 0 000 2h14a1 1 0 100-2H3zM3 13a1 1 0 000 2h14a1 1 0 100-2H3z" />
+                    </svg><span class="menu-text">Sort by</span><svg class="arrow" width="16" height="16"
+                        viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg></li>
+                <li id="context-menu-refresh" class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                            clip-rule="evenodd" />
+                    </svg><span class="menu-text">Refresh</span></li>
+                <li class="context-menu-separator"></li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                            clip-rule="evenodd" />
+                    </svg><span class="menu-text">New</span><svg class="arrow" width="16" height="16"
+                        viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg></li>
+                <li class="context-menu-separator"></li>
+                <li class="context-menu-item" id="context-menu-settings"><svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg><span class="menu-text">Display settings</span></li>
+                <li class="context-menu-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            d="M17.293 3.293A1 1 0 0118 4v12a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1h4.586a1 1 0 01.707.293l1.414 1.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l1.414-1.414A1 1 0 0112.414 3H17.293zM2 6v10h16V6H2z" />
+                    </svg><span class="menu-text">Personalize</span></li>
+            </ul>
+        </div>
+
+        <!-- NEW: Explorer General Context Menu -->
+        <div id="explorer-context-menu-general" class="explorer-context-menu">
+            <ul class="context-menu-list">
+                <li class="context-menu-item" data-command="view">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/visible.png" />
+                    <span class="context-menu-item-text">View</span><span class="context-menu-item-arrow">&#9654;</span>
+                    <div class="submenu explorer-context-menu">
+                        <ul class="context-menu-list">
+                            <li class="context-menu-item" data-command="view-grid"><span
+                                    class="context-menu-item-text">Large icons</span></li>
+                            <li class="context-menu-item" data-command="view-list"><span
+                                    class="context-menu-item-text">List</span></li>
+                            <li class="context-menu-item" data-command="view-details"><span
+                                    class="context-menu-item-text">Details</span></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="context-menu-item" data-command="sort">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/sort-down.png" />
+                    <span class="context-menu-item-text">Sort by</span><span
+                        class="context-menu-item-arrow">&#9654;</span>
+                    <div class="submenu explorer-context-menu">
+                        <ul class="context-menu-list">
+                            <li class="context-menu-item" data-command="sort-name"><span
+                                    class="context-menu-item-text">Name</span></li>
+                            <li class="context-menu-item" data-command="sort-dateModified"><span
+                                    class="context-menu-item-text">Date modified</span></li>
+                            <li class="context-menu-item" data-command="sort-type"><span
+                                    class="context-menu-item-text">Type</span></li>
+                            <li class="context-menu-item" data-command="sort-size"><span
+                                    class="context-menu-item-text">Size</span></li>
+                        </ul>
+                    </div>
+                </li>
+                <li id="explorer-general-refresh" data-command="refresh" class="context-menu-item">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/refresh.png" />
+                    <span class="context-menu-item-text">Refresh</span><span
+                        class="context-menu-item-shortcut">F5</span>
+                </li>
+                <li class="context-menu-separator"></li>
+                <li id="explorer-general-paste" data-command="paste" class="context-menu-item">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/paste.png" />
+                    <span class="context-menu-item-text">Paste</span><span
+                        class="context-menu-item-shortcut">Ctrl+V</span>
+                </li>
+                <li class="context-menu-item disabled" data-command="paste-shortcut">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/paste-as-icon.png" />
+                    <span class="context-menu-item-text">Paste shortcut</span>
+                </li>
+                <li id="explorer-general-undo" data-command="undo" class="context-menu-item">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/undo.png" />
+                    <span class="context-menu-item-text">Undo</span><span
+                        class="context-menu-item-shortcut">Ctrl+Z</span>
+                </li>
+                <li class="context-menu-separator"></li>
+                <li class="context-menu-item" data-command="new">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/add-file.png" />
+                    <span class="context-menu-item-text">New</span><span class="context-menu-item-arrow">&#9654;</span>
+                    <div class="submenu explorer-context-menu">
+                        <ul class="context-menu-list">
+                            <li class="context-menu-item" data-command="new-folder"><img class="context-menu-item-icon"
+                                    src="https://img.icons8.com/fluency/48/folder-invoices.png" /><span
+                                    class="context-menu-item-text">Folder</span></li>
+                            <li class="context-menu-separator"></li>
+                            <li class="context-menu-item" data-command="new-file"><img class="context-menu-item-icon"
+                                    src="https://img.icons8.com/fluency/48/document.png" /><span
+                                    class="context-menu-item-text">Text Document</span></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="context-menu-separator"></li>
+                <li id="explorer-general-properties" data-command="properties-general" class="context-menu-item">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/show-property.png" />
+                    <span class="context-menu-item-text">Properties</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- NEW: Explorer Item Context Menu -->
+        <div id="explorer-context-menu-item" class="explorer-context-menu">
+            <ul class="context-menu-list">
+                <li id="explorer-item-open" data-command="open" class="context-menu-item"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/open-in-window.png" /><span
+                        class="context-menu-item-text" style="font-weight: 600;">Open</span></li>
+                <li class="context-menu-separator"></li>
+                <li class="context-menu-item" data-command="send-to">
+                    <img class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/sent.png" />
+                    <span class="context-menu-item-text">Send to</span><span
+                        class="context-menu-item-arrow">&#9654;</span>
+                    <div class="submenu explorer-context-menu">
+                        <ul class="context-menu-list">
+                            <li class="context-menu-item disabled"><span class="context-menu-item-text">Compressed
+                                    (zipped) folder</span></li>
+                            <li class="context-menu-item disabled"><span class="context-menu-item-text">Desktop (create
+                                    shortcut)</span></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="context-menu-separator"></li>
+                <li id="explorer-item-cut" data-command="cut" class="context-menu-item"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/cut.png" /><span
+                        class="context-menu-item-text">Cut</span><span class="context-menu-item-shortcut">Ctrl+X</span>
+                </li>
+                <li id="explorer-item-copy" data-command="copy" class="context-menu-item"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/copy.png" /><span
+                        class="context-menu-item-text">Copy</span><span class="context-menu-item-shortcut">Ctrl+C</span>
+                </li>
+                <li class="context-menu-separator"></li>
+                <li class="context-menu-item disabled" data-command="create-shortcut"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/paste-as-icon.png" /><span
+                        class="context-menu-item-text">Create shortcut</span></li>
+                <li id="explorer-item-delete" data-command="delete" class="context-menu-item"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/trash.png" /><span
+                        class="context-menu-item-text">Delete</span><span class="context-menu-item-shortcut">Del</span>
+                </li>
+                <li id="explorer-item-rename" data-command="rename" class="context-menu-item"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/rename.png" /><span
+                        class="context-menu-item-text">Rename</span><span class="context-menu-item-shortcut">F2</span>
+                </li>
+                <li class="context-menu-separator"></li>
+                <li id="explorer-item-properties" data-command="properties-item" class="context-menu-item"><img
+                        class="context-menu-item-icon"
+                        src="https://img.icons8.com/fluent-systems-filled/48/show-property.png" /><span
+                        class="context-menu-item-text">Properties</span></li>
+            </ul>
+        </div>
+
+
+        <canvas id="visualizer"></canvas>
+
+        <div id="taskbar" class="taskbar-bottom">
+            <div id="taskbar-main-group" class="flex items-center gap-1">
+                <div id="start-button" class="taskbar-icon"><img src="https://img.icons8.com/fluency/48/windows-11.png"
+                        alt="Start" /></div>
+                <div id="app-icons" class="flex items-center gap-1">
+                    <!-- [KEPT] Mempertahankan ikon explorer dari file lokal -->
+                    <div id="taskbar-explorer-icon" class="taskbar-icon"><img src="img/explorer.png" alt="Folder" />
+                    </div>
+                    <div class="taskbar-icon"><img src="img/msedge2019.png" alt="Edge" /></div>
+                    <div class="taskbar-icon"><img src="img/winstoreapp-dark.png" alt="Store" /></div>
+                    <div id="taskbar-cp-icon" class="taskbar-icon" style="display: none;"><img
+                            src="https://img.icons8.com/fluency/48/000000/control-panel.png" alt="Control Panel" />
+                    </div>
+                    <div id="taskbar-music-icon" class="taskbar-icon" style="display: none;"><img
+                            src="https://img.icons8.com/fluency/48/000000/apple-music.png" alt="Music Player" /></div>
+                    <!-- NEW: Taskbar icon for Live Wallpaper -->
+                    <div id="taskbar-live2d-icon" class="taskbar-icon" style="display: none;"><img
+                            src="https://img.icons8.com/fluency/48/domain.png" alt="Live Wallpaper" /></div>
+                </div>
+            </div>
+            <div id="system-tray" class="flex items-center gap-2">
+                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg></div>
+                <div class="taskbar-icon p-2"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0" />
+                    </svg></div>
+                <div class="text-sm px-1"><span>ENG</span></div>
+                <div id="datetime-container" class="text-xs text-right leading-tight px-1 cursor-default"><span
+                        id="clock">15:45</span><span id="date" class="block">28/09/2025</span></div>
+                <div id="notification-center-trigger" class="taskbar-icon p-2"><svg class="h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg></div>
+            </div>
+            <div id="notification-center">
+
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-lg font-semibold" style="color: var(--window-text);">
+                        Notifications
+                    </h2>
+                    <button id="clear-all-notifications-btn" class="text-sm px-2 py-1 rounded-md transition-colors"
+                        style="color: var(--window-text); background-color: var(--quick-settings-bg);"
+                        onmouseover="this.style.backgroundColor='var(--quick-settings-hover-bg)'"
+                        onmouseout="this.style.backgroundColor='var(--quick-settings-bg)'">
+                        Clear all
+                    </button>
+                </div>
+                <div id="notification-list" class="notification-area">
+                    <div id="notification-placeholder" class="p-4 text-center text-sm"
+                        style="color: var(--explorer-text-secondary);">
+                        Tidak ada notifikasi baru
+                    </div>
+                </div>
+                <div class="quick-settings-grid">
+                    <button class="quick-setting-btn active">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Wi-Fi</span>
+                    </button>
+                    <button class="quick-setting-btn active">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        <span>Bluetooth</span>
+                    </button>
+                    <button class="quick-setting-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                        <span>Mode Pesawat</span>
+                    </button>
+                    <button class="quick-setting-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 10a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zM15 9a1 1 0 100 2h1a1 1 0 100-2h-1zM4.343 5.343a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM14.243 15.657a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707zM4.343 14.243a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM15.657 5.757a1 1 0 010-1.414l-.707-.707a1 1 0 01-1.414 1.414l.707.707a1 1 0 011.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Mode Malam</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container Pill -->
+        <div id="pill-container" class="hidden">
+            <!-- Pindahkan elemen notifikasi dan volume ke sini -->
+            <div id="notification-content" class="flex items-center gap-3 w-full px-5 opacity-0 pointer-events-none">
+                <div id="notification-icon" class="flex-shrink-0 w-10 h-10 rounded">
+                </div>
+                <div class="flex-grow min-w-0">
+                    <p id="notification-title" class="font-semibold text-sm truncate"></p>
+                    <p id="notification-message" class="text-xs"></p>
+                </div>
+                <button id="close-button"
+                    class="flex-shrink-0 text-gray-500 hover:text-black dark:hover:text-white transition-colors duration-200 pointer-events-auto">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div id="volume-content" class="hidden items-center gap-3 w-full px-5">
+                <div id="volume-icon" class="flex-shrink-0 w-6 h-6">
+                </div>
+                <div class="flex-grow min-w-0 flex items-center gap-3">
+                    <div id="volume-bar-wrapper"
+                        class="w-full h-2 rounded-full bg-[var(--taskbar-hover-bg)] overflow-hidden">
+                        <div id="volume-bar-fill"
+                            class="h-full rounded-full bg-[var(--window-text)] transition-all duration-100"></div>
+                    </div>
+                    <span id="volume-value" class="font-medium text-sm w-12 text-right">80%</span>
+                </div>
+            </div>
+        </div>
+
+        <script src="js/startmenu.js"></script>
+        <script src="js/jquery-3.7.1.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+        <script src="js/winbox.bundle.min.js"></script>
+        <script src="js/index-winbox.js"></script>
+
+</body>
+
+</html>

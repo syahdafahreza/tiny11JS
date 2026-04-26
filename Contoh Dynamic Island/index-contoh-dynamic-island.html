@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Dynamic Island CSS Animation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- .layout 係最外層外面嘅排版，打直分上中下3格 -->
+    <div class="layout">
+      <!-- .header 係裝住Title -->
+      <div class="header">
+        <p class="headerTitle">Dynamic Island <span>(CSS Animation)</span></p>
+      </div>
+      <!-- .content 係中間 -->
+      <div class="content">
+        <!-- .islandContainer係iPhone個框，用左Relative & Absolute 既Positioning入面裝住3三層。 -->
+        <div class="islandContainer">
+          <!-- .island 係黑色既果一舊。係JavaScript入面控制佢改class轉size。 -->
+          <div class="island islandIsNormal"></div>
+          <!-- .islandCompact 同 .islandExpanded 就係上面d UI圖。係JavaScript入面控制佢顯示同隱藏。 -->
+          <div class="islandCompact">
+            <!-- .islandCompact 同 .islandExpanded入面都係用Flex排番d圖片位置。 -->
+            <div class="compactLeading">
+              <img src="CompactLeading.png" alt="" srcset="" />
+            </div>
+            <div class="compactSpacer"></div>
+            <div class="compactTrailing">
+              <img src="CompactTrailing.png" alt="" />
+            </div>
+          </div>
+          <div class="islandExpanded">
+            <div class="expandedLeading">
+              <img src="ExpandedLeading.png" alt="" srcset="" />
+            </div>
+            <div class="expandedSpacer"></div>
+            <div class="expandedTrailing">
+              <img src="ExpandedTrailing.png" alt="" srcset="" />
+            </div>
+            <div class="expandedButtom">
+              <img src="ExpandedButtom.png" alt="" srcset="" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- .content 係最底 -->
+      <div class="footer">
+        <!-- 入面就係3個button，JavaScript入面整左Click佢地既時侯，改.island既class令佢轉size。 -->
+        <div class="button toNormal">Normal</div>
+        <div class="button toCompact">Compact</div>
+        <div class="button toExpanded">Expanded</div>
+      </div>
+    </div>
+    <!-- 今次都係用jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
